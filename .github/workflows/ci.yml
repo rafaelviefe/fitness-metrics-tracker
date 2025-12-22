@@ -1,0 +1,36 @@
+name: CI Quality Check
+
+on:
+  # Run on any PR targeting dev or main
+  pull_request:
+    branches: [ "dev", "main" ]
+  # Run on direct pushes to dev (to catch issues early)
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  validate:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint Code
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm run test
+
+      - name: Build Project (Production Check)
+        run: npm run build
