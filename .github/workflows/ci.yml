@@ -1,10 +1,8 @@
 name: CI Quality Check
 
 on:
-  # Run on any PR targeting dev or main
   pull_request:
     branches: [ "dev", "main" ]
-  # Run on direct pushes to dev (to catch issues early)
   push:
     branches: [ "dev" ]
 
