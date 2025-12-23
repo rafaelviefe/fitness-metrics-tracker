@@ -8,11 +8,10 @@ This project relies on a strict "Quality Gate" pipeline. The infrastructure is s
 **Trigger:** - Push to `dev` or any feature branch.
 - Pull Request to `main`.
 
-1. **Testing:** Runs `vitest` to verify logic.
-2. **Build Check:** Runs `next build` to ensure type safety.
+**Jobs:**
+1. **Testing:** Runs `vitest` to verify logic and regressions.
+2. **Build Check:** Runs `next build` to ensure type safety and compilability.
 *Note: Linting is disabled. The Agent is responsible for code cleanliness.*
-
-**Rule:** The Agent must ensure the `CI Quality Check` passes locally before pushing.
 
 ## 2. Deployment (Vercel)
 **Project:** Fitness Metrics Tracker
@@ -26,23 +25,19 @@ The Agent must strictly follow this cycle to prevent conflicts and ensure clean 
 
 1.  **Sync & Plan:**
     * Checkout `main` branch.
-    * Pull latest changes (`git pull origin main`).
+    * Pull latest changes.
     * Read `todo.md` to select the next task.
 
-2.  **Branching:**
-    * **CRITICAL:** Always create a NEW branch from `main`.
-    * Naming convention: `feat/{task-id}-{short-description}` (e.g., `feat/task-004-weight-log`).
-
-3.  **Implementation:**
+2.  **Implementation:**
+    * Create a branch: `feat/{task-id}-{timestamp}`.
     * Write code and tests.
-    * Run `npm test` locally. **Do not push if tests fail.**
+    * Run `npm test` locally.
 
-4.  **Delivery (Zero-Touch):**
+3.  **Delivery (Zero-Touch):**
     * Push the branch to origin.
     * Create a Pull Request (PR) targeting `main`.
-    * **Auto-Merge:** The Agent MUST strictly enable "Auto-Merge" on the PR immediately after creation (using GitHub API).
-    * *Note:* The repository is configured to automatically delete the branch after the merge is complete.
+    * **Auto-Merge:** The Agent enables "Auto-Merge" (Squash).
+    * `todo.md` is updated on the feature branch to mark the task as done.
 
-5.  **Clean Up:**
-    * Delete local branch.
-    * Update `journal.md` with the result.
+4.  **Planning Mode (Cycle End):**
+    * When all tasks are checked, the Agent analyzes `todo.md` and appends new tasks.

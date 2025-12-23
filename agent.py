@@ -11,9 +11,9 @@ REPO_PATH = "."
 DOCS_PATH = os.path.join(REPO_PATH, "docs")
 SRC_PATH = os.path.join(REPO_PATH, "src")
 TODO_PATH = os.path.join(DOCS_PATH, "todo.md")
-JOURNAL_PATH = os.path.join(DOCS_PATH, "journal.md")
 ARCH_PATH = os.path.join(DOCS_PATH, "architecture.md")
 
+# Limits
 MAX_RETRIES_PER_ATTEMPT = 3
 MAX_ATTEMPTS_PER_TASK = 2
 
@@ -58,12 +58,6 @@ def update_todo_status(line_idx: int, status: str):
     lines = read_file(TODO_PATH).splitlines()
     lines[line_idx] = lines[line_idx].replace("[ ]", f"[{status}]")
     write_file(TODO_PATH, "\n".join(lines))
-
-def append_journal(entry: str):
-    date_str = time.strftime("%Y-%m-%d")
-    content = read_file(JOURNAL_PATH)
-    new_entry = f"\n## {date_str}\n{entry}\n"
-    write_file(JOURNAL_PATH, content + new_entry)
 
 def get_code_context() -> str:
     context = ""
@@ -125,17 +119,14 @@ def generate_code(task: dict, error_log: str = "") -> dict:
 
 def planning_mode():
     print("Entering Planning Mode...")
-    journal = read_file(JOURNAL_PATH)
     todo = read_file(TODO_PATH)
     
     prompt = f"""
     You are the Lead Architect. The current cycle is complete.
-    1. Analyze the `journal.md`.
-    2. Review `todo.md`.
-    3. Suggest the next 3-5 logical tasks.
-    4. Output strictly a list of tasks in the format: "[ ] ID: Description".
+    1. Review `todo.md` (all tasks checked).
+    2. Suggest the next 3-5 logical tasks to evolve the product.
+    3. Output strictly a list of tasks in the format: "[ ] ID: Description".
     
-    Journal: {journal}
     Current Todo: {todo}
     """
     
@@ -146,7 +137,7 @@ def planning_mode():
     
     new_tasks = response.text
     write_file(TODO_PATH, todo + "\n\n" + new_tasks)
-    append_journal("PLANNING: Cycle complete. Roadmap updated.")
+    print("PLANNING: Cycle complete. Roadmap updated.")
 
 def coding_mode():
     task = get_next_task()
@@ -189,7 +180,6 @@ def coding_mode():
                 print("    Tests Passed!")
                 
                 update_todo_status(task["line_idx"], "x")
-                append_journal(f"SUCCESS: Completed {task['id']}. Branch: {branch_name}")
                 
                 run_command("git add .")
                 run_command(f"git commit -m 'feat: {task['desc']}'")
@@ -219,7 +209,3 @@ def coding_mode():
     
     print("CRITICAL: Failed to implement task after multiple attempts.")
     update_todo_status(task["line_idx"], "!")
-    append_journal(f"FAILURE: Could not complete {task['id']} after {MAX_ATTEMPTS_PER_TASK} resets.")
-
-if __name__ == "__main__":
-    coding_mode()
