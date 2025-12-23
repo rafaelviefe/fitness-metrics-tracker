@@ -5,7 +5,7 @@ import glob
 from typing import List, Optional
 from google import genai
 from google.genai import types
-from github import Github, GithubException
+from github import Github, GithubException, Auth
 
 # --- CONFIGURATION ---
 REPO_PATH = "."
@@ -21,7 +21,10 @@ MAX_ATTEMPTS_PER_TASK = 2
 
 # --- CLIENTS ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-gh = Github(os.environ["GH_TOKEN"])
+
+# Fix: Use new Auth method to avoid deprecation warning
+auth = Auth.Token(os.environ["GH_TOKEN"])
+gh = Github(auth=auth)
 repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
 
 def run_command(command: str) -> tuple[bool, str]:
@@ -59,7 +62,6 @@ def get_next_task() -> Optional[dict]:
 def update_todo_status(line_idx: int, status: str):
     """Updates the task status in todo.md."""
     lines = read_file(TODO_PATH).splitlines()
-    # status char: 'x' for done, '!' for failed
     lines[line_idx] = lines[line_idx].replace("[ ]", f"[{status}]")
     write_file(TODO_PATH, "\n".join(lines))
 
@@ -73,7 +75,6 @@ def append_journal(entry: str):
 def get_code_context() -> str:
     """Concatenates all relevant source files for context."""
     context = ""
-    # Limit to src/ and docs/ to save tokens, avoiding node_modules
     for root, _, files in os.walk(SRC_PATH):
         for file in files:
             if file.endswith(('.ts', '.tsx', '.css')):
@@ -117,21 +118,19 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     if error_log:
         user_prompt += f"\n\nPREVIOUS ATTEMPT FAILED. Fix these errors:\n{error_log}"
 
-    # Enforce JSON schema output for reliability
-    response = client.models.generate_content(
-        model=model_id,
-        contents=user_prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction,
-            response_mime_type="application/json"
-        )
-    )
-    
-    import json
     try:
+        response = client.models.generate_content(
+            model=model_id,
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                response_mime_type="application/json"
+            )
+        )
+        import json
         return json.loads(response.text)
     except Exception as e:
-        print(f"JSON Parse Error: {e}")
+        print(f"Generation Error: {e}")
         return {}
 
 def planning_mode():
@@ -142,10 +141,9 @@ def planning_mode():
     
     prompt = f"""
     You are the Lead Architect. The current cycle is complete.
-    
-    1. Analyze the `journal.md` for lessons learned.
-    2. Review `todo.md` (all tasks checked).
-    3. Suggest the next 3-5 logical tasks to evolve the product.
+    1. Analyze the `journal.md`.
+    2. Review `todo.md`.
+    3. Suggest the next 3-5 logical tasks.
     4. Output strictly a list of tasks in the format: "[ ] ID: Description".
     
     Journal: {journal}
@@ -157,7 +155,6 @@ def planning_mode():
         contents=prompt
     )
     
-    # Append new tasks to todo.md
     new_tasks = response.text
     write_file(TODO_PATH, todo + "\n\n" + new_tasks)
     append_journal("PLANNING: Cycle complete. Roadmap updated.")
@@ -170,7 +167,6 @@ def coding_mode():
 
     print(f"Starting Task: {task['id']} - {task['desc']}")
     
-    # Create Feature Branch
     branch_name = f"feat/{task['id']}-{int(time.time())}"
     run_command("git checkout main")
     run_command("git pull origin main")
@@ -181,36 +177,38 @@ def coding_mode():
         attempts += 1
         print(f"--- Attempt {attempts}/{MAX_ATTEMPTS_PER_TASK} ---")
         
-        # Retry Loop (Coding -> Testing)
         retries = 0
         last_error = ""
         
         while retries < MAX_RETRIES_PER_ATTEMPT:
             print(f"  > Generation Cycle {retries+1}/{MAX_RETRIES_PER_ATTEMPT}")
             
-            # 1. Generate Code
             files_to_write = generate_code(task, last_error)
             if not files_to_write:
                 print("    Error: No code generated.")
                 retries += 1
                 continue
                 
-            # 2. Apply Changes
             for path, content in files_to_write.items():
                 write_file(path, content)
             
-            # 3. Verify (Test)
             print("    Running Tests...")
             success, output = run_command("npm run test")
             
             if success:
                 print("    Tests Passed!")
-                # 4. Commit & Push
-                run_command("git add .")
-                run_command(f"git commit -m 'feat: {task['desc']}'")
-                run_command(f"git push origin {branch_name}")
                 
-                # 5. PR & Auto-Merge
+                add_ok, add_out = run_command("git add .")
+                commit_ok, commit_out = run_command(f"git commit -m 'feat: {task['desc']}'")
+                push_ok, push_out = run_command(f"git push origin {branch_name}")
+                
+                if not commit_ok:
+                    print(f"    Git Commit Failed: {commit_out}")
+                    return
+                if not push_ok:
+                    print(f"    Git Push Failed: {push_out}")
+                    return
+
                 try:
                     pr = repo.create_pull(
                         title=f"feat: {task['desc']}",
@@ -223,23 +221,19 @@ def coding_mode():
                     
                     update_todo_status(task["line_idx"], "x")
                     append_journal(f"SUCCESS: Completed {task['id']}. PR: {pr.html_url}")
-                    return # Task Done!
+                    return
                 except GithubException as e:
                     print(f"    GitHub API Error: {e}")
-                    # If PR fails, we technically succeeded in coding, but failed in ops.
-                    # For now, let's count as success locally but log error.
                     return
             else:
                 print("    Tests Failed.")
-                last_error = output[-2000:] # Keep last 2k chars of error
+                last_error = output[-2000:]
                 retries += 1
         
-        # If we exit the retry loop, it means we failed 3 times.
         print("  > Reverting changes for this attempt...")
         run_command("git reset --hard HEAD")
         run_command("git clean -fd")
     
-    # If we exit the attempt loop, we failed completely.
     print("CRITICAL: Failed to implement task after multiple attempts.")
     update_todo_status(task["line_idx"], "!")
     append_journal(f"FAILURE: Could not complete {task['id']} after {MAX_ATTEMPTS_PER_TASK} resets.")
