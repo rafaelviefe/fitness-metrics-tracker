@@ -2,8 +2,11 @@
 
 [x] 001: Initialize Next.js project with TypeScript, Tailwind, and Vitest.
 [x] 002: Setup CI/CD Pipeline and GitHub Actions.
-[ ] 003: Create StorageService utility in src/core/storage/index.ts to handle localStorage with type safety.
-[ ] 004: Create a reusable Button component in src/components/ui/Button.tsx following design_system.md.
-[ ] 005: Create a reusable Card component in src/components/ui/Card.tsx following design_system.md.
-[ ] 006: Create the Weight Log feature container and a basic form to add current weight.
-[ ] 007: Implement the Weight Chart visualization using a simple SVG or charting library.
+[ ] 003: Create `StorageService` interface and a specific `LocalStorageAdapter` in `src/core/storage/`. Just the reading/writing logic. Tests required.
+[ ] 004: Create a specialized `WeightRepository` in `src/features/weight/repositories/`. It should use the `StorageService` to save/load weight records. Tests required.
+[ ] 005: Create the UI atom: `<Button />` in `src/components/ui/`. Implementation must match `design_system.md`.
+[ ] 006: Create the UI atom: `<Card />` in `src/components/ui/`. Simple container with tailwind classes from design system.
+[ ] 007: Create the UI atom: `<Input />` in `src/components/ui/`. A styled HTML input for numbers/text.
+[ ] 008: Feature Weight: Create `AddWeightForm` component. It should use `WeightRepository` to save data. No list view yet, just the form.
+[ ] 009: Feature Weight: Create `WeightHistoryList` component. It should strictly read from repo and display a list.
+[ ] 010: Feature Weight: Assemble the "Weight Page" (`src/app/weight/page.tsx`) combining the Form and List components.

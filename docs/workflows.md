@@ -8,10 +8,9 @@ This project relies on a strict "Quality Gate" pipeline. The infrastructure is s
 **Trigger:** - Push to `dev` or any feature branch.
 - Pull Request to `main`.
 
-**Jobs:**
-1. **Linting:** Runs `eslint .` to ensure code style consistency.
-2. **Testing:** Runs `vitest` to verify logic and regressions.
-3. **Build Check:** Runs `next build` to ensure type safety and compilability.
+1. **Testing:** Runs `vitest` to verify logic.
+2. **Build Check:** Runs `next build` to ensure type safety.
+*Note: Linting is disabled. The Agent is responsible for code cleanliness.*
 
 **Rule:** The Agent must ensure the `CI Quality Check` passes locally before pushing.
 

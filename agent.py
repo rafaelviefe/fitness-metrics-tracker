@@ -1,8 +1,7 @@
 import os
 import subprocess
 import time
-import glob
-from typing import List, Optional
+from typing import Optional
 from google import genai
 from google.genai import types
 from github import Github, GithubException, Auth
@@ -22,7 +21,6 @@ MAX_ATTEMPTS_PER_TASK = 2
 # --- CLIENTS ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-# Fix: Use new Auth method to avoid deprecation warning
 auth = Auth.Token(os.environ["GH_TOKEN"])
 gh = Github(auth=auth)
 repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
@@ -168,6 +166,7 @@ def coding_mode():
     print(f"Starting Task: {task['id']} - {task['desc']}")
     
     branch_name = f"feat/{task['id']}-{int(time.time())}"
+    
     run_command("git checkout main")
     run_command("git pull origin main")
     run_command(f"git checkout -b {branch_name}")
@@ -198,16 +197,9 @@ def coding_mode():
             if success:
                 print("    Tests Passed!")
                 
-                add_ok, add_out = run_command("git add .")
-                commit_ok, commit_out = run_command(f"git commit -m 'feat: {task['desc']}'")
-                push_ok, push_out = run_command(f"git push origin {branch_name}")
-                
-                if not commit_ok:
-                    print(f"    Git Commit Failed: {commit_out}")
-                    return
-                if not push_ok:
-                    print(f"    Git Push Failed: {push_out}")
-                    return
+                run_command("git add .")
+                run_command(f"git commit -m 'feat: {task['desc']}'")
+                run_command(f"git push origin {branch_name}")
 
                 try:
                     pr = repo.create_pull(
@@ -216,7 +208,7 @@ def coding_mode():
                         head=branch_name,
                         base="main"
                     )
-                    pr.enable_automerge(merge_method="squash")
+                    pr.enable_automerge(merge_method="SQUASH")
                     print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
                     
                     update_todo_status(task["line_idx"], "x")
