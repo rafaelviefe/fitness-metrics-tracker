@@ -19,15 +19,15 @@ We avoid "spaghetti code" by organizing around **Business Features**, not techni
 - `src/components/ui/`: Shared, dumb UI atoms (Buttons, Inputs) following the Design System.
 - `src/core/`: Shared utilities (Dates, Math, Storage wrappers).
 
-## 3. Code Quality & SOLID Principles
-**The Agent must strictly adhere to these rules. Violations cause build failure.**
+## 3. Code Quality & Principles (Honor System)
+**Note:** Automated linting is disabled to save resources. The Agent is trusted to produce clean code by default.
 
-- **Single Responsibility:** A component renders UI. A hook handles logic. A util calculates data. Do not mix them.
-- **The "15-Line Rule":**
-  - Logical functions (utils/hooks) must be under **15 lines**. If longer, break it down.
-  - React Components (JSX) must be under **50 lines**. If longer, extract sub-components.
-- **Descriptive Naming:** `const data` is forbidden. Use `const weightLogEntries`.
-- **No Magic Numbers:** Use named constants.
+- **Atomic Complexity:** - Prefer many small files over one large file.
+  - If a file exceeds 100 lines, you MUST consider refactoring it immediately.
+- **Naming:** - Use Descriptive Naming (`userWeightInKg` vs `w`).
+  - Boolean variables should start with `is`, `has`, or `should`.
+- **Comments:** - Do not comment *what* code does (the code speaks).
+  - Comment *why* complex business logic exists.
 
 ## 4. Testing Mandate
 - **Zero-Tolerance:** No feature is "Done" without tests.
