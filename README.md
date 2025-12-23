@@ -1,7 +1,12 @@
-# Fitness Metrics Tracker
+# Self-Evolving Fitness Tracker
 
 ## Project Overview
 This is a **Fitness Metrics Tracker** built entirely by an Autonomous AI Agent using a "One-Day-One-Commit" methodology. The goal is to build a high-value, resilient frontend application for tracking physical progress (Weights, PRs, Goals) without a dedicated backend.
+
+## Structure
+- `docs/todo.md`: The active roadmap.
+- `docs/architecture.md`: Technical constraints.
+- `src/`: Application source code.
 
 ## The "Self-Developing" Protocol
 This repository is managed by an AI Agent.
