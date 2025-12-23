@@ -14,7 +14,6 @@ TODO_PATH = os.path.join(DOCS_PATH, "todo.md")
 JOURNAL_PATH = os.path.join(DOCS_PATH, "journal.md")
 ARCH_PATH = os.path.join(DOCS_PATH, "architecture.md")
 
-# Limits
 MAX_RETRIES_PER_ATTEMPT = 3
 MAX_ATTEMPTS_PER_TASK = 2
 
@@ -26,7 +25,6 @@ gh = Github(auth=auth)
 repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
 
 def run_command(command: str) -> tuple[bool, str]:
-    """Runs a shell command and returns (success, output)."""
     try:
         result = subprocess.run(
             command, shell=True, text=True, capture_output=True, cwd=REPO_PATH
@@ -47,7 +45,6 @@ def write_file(path: str, content: str):
         f.write(content)
 
 def get_next_task() -> Optional[dict]:
-    """Parses todo.md to find the first unchecked task."""
     content = read_file(TODO_PATH)
     lines = content.splitlines()
     for i, line in enumerate(lines):
@@ -58,20 +55,17 @@ def get_next_task() -> Optional[dict]:
     return None
 
 def update_todo_status(line_idx: int, status: str):
-    """Updates the task status in todo.md."""
     lines = read_file(TODO_PATH).splitlines()
     lines[line_idx] = lines[line_idx].replace("[ ]", f"[{status}]")
     write_file(TODO_PATH, "\n".join(lines))
 
 def append_journal(entry: str):
-    """Logs actions to the journal."""
     date_str = time.strftime("%Y-%m-%d")
     content = read_file(JOURNAL_PATH)
     new_entry = f"\n## {date_str}\n{entry}\n"
     write_file(JOURNAL_PATH, content + new_entry)
 
 def get_code_context() -> str:
-    """Concatenates all relevant source files for context."""
     context = ""
     for root, _, files in os.walk(SRC_PATH):
         for file in files:
@@ -81,8 +75,6 @@ def get_code_context() -> str:
     return context
 
 def generate_code(task: dict, error_log: str = "") -> dict:
-    """Prompts Gemini to implement or fix the task."""
-    
     model_id = "gemini-2.5-flash" 
     
     system_instruction = f"""
@@ -132,7 +124,6 @@ def generate_code(task: dict, error_log: str = "") -> dict:
         return {}
 
 def planning_mode():
-    """Analyzes the project and generates new tasks."""
     print("Entering Planning Mode...")
     journal = read_file(JOURNAL_PATH)
     todo = read_file(TODO_PATH)
@@ -197,6 +188,9 @@ def coding_mode():
             if success:
                 print("    Tests Passed!")
                 
+                update_todo_status(task["line_idx"], "x")
+                append_journal(f"SUCCESS: Completed {task['id']}. Branch: {branch_name}")
+                
                 run_command("git add .")
                 run_command(f"git commit -m 'feat: {task['desc']}'")
                 run_command(f"git push origin {branch_name}")
@@ -210,9 +204,6 @@ def coding_mode():
                     )
                     pr.enable_automerge(merge_method="SQUASH")
                     print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
-                    
-                    update_todo_status(task["line_idx"], "x")
-                    append_journal(f"SUCCESS: Completed {task['id']}. PR: {pr.html_url}")
                     return
                 except GithubException as e:
                     print(f"    GitHub API Error: {e}")
