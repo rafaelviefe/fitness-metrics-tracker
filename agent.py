@@ -1,8 +1,7 @@
 import os
 import subprocess
 import time
-import glob
-from typing import List, Optional
+from typing import Optional
 from google import genai
 from google.genai import types
 from github import Github, GithubException, Auth
@@ -22,7 +21,6 @@ MAX_ATTEMPTS_PER_TASK = 2
 # --- CLIENTS ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-# Auth: Use Token method
 auth = Auth.Token(os.environ["GH_TOKEN"])
 gh = Github(auth=auth)
 repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
