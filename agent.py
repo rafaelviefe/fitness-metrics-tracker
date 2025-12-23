@@ -13,6 +13,8 @@ SRC_PATH = os.path.join(REPO_PATH, "src")
 TODO_PATH = os.path.join(DOCS_PATH, "todo.md")
 ARCH_PATH = os.path.join(DOCS_PATH, "architecture.md")
 
+TARGET_BRANCH = "testing-planning" 
+
 MAX_RETRIES_PER_ATTEMPT = 3
 MAX_ATTEMPTS_PER_TASK = 2
 
@@ -51,7 +53,6 @@ def get_next_task() -> Optional[dict]:
         if line_stripped.startswith("[ ]") or line_stripped.startswith("[!]"):
             is_retry = line_stripped.startswith("[!]")
             marker = "[!]" if is_retry else "[ ]"
-            
             parts = line.replace(marker, "").strip().split(":", 1)
             if len(parts) == 2:
                 return {
@@ -65,12 +66,10 @@ def get_next_task() -> Optional[dict]:
 def update_todo_status(line_idx: int, status: str):
     lines = read_file(TODO_PATH).splitlines()
     current_line = lines[line_idx]
-    
     if "[ ]" in current_line:
         lines[line_idx] = current_line.replace("[ ]", f"[{status}]")
     elif "[!]" in current_line:
         lines[line_idx] = current_line.replace("[!]", f"[{status}]")
-        
     write_file(TODO_PATH, "\n".join(lines))
 
 def get_code_context() -> str:
@@ -100,13 +99,11 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     if task.get("is_retry"):
         print("  ! RETRY MODE: Injecting simplification directives.")
         system_instruction += """
-        
         CRITICAL SAFETY DIRECTIVE:
         This task FAILED previously. 
         1. Implement the solution in the SIMPLEST way possible.
-        2. Verify every import path and variable name.
-        3. Do not attempt complex refactors. Stick to the basics.
-        4. Focus on PASSING TESTS above all else.
+        2. Do not attempt complex refactors.
+        3. Focus on PASSING TESTS above all else.
         """
 
     system_instruction += f"""
@@ -120,10 +117,8 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     user_prompt = f"""
     Context:
     {read_file(ARCH_PATH)}
-    
     Current Codebase:
     {get_code_context()}
-    
     Task: {task['desc']}
     """
 
@@ -149,8 +144,9 @@ def planning_mode():
     print("Entering Planning Mode...")
     
     branch_name = f"plan/roadmap-update-{int(time.time())}"
-    run_command("git checkout main")
-    run_command("git pull origin main")
+    # TEST CONFIG: Target the test branch
+    run_command(f"git checkout {TARGET_BRANCH}")
+    run_command(f"git pull origin {TARGET_BRANCH}")
     run_command(f"git checkout -b {branch_name}")
     
     todo = read_file(TODO_PATH)
@@ -160,7 +156,6 @@ def planning_mode():
     1. Review `todo.md` (all tasks checked).
     2. Suggest the next 3-5 logical tasks to evolve the product.
     3. Output strictly a list of tasks in the format: "[ ] ID: Description".
-    
     Current Todo: {todo}
     """
     
@@ -183,7 +178,7 @@ def planning_mode():
             title="chore: Update Roadmap (Planning Mode)",
             body="Cycle complete. New tasks added by AI Architect.",
             head=branch_name,
-            base="main"
+            base=TARGET_BRANCH # TEST CONFIG: PR against test branch
         )
         pr.enable_automerge(merge_method="SQUASH")
         print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
@@ -198,12 +193,13 @@ def coding_mode():
 
     print(f"Starting Task: {task['id']} - {task['desc']}")
     if task.get("is_retry"):
-        print(">>> WARNING: This is a RECOVERY ATTEMPT for a previously failed task. <<<")
+        print(">>> WARNING: RECOVERY ATTEMPT <<<")
     
     branch_name = f"feat/{task['id']}-{int(time.time())}"
     
-    run_command("git checkout main")
-    run_command("git pull origin main")
+    # TEST CONFIG: Target the test branch
+    run_command(f"git checkout {TARGET_BRANCH}")
+    run_command(f"git pull origin {TARGET_BRANCH}")
     run_command(f"git checkout -b {branch_name}")
 
     attempts = 0
@@ -231,7 +227,6 @@ def coding_mode():
             
             if success:
                 print("    Tests Passed!")
-                
                 update_todo_status(task["line_idx"], "x")
                 
                 run_command("git add .")
@@ -243,7 +238,7 @@ def coding_mode():
                         title=f"feat: {task['desc']}",
                         body=f"Implemented by AI Agent.\nTask: {task['id']}",
                         head=branch_name,
-                        base="main"
+                        base=TARGET_BRANCH # TEST CONFIG: PR against test branch
                     )
                     pr.enable_automerge(merge_method="SQUASH")
                     print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
