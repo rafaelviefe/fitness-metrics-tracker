@@ -1,0 +1,59 @@
+name: Daily AI Developer
+
+on:
+  schedule:
+    - cron: '30 22 * * *' # Every day at 19:30 BRT (22:30 UTC)
+  workflow_dispatch: # Allows manual trigger button
+
+jobs:
+  ai-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for context
+          token: ${{ secrets.GH_TOKEN }} # Use PAT for bypassing branch protection if needed
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Setup Node.js (for testing)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Run AI Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }} # Personal Access Token
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python agent.py
+        
+      - name: Commit Documentation Updates
+        # The agent modifies todo.md and journal.md directly on the main branch context
+        # We need to push these specific changes back to main if the agent didn't handle them in the PR
+        # (This handles the bookkeeping updates)
+        if: always() 
+        run: |
+          git config --global user.name "AI Agent"
+          git config --global user.email "agent@bot.com"
+          git add docs/todo.md docs/journal.md
+          git commit -m "chore: update agent logs" || echo "No doc changes to commit"
+          git push origin HEAD:main || echo "Could not push docs (might be protected)"
