@@ -84,8 +84,7 @@ def get_code_context() -> str:
 def generate_code(task: dict, error_log: str = "") -> dict:
     """Prompts Gemini to implement or fix the task."""
     
-    # We use Pro for better reasoning on code structure
-    model_id = "gemini-1.5-pro" 
+    model_id = "gemini-1.5-flash" 
     
     system_instruction = f"""
     You are a Senior React/Next.js Engineer.
