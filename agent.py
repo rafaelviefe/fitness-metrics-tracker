@@ -1,8 +1,7 @@
 import os
 import subprocess
 import time
-import glob
-from typing import List, Optional
+from typing import Optional
 from google import genai
 from google.genai import types
 from github import Github, GithubException, Auth
@@ -69,7 +68,6 @@ def get_code_context() -> str:
     return context
 
 def generate_code(task: dict, error_log: str = "") -> dict:
-    # UPDATED: Using the requested model version
     model_id = "gemini-2.5-flash" 
     
     system_instruction = f"""
@@ -210,3 +208,6 @@ def coding_mode():
     
     print("CRITICAL: Failed to implement task after multiple attempts.")
     update_todo_status(task["line_idx"], "!")
+
+if __name__ == "__main__":
+    coding_mode()

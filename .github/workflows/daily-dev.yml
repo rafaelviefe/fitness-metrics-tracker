@@ -40,8 +40,8 @@ jobs:
 
       - name: Configure Git Identity
         run: |
-          git config --global user.name "AI Agent"
-          git config --global user.email "agent@bot.com"
+          git config --global user.name "rafaelviefe"
+          git config --global user.email "rafaelviefe@gmail.com"
 
       - name: Run AI Agent
         env:
