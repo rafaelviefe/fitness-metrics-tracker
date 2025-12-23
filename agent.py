@@ -84,7 +84,7 @@ def get_code_context() -> str:
 def generate_code(task: dict, error_log: str = "") -> dict:
     """Prompts Gemini to implement or fix the task."""
     
-    model_id = "gemini-1.5-flash" 
+    model_id = "gemini-2.5-flash" 
     
     system_instruction = f"""
     You are a Senior React/Next.js Engineer.
@@ -153,7 +153,7 @@ def planning_mode():
     """
     
     response = client.models.generate_content(
-        model="gemini-1.5-pro",
+        model="gemini-2.5-flash",
         contents=prompt
     )
     
