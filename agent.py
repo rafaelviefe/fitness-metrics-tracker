@@ -47,15 +47,30 @@ def get_next_task() -> Optional[dict]:
     content = read_file(TODO_PATH)
     lines = content.splitlines()
     for i, line in enumerate(lines):
-        if line.strip().startswith("[ ]"):
-            parts = line.replace("[ ]", "").strip().split(":", 1)
+        line_stripped = line.strip()
+        if line_stripped.startswith("[ ]") or line_stripped.startswith("[!]"):
+            is_retry = line_stripped.startswith("[!]")
+            marker = "[!]" if is_retry else "[ ]"
+            
+            parts = line.replace(marker, "").strip().split(":", 1)
             if len(parts) == 2:
-                return {"id": parts[0].strip(), "desc": parts[1].strip(), "line_idx": i}
+                return {
+                    "id": parts[0].strip(),
+                    "desc": parts[1].strip(),
+                    "line_idx": i,
+                    "is_retry": is_retry
+                }
     return None
 
 def update_todo_status(line_idx: int, status: str):
     lines = read_file(TODO_PATH).splitlines()
-    lines[line_idx] = lines[line_idx].replace("[ ]", f"[{status}]")
+    current_line = lines[line_idx]
+    
+    if "[ ]" in current_line:
+        lines[line_idx] = current_line.replace("[ ]", f"[{status}]")
+    elif "[!]" in current_line:
+        lines[line_idx] = current_line.replace("[!]", f"[{status}]")
+        
     write_file(TODO_PATH, "\n".join(lines))
 
 def get_code_context() -> str:
@@ -80,7 +95,21 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     3. You MUST write comprehensive Unit Tests (Vitest) for your code.
     4. Output purely a JSON object with file paths as keys and content as values.
     5. NO Markdown formatting, NO explanations outside the JSON.
-    
+    """
+
+    if task.get("is_retry"):
+        print("  ! RETRY MODE: Injecting simplification directives.")
+        system_instruction += """
+        
+        CRITICAL SAFETY DIRECTIVE:
+        This task FAILED previously. 
+        1. Implement the solution in the SIMPLEST way possible.
+        2. Verify every import path and variable name.
+        3. Do not attempt complex refactors. Stick to the basics.
+        4. Focus on PASSING TESTS above all else.
+        """
+
+    system_instruction += f"""
     Example Output:
     {{
         "src/features/feature-x/index.ts": "...",
@@ -118,6 +147,12 @@ def generate_code(task: dict, error_log: str = "") -> dict:
 
 def planning_mode():
     print("Entering Planning Mode...")
+    
+    branch_name = f"plan/roadmap-update-{int(time.time())}"
+    run_command("git checkout main")
+    run_command("git pull origin main")
+    run_command(f"git checkout -b {branch_name}")
+    
     todo = read_file(TODO_PATH)
     
     prompt = f"""
@@ -136,7 +171,24 @@ def planning_mode():
     
     new_tasks = response.text
     write_file(TODO_PATH, todo + "\n\n" + new_tasks)
+    
     print("PLANNING: Cycle complete. Roadmap updated.")
+    
+    run_command("git add docs/todo.md")
+    run_command("git commit -m 'chore: update roadmap for next cycle'")
+    run_command(f"git push origin {branch_name}")
+    
+    try:
+        pr = repo.create_pull(
+            title="chore: Update Roadmap (Planning Mode)",
+            body="Cycle complete. New tasks added by AI Architect.",
+            head=branch_name,
+            base="main"
+        )
+        pr.enable_automerge(merge_method="SQUASH")
+        print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
+    except GithubException as e:
+        print(f"    GitHub API Error: {e}")
 
 def coding_mode():
     task = get_next_task()
@@ -145,6 +197,8 @@ def coding_mode():
         return
 
     print(f"Starting Task: {task['id']} - {task['desc']}")
+    if task.get("is_retry"):
+        print(">>> WARNING: This is a RECOVERY ATTEMPT for a previously failed task. <<<")
     
     branch_name = f"feat/{task['id']}-{int(time.time())}"
     
