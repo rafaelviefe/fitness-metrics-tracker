@@ -261,7 +261,25 @@ def coding_mode():
         run_command("git clean -fd")
     
     print("CRITICAL: Failed to implement task after multiple attempts.")
+    
     update_todo_status(task["line_idx"], "!")
+    
+    print("    Committing failure status...")
+    run_command("git add docs/todo.md")
+    run_command(f"git commit -m 'chore: mark task {task['id']} as failed'")
+    run_command(f"git push origin {branch_name}")
+
+    try:
+        pr = repo.create_pull(
+            title=f"chore: Mark {task['id']} as Failed",
+            body=f"Agent failed to implement task {task['id']} after multiple attempts. Marking as requiring human intervention or retry.",
+            head=branch_name,
+            base="main"
+        )
+        pr.enable_automerge(merge_method="SQUASH")
+        print(f"    PR Created for Failure Status: {pr.html_url}")
+    except GithubException as e:
+        print(f"    GitHub API Error: {e}")
 
 if __name__ == "__main__":
     coding_mode()
