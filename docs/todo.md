@@ -10,3 +10,7 @@
 [x] 008: Feature Weight: Create `AddWeightForm` component. It should use `WeightRepository` to save data. No list view yet, just the form.
 [x] 009: Feature Weight: Create `WeightHistoryList` component. It should strictly read from repo and display a list.
 [x] 010: Feature Weight: Assemble the "Weight Page" (`src/app/weight/page.tsx`) combining the Form and List components.
+
+[ ] 011: Implement `update` and `delete` methods in `WeightRepository` and integrate them into the `WeightHistoryList` with appropriate UI elements (e.g., edit/delete buttons).
+[ ] 012: Integrate a charting library (e.g., Recharts or Chart.js) to display weight history as a line chart on the `Weight Page`, visualizing progress over time.
+[ ] 013: Add client-side input validation (e.g., using a library like Zod) to the `AddWeightForm` and display user-friendly error messages for invalid inputs (e.g., non-numeric weight).
