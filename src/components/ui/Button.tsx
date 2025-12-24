@@ -1,10 +1,5 @@
 import * as React from 'react';
-
-// Placeholder for cn utility (combine class names with tw-merge compatibility)
-// If src/lib/utils.ts with cn is not available, this local cn will be used.
-const cn = (...classNames: (string | boolean | undefined | null)[]) => {
-  return classNames.filter(Boolean).join(' ');
-};
+import { cn } from '@/lib/utils'; // Import cn from the new utility file
 
 type ButtonVariant =
   | 'default'
