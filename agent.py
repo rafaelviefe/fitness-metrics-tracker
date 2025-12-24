@@ -6,7 +6,6 @@ from google import genai
 from google.genai import types
 from github import Github, GithubException, Auth
 
-# --- CONFIGURATION ---
 REPO_PATH = "."
 DOCS_PATH = os.path.join(REPO_PATH, "docs")
 SRC_PATH = os.path.join(REPO_PATH, "src")
@@ -16,7 +15,6 @@ ARCH_PATH = os.path.join(DOCS_PATH, "architecture.md")
 MAX_RETRIES_PER_ATTEMPT = 3
 MAX_ATTEMPTS_PER_TASK = 2
 
-# --- CLIENTS ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 auth = Auth.Token(os.environ["GH_TOKEN"])
@@ -174,21 +172,29 @@ def planning_mode():
     current_code = get_code_context()
     
     prompt = f"""
-    You are the Lead Architect for this project.
+    You are the Lead Technical Architect.
     
     Current Project State (Codebase):
     {current_code}
     
-    Your Goal:
-    Based strictly on the existing code above, define the NEXT 6 logical tasks to evolve the product.
+    Your Goal: Define the NEXT 6 atomic, extremely granular development tasks.
     
-    Rules:
+    STRICT GRANULARITY RULES:
+    1. NEVER create a task that involves multiple files or complex logic at once.
+    2. Break features down into tiny steps. Example sequence:
+       - Step A: Create Interface/Type definitions only.
+       - Step B: Create a simple Utility or Service with Tests.
+       - Step C: Create a single UI Atom (e.g., Button, Input) with Tests.
+       - Step D: Create a specific Form component (logic only).
+       - Step E: Create the View/Page (assembly).
+    3. Each task must be solvable in a single code generation pass without context overflow.
+    
+    FORMATTING RULES:
     1. Start numbering tasks from ID: {next_start_id:03d}.
     2. Output EXACTLY 6 new tasks.
     3. Format strictly as: "[ ] ID: Description" (one per line).
-    4. NO empty lines between tasks.
-    5. Do NOT output Markdown headers, intro text, or the old completed tasks. Just the new list.
-    6. Ensure tasks follow the architecture defined in existing files (Feature-sliced).
+    4. NO Markdown headers, NO intro/outro text.
+    5. Description must be technical and specific (mention file paths or components).
     """
     
     print("  > Asking AI Architect for new tasks...")
@@ -216,7 +222,7 @@ def planning_mode():
     try:
         pr = repo.create_pull(
             title=f"chore: Update Roadmap (Cycle {next_start_id // 6 + 1})",
-            body="Planning Cycle Complete.\n\n- Old tasks archived (cleared).\n- New tasks generated based on current code state.",
+            body="Planning Cycle Complete.\n\n- Old tasks archived.\n- New atomic tasks generated.",
             head=branch_name,
             base="main"
         )
