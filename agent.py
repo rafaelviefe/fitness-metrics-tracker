@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import json
 from typing import Optional
 from google import genai
 from google.genai import types
@@ -50,7 +51,13 @@ def get_next_task() -> Optional[dict]:
             is_retry = line_stripped.startswith("[!]")
             marker = "[!]" if is_retry else "[ ]"
             
-            parts = line.replace(marker, "").strip().split(":", 1)
+            clean_line = line.replace(marker, "").strip()
+            
+            if clean_line.startswith("ID:"):
+                clean_line = clean_line[3:].strip()
+            
+            parts = clean_line.split(":", 1)
+            
             if len(parts) == 2:
                 return {
                     "id": parts[0].strip(),
@@ -85,33 +92,35 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     
     system_instruction = f"""
     You are a Senior React/Next.js Engineer.
-    Your goal is to complete the following task: "{task['desc']}".
+    
+    YOUR MISSION:
+    Implement ONLY the specific task described in the prompt.
+    
+    CRITICAL RULES:
+    1. SCOPE IS STRICT: You must NOT implement any other tasks from the roadmap, even if they seem obvious or next in line.
+    2. ATOMICITY: Output only the files directly required for THIS single task.
+    3. STANDARDS: Follow `docs/architecture.md` and `docs/design_system.md`.
+    4. TESTING: You MUST write comprehensive Unit Tests (Vitest) for the code you write.
+    5. FORMAT: Output purely a JSON object with file paths as keys and content as values.
     
     Constraints:
-    1. STRICTLY follow `docs/architecture.md` (Feature-sliced, SOLID).
-    2. USE `docs/design_system.md` for any UI.
-    3. You MUST write comprehensive Unit Tests (Vitest) for your code.
-    4. Output purely a JSON object with file paths as keys and content as values.
-    5. NO Markdown formatting, NO explanations outside the JSON.
+    - NO Markdown formatting.
+    - NO explanations.
+    - JSON ONLY.
     """
 
     if task.get("is_retry"):
-        print("  ! RETRY MODE: Injecting simplification directives.")
         system_instruction += """
-        
-        CRITICAL SAFETY DIRECTIVE:
-        This task FAILED previously. 
+        RETRY MODE ACTIVE:
         1. Implement the solution in the SIMPLEST way possible.
-        2. Verify every import path and variable name.
-        3. Do not attempt complex refactors. Stick to the basics.
-        4. Focus on PASSING TESTS above all else.
+        2. Verify imports and variable names.
+        3. Focus on PASSING TESTS.
         """
 
     system_instruction += f"""
     Example Output:
     {{
-        "src/features/feature-x/index.ts": "...",
-        "src/features/feature-x/index.test.ts": "..."
+        "src/features/feature-x/index.ts": "..."
     }}
     """
 
@@ -122,7 +131,9 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     Current Codebase:
     {get_code_context()}
     
-    Task: {task['desc']}
+    TASK TO IMPLEMENT: "{task['desc']}"
+    
+    Implement EXACTLY this task and nothing else.
     """
 
     if error_log:
@@ -137,7 +148,6 @@ def generate_code(task: dict, error_log: str = "") -> dict:
                 response_mime_type="application/json"
             )
         )
-        import json
         return json.loads(response.text)
     except Exception as e:
         print(f"Generation Error: {e}")
@@ -151,6 +161,8 @@ def get_last_task_id() -> int:
         if line.strip().startswith("["):
             try:
                 clean_line = line.split("]", 1)[1].strip()
+                if clean_line.startswith("ID:"):
+                    clean_line = clean_line[3:].strip()
                 id_part = clean_line.split(":")[0].strip()
                 if id_part.isdigit():
                     max_id = max(max_id, int(id_part))
@@ -181,20 +193,14 @@ def planning_mode():
     
     STRICT GRANULARITY RULES:
     1. NEVER create a task that involves multiple files or complex logic at once.
-    2. Break features down into tiny steps. Example sequence:
-       - Step A: Create Interface/Type definitions only.
-       - Step B: Create a simple Utility or Service with Tests.
-       - Step C: Create a single UI Atom (e.g., Button, Input) with Tests.
-       - Step D: Create a specific Form component (logic only).
-       - Step E: Create the View/Page (assembly).
-    3. Each task must be solvable in a single code generation pass without context overflow.
+    2. Break features down into tiny steps.
+    3. Each task must be solvable in a single code generation pass.
     
     FORMATTING RULES:
     1. Start numbering tasks from ID: {next_start_id:03d}.
     2. Output EXACTLY 6 new tasks.
-    3. Format strictly as: "[ ] ID: Description" (one per line).
+    3. Format strictly as: "[ ] ID: <id>: <Description>" (one per line).
     4. NO Markdown headers, NO intro/outro text.
-    5. Description must be technical and specific (mention file paths or components).
     """
     
     print("  > Asking AI Architect for new tasks...")
@@ -212,7 +218,6 @@ def planning_mode():
     
     write_file(TODO_PATH, new_file_content)
     
-    print("PLANNING: Cycle complete. Roadmap reset with new tasks.")
     print(f"  > Generated {len(lines)} new tasks starting from ID {next_start_id:03d}.")
     
     run_command("git add docs/todo.md")
@@ -313,7 +318,7 @@ def coding_mode():
     try:
         pr = repo.create_pull(
             title=f"chore: Mark {task['id']} as Failed",
-            body=f"Agent failed to implement task {task['id']} after multiple attempts. Marking as requiring human intervention or retry.",
+            body=f"Agent failed to implement task {task['id']} after multiple attempts.",
             head=branch_name,
             base="main"
         )
