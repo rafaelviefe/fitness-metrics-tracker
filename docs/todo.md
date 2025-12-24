@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] 001: Initialize Next.js project with TypeScript, Tailwind, and Vitest.
-[x] 002: Setup CI/CD Pipeline and GitHub Actions.
-[x] 003: Create `StorageService` interface and a specific `LocalStorageAdapter` in `src/core/storage/`. Just the reading/writing logic. Tests required.
-[x] 004: Create a specialized `WeightRepository` in `src/features/weight/repositories/`. It should use the `StorageService` to save/load weight records. Tests required.
-[x] 005: Create the UI atom: `<Button />` in `src/components/ui/`. Implementation must match `design_system.md`.
-[x] 006: Create the UI atom: `<Card />` in `src/components/ui/`. Simple container with tailwind classes from design system.
+[ ] ID: 007: Centralize `cn` utility function in `src/lib/utils.ts` using `clsx` and `tw-merge` and update `Button` and `Card` components to import it.
+[ ] ID: 008: Implement logic on the `Home` page to fetch and display existing weight records using `WeightRepository`.
+[ ] ID: 009: Create a dedicated `WeightRecordItem` component to display a single weight record, potentially utilizing the `Card` component.
+[ ] ID: 010: Add a form to the `Home` page for users to input and add new weight records using `WeightRepository.addWeightRecord`.
+[ ] ID: 011: Implement delete functionality for individual weight records on the `Home` page, integrating with `WeightRepository.deleteWeightRecord`.
+[ ] ID: 012: Implement edit functionality for existing weight records, allowing users to modify a record's weight or date.
