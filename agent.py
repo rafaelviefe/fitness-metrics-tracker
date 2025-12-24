@@ -13,6 +13,9 @@ SRC_PATH = os.path.join(REPO_PATH, "src")
 TODO_PATH = os.path.join(DOCS_PATH, "todo.md")
 ARCH_PATH = os.path.join(DOCS_PATH, "architecture.md")
 
+# DEFININDO A BRANCH ALVO PARA O TESTE
+TARGET_BRANCH = "planning-test"
+
 MAX_RETRIES_PER_ATTEMPT = 3
 MAX_ATTEMPTS_PER_TASK = 2
 
@@ -149,8 +152,11 @@ def planning_mode():
     print("Entering Planning Mode...")
     
     branch_name = f"plan/roadmap-update-{int(time.time())}"
-    run_command("git checkout main")
-    run_command("git pull origin main")
+    
+    # Switch context to TARGET_BRANCH
+    print(f"Checking out base branch: {TARGET_BRANCH}")
+    run_command(f"git checkout {TARGET_BRANCH}")
+    run_command(f"git pull origin {TARGET_BRANCH}")
     run_command(f"git checkout -b {branch_name}")
     
     todo = read_file(TODO_PATH)
@@ -183,7 +189,7 @@ def planning_mode():
             title="chore: Update Roadmap (Planning Mode)",
             body="Cycle complete. New tasks added by AI Architect.",
             head=branch_name,
-            base="main"
+            base=TARGET_BRANCH  # Point PR to planning-test
         )
         pr.enable_automerge(merge_method="SQUASH")
         print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
@@ -202,8 +208,10 @@ def coding_mode():
     
     branch_name = f"feat/{task['id']}-{int(time.time())}"
     
-    run_command("git checkout main")
-    run_command("git pull origin main")
+    # Switch context to TARGET_BRANCH
+    print(f"Checking out base branch: {TARGET_BRANCH}")
+    run_command(f"git checkout {TARGET_BRANCH}")
+    run_command(f"git pull origin {TARGET_BRANCH}")
     run_command(f"git checkout -b {branch_name}")
 
     attempts = 0
@@ -243,7 +251,7 @@ def coding_mode():
                         title=f"feat: {task['desc']}",
                         body=f"Implemented by AI Agent.\nTask: {task['id']}",
                         head=branch_name,
-                        base="main"
+                        base=TARGET_BRANCH # Point PR to planning-test
                     )
                     pr.enable_automerge(merge_method="SQUASH")
                     print(f"    PR Created & Auto-Merge Enabled: {pr.html_url}")
@@ -274,7 +282,7 @@ def coding_mode():
             title=f"chore: Mark {task['id']} as Failed",
             body=f"Agent failed to implement task {task['id']} after multiple attempts. Marking as requiring human intervention or retry.",
             head=branch_name,
-            base="main"
+            base=TARGET_BRANCH # Point PR to planning-test
         )
         pr.enable_automerge(merge_method="SQUASH")
         print(f"    PR Created for Failure Status: {pr.html_url}")

@@ -2,7 +2,7 @@ name: CI Quality Check
 
 on:
   pull_request:
-    branches: [ "dev", "main" ]
+    branches: [ "dev", "main", "planning-test" ] # Adicionado planning-test
   push:
     branches: [ "dev" ]
 
