@@ -145,6 +145,21 @@ def generate_code(task: dict, error_log: str = "") -> dict:
         print(f"Generation Error: {e}")
         return {}
 
+def get_last_task_id() -> int:
+    content = read_file(TODO_PATH)
+    lines = content.splitlines()
+    max_id = 0
+    for line in lines:
+        if line.strip().startswith("["):
+            try:
+                clean_line = line.split("]", 1)[1].strip()
+                id_part = clean_line.split(":")[0].strip()
+                if id_part.isdigit():
+                    max_id = max(max_id, int(id_part))
+            except:
+                continue
+    return max_id
+
 def planning_mode():
     print("Entering Planning Mode...")
     
@@ -153,35 +168,55 @@ def planning_mode():
     run_command("git pull origin main")
     run_command(f"git checkout -b {branch_name}")
     
-    todo = read_file(TODO_PATH)
+    last_id = get_last_task_id()
+    next_start_id = last_id + 1
+    
+    current_code = get_code_context()
     
     prompt = f"""
-    You are the Lead Architect. The current cycle is complete.
-    1. Review `todo.md` (all tasks checked).
-    2. Suggest the next 3-5 logical tasks to evolve the product.
-    3. Output strictly a list of tasks in the format: "[ ] ID: Description".
+    You are the Lead Architect for this project.
     
-    Current Todo: {todo}
+    Current Project State (Codebase):
+    {current_code}
+    
+    Your Goal:
+    Based strictly on the existing code above, define the NEXT 6 logical tasks to evolve the product.
+    
+    Rules:
+    1. Start numbering tasks from ID: {next_start_id:03d}.
+    2. Output EXACTLY 6 new tasks.
+    3. Format strictly as: "[ ] ID: Description" (one per line).
+    4. NO empty lines between tasks.
+    5. Do NOT output Markdown headers, intro text, or the old completed tasks. Just the new list.
+    6. Ensure tasks follow the architecture defined in existing files (Feature-sliced).
     """
     
+    print("  > Asking AI Architect for new tasks...")
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
     
-    new_tasks = response.text
-    write_file(TODO_PATH, todo + "\n\n" + new_tasks)
+    raw_new_tasks = response.text.strip()
     
-    print("PLANNING: Cycle complete. Roadmap updated.")
+    lines = [line.strip() for line in raw_new_tasks.splitlines() if line.strip()]
+    formatted_tasks = "\n".join(lines)
+    
+    new_file_content = f"# Project Roadmap\n\n{formatted_tasks}"
+    
+    write_file(TODO_PATH, new_file_content)
+    
+    print("PLANNING: Cycle complete. Roadmap reset with new tasks.")
+    print(f"  > Generated {len(lines)} new tasks starting from ID {next_start_id:03d}.")
     
     run_command("git add docs/todo.md")
-    run_command("git commit -m 'chore: update roadmap for next cycle'")
+    run_command("git commit -m 'chore: reset roadmap with next cycle tasks'")
     run_command(f"git push origin {branch_name}")
     
     try:
         pr = repo.create_pull(
-            title="chore: Update Roadmap (Planning Mode)",
-            body="Cycle complete. New tasks added by AI Architect.",
+            title=f"chore: Update Roadmap (Cycle {next_start_id // 6 + 1})",
+            body="Planning Cycle Complete.\n\n- Old tasks archived (cleared).\n- New tasks generated based on current code state.",
             head=branch_name,
             base="main"
         )
