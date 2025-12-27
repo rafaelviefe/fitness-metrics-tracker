@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 014: Convert `src/app/page.tsx` into a client component by adding the `'use client';` directive.
+[x] ID: 014: Convert `src/app/page.tsx` into a client component by adding the `'use client';` directive.
 [ ] ID: 015: In `src/app/page.tsx`, import `WeightRepository` and `LocalStorageAdapter` from their respective paths.
 [ ] ID: 016: In `src/app/page.tsx`, instantiate `LocalStorageAdapter` and `WeightRepository` outside or inside the `Home` component, and define a `weightRecords` state using `useState` initialized to an empty array.
 [ ] ID: 017: In `src/app/page.tsx`, add a `useEffect` hook that fetches existing weight records using `weightRepository.getWeightRecords()` and updates the `weightRecords` state upon component mount.
