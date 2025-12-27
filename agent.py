@@ -280,9 +280,24 @@ def coding_mode():
                 
                 update_todo_status(task["line_idx"], "x")
                 
-                run_command("git add .")
-                run_command(f"git commit -m 'feat: {task['desc']}'")
-                run_command(f"git push origin {branch_name}")
+                add_success, add_error = run_command("git add .")
+                if not add_success:
+                    print(f"    Error: Git Add failed.\n{add_error}")
+                    return
+
+                commit_success, commit_error = run_command(f"git commit -m 'feat: {task['desc']}' --no-verify")
+                if not commit_success:
+                    if "nothing to commit" in commit_error:
+                        print("    Warning: No changes detected to commit. Skipping PR creation.")
+                        return
+                    else:
+                        print(f"    Error: Git Commit failed.\n{commit_error}")
+                        return
+
+                push_success, push_error = run_command(f"git push origin {branch_name}")
+                if not push_success:
+                    print(f"    Error: Git Push failed.\n{push_error}")
+                    return
 
                 try:
                     pr = repo.create_pull(
