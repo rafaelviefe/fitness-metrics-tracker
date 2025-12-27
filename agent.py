@@ -2,7 +2,8 @@ import os
 import subprocess
 import time
 import json
-from typing import Optional
+import re
+from typing import Optional, Union
 from google import genai
 from google.genai import types
 from github import Github, GithubException, Auth
@@ -22,10 +23,20 @@ auth = Auth.Token(os.environ["GH_TOKEN"])
 gh = Github(auth=auth)
 repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
 
-def run_command(command: str) -> tuple[bool, str]:
+def run_command(command: Union[str, list]) -> tuple[bool, str]:
+    """
+    Executes a shell command. 
+    If 'command' is a list, shell=False is used (safer for inputs with quotes).
+    If 'command' is a string, shell=True is used.
+    """
     try:
+        use_shell = isinstance(command, str)
         result = subprocess.run(
-            command, shell=True, text=True, capture_output=True, cwd=REPO_PATH
+            command, 
+            shell=use_shell, 
+            text=True, 
+            capture_output=True, 
+            cwd=REPO_PATH
         )
         return result.returncode == 0, result.stdout + "\n" + result.stderr
     except Exception as e:
@@ -87,6 +98,20 @@ def get_code_context() -> str:
                 context += f"\n--- {path} ---\n{read_file(path)}\n"
     return context
 
+def clean_json_response(response_text: str) -> str:
+    """Removes Markdown code blocks if present to ensure valid JSON."""
+    text = response_text.strip()
+    # Remove ```json ... ``` or just ``` ... ```
+    if text.startswith("```"):
+        # Find first newline
+        parts = text.split("\n", 1)
+        if len(parts) > 1:
+            text = parts[1]
+            # Remove last line if it is ```
+            if text.strip().endswith("```"):
+                text = text.strip()[:-3].strip()
+    return text
+
 def generate_code(task: dict, error_log: str = "") -> dict:
     model_id = "gemini-2.5-flash" 
     
@@ -104,7 +129,7 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     5. FORMAT: Output purely a JSON object with file paths as keys and content as values.
     
     Constraints:
-    - NO Markdown formatting.
+    - NO Markdown formatting (just raw JSON is preferred, but code blocks are accepted).
     - NO explanations.
     - JSON ONLY.
     """
@@ -148,7 +173,10 @@ def generate_code(task: dict, error_log: str = "") -> dict:
                 response_mime_type="application/json"
             )
         )
-        return json.loads(response.text)
+        
+        cleaned_text = clean_json_response(response.text)
+        return json.loads(cleaned_text, strict=False)
+        
     except Exception as e:
         print(f"Generation Error: {e}")
         return {}
@@ -285,7 +313,10 @@ def coding_mode():
                     print(f"    Error: Git Add failed.\n{add_error}")
                     return
 
-                commit_success, commit_error = run_command(f"git commit -m 'feat: {task['desc']}' --no-verify")
+                # CORREÇÃO: Usar lista de argumentos para evitar erro de shell com aspas
+                commit_cmd = ["git", "commit", "-m", f"feat: {task['desc']}", "--no-verify"]
+                commit_success, commit_error = run_command(commit_cmd)
+                
                 if not commit_success:
                     if "nothing to commit" in commit_error:
                         print("    Warning: No changes detected to commit. Skipping PR creation.")
@@ -327,7 +358,10 @@ def coding_mode():
     
     print("    Committing failure status...")
     run_command("git add docs/todo.md")
-    run_command(f"git commit -m 'chore: mark task {task['id']} as failed'")
+    
+    # CORREÇÃO: Usar lista aqui também por segurança
+    run_command(["git", "commit", "-m", f"chore: mark task {task['id']} as failed", "--no-verify"])
+    
     run_command(f"git push origin {branch_name}")
 
     try:
