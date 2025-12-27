@@ -1,5 +1,8 @@
 'use client';
 
+import { WeightRepository } from '@/features/weight/repositories/weight.repository';
+import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
