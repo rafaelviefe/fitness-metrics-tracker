@@ -306,6 +306,17 @@ def coding_mode():
             if success:
                 print("    Tests Passed!")
                 
+                print("    Running Build Check...")
+                build_success, build_output = run_command("npm run build")
+                
+                if not build_success:
+                    print("    Build Failed.")
+                    last_error = "BUILD FAILURE:\n" + build_output[-2000:]
+                    retries += 1
+                    continue
+                
+                print("    Build Passed!")
+                
                 update_todo_status(task["line_idx"], "x")
                 
                 add_success, add_error = run_command("git add .")
