@@ -4,6 +4,7 @@ import { WeightRepository } from '@/features/weight/repositories/weight.reposito
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
 import { useState, useEffect, useRef } from 'react';
 import { WeightRecord } from '@/features/weight/types';
+import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -39,13 +40,8 @@ export default function Home() {
         ) : (
           <ul className="space-y-3">
             {weightRecords.map((record) => (
-              <li key={record.id} className="p-4 border rounded-md shadow-sm bg-white dark:bg-neutral-800 dark:border-neutral-700">
-                <p className="text-neutral-700 dark:text-neutral-300">
-                  <span className="font-medium">Date:</span> {new Date(record.date).toLocaleDateString()}
-                </p>
-                <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
-                  <span className="font-medium">Weight:</span> {record.weight} kg
-                </p>
+              <li key={record.id}>
+                <WeightRecordCard record={record} />
               </li>
             ))}
           </ul>
