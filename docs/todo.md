@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 014: Convert `src/app/page.tsx` into a client component by adding the `'use client';` directive.
-[x] ID: 015: In `src/app/page.tsx`, import `WeightRepository` and `LocalStorageAdapter` from their respective paths.
-[x] ID: 016: In `src/app/page.tsx`, instantiate `LocalStorageAdapter` and `WeightRepository` outside or inside the `Home` component, and define a `weightRecords` state using `useState` initialized to an empty array.
-[x] ID: 017: In `src/app/page.tsx`, add a `useEffect` hook that fetches existing weight records using `weightRepository.getWeightRecords()` and updates the `weightRecords` state upon component mount.
-[x] ID: 018: In `src/app/page.tsx`, import the `WeightRecordCard` component.
-[x] ID: 019: In `src/app/page.tsx`, render the `weightRecords` array by mapping over it and displaying each `WeightRecord` using the `WeightRecordCard` component, ensuring each card has a unique `key` prop.
+[ ] ID: 020: Create the `src/features/weight/components/AddWeightForm.tsx` file with a basic React functional component structure and export it.
+[ ] ID: 021: Create the `src/features/weight/components/AddWeightForm.test.tsx` file with a basic Vitest `describe` block and a placeholder test for rendering.
+[ ] ID: 022: In `src/features/weight/components/AddWeightForm.tsx`, import the `Input` component and add a self-closing `<Input />` element within the component's JSX.
+[ ] ID: 023: In `src/features/weight/components/AddWeightForm.tsx`, import the `Button` component and add a `<Button>` element with the text "Add Weight" within the component's JSX.
+[ ] ID: 024: In `src/app/page.tsx`, import the `AddWeightForm` component and render it within the main section, before the "Your Weight Records" section.
+[ ] ID: 025: In `src/features/weight/components/AddWeightForm.test.tsx`, add a test to verify that the `Input` and `Button` components are rendered inside the `AddWeightForm`.
