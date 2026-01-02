@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 020: Create the `src/features/weight/components/AddWeightForm.tsx` file with a basic React functional component structure and export it.
+[x] ID: 020: Create the `src/features/weight/components/AddWeightForm.tsx` file with a basic React functional component structure and export it.
 [ ] ID: 021: Create the `src/features/weight/components/AddWeightForm.test.tsx` file with a basic Vitest `describe` block and a placeholder test for rendering.
 [ ] ID: 022: In `src/features/weight/components/AddWeightForm.tsx`, import the `Input` component and add a self-closing `<Input />` element within the component's JSX.
 [ ] ID: 023: In `src/features/weight/components/AddWeightForm.tsx`, import the `Button` component and add a `<Button>` element with the text "Add Weight" within the component's JSX.
