@@ -3,8 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { AddWeightForm } from './AddWeightForm';
 
 describe('AddWeightForm', () => {
-  it('renders the placeholder text', () => {
+  it('renders an input field for weight with a placeholder', () => {
     render(<AddWeightForm />);
-    expect(screen.getByText('Add Weight Form Placeholder')).toBeInTheDocument();
+    const weightInput = screen.getByPlaceholderText('Enter weight in kg');
+    expect(weightInput).toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('type', 'number');
+    expect(weightInput).toHaveAttribute('step', '0.1');
   });
 });
