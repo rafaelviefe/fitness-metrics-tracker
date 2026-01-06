@@ -5,6 +5,7 @@ import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
 import { useState, useEffect, useRef } from 'react';
 import { WeightRecord } from '@/features/weight/types';
 import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
+import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -34,6 +35,9 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
+        {/* Render AddWeightForm here, before the "Your Weight Records" section */}
+        <AddWeightForm className="mb-6" />
+
         <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
         {weightRecords.length === 0 ? (
           <p className="text-neutral-500">No weight records found. Add some!</p>
