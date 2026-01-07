@@ -10,4 +10,13 @@ describe('AddWeightForm', () => {
     expect(weightInput).toHaveAttribute('type', 'number');
     expect(weightInput).toHaveAttribute('step', '0.1');
   });
+
+  it('renders Input and Button components', () => {
+    render(<AddWeightForm />);
+    const weightInput = screen.getByPlaceholderText('Enter weight in kg');
+    const addButton = screen.getByRole('button', { name: 'Add Weight' });
+
+    expect(weightInput).toBeInTheDocument();
+    expect(addButton).toBeInTheDocument();
+  });
 });
