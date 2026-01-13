@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
-interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {}
+interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
+  onWeightAdded?: (weight: number) => void;
+}
 
-export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, ...props }) => {
+export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeightAdded, ...props }) => {
   const [weight, setWeight] = useState<string>('');
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,6 +19,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, ...prop
     e.preventDefault();
     // Handle submission logic here (e.g., call a repository method)
     console.log('Submitting weight:', weight);
+    // onWeightAdded(parseFloat(weight)); // This would be called if we were implementing the submission logic
     setWeight(''); // Clear input after submission
   };
 
