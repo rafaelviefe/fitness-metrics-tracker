@@ -19,7 +19,11 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
     e.preventDefault();
     // Handle submission logic here (e.g., call a repository method)
     console.log('Submitting weight:', weight);
-    // onWeightAdded(parseFloat(weight)); // This would be called if we were implementing the submission logic
+
+    const parsedWeight = parseFloat(weight);
+    if (!isNaN(parsedWeight) && onWeightAdded) {
+      onWeightAdded(parsedWeight);
+    }
     setWeight(''); // Clear input after submission
   };
 
