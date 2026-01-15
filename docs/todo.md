@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 026: Implement `useState` for the weight input value (e.g., `weight`) in the `AddWeightForm` component.
-[x] ID: 027: Connect the `Input` component's `value` and `onChange` props to the new `weight` state in `AddWeightForm`.
-[x] ID: 028: Wrap the `Input` and `Button` components within a `<form>` element in `AddWeightForm.tsx`.
-[x] ID: 029: Define a `handleSubmit` function in `AddWeightForm` that prevents the default form submission and logs the current `weight` state.
-[x] ID: 030: Add a prop `onWeightAdded?: (weight: number) => void;` to the `AddWeightFormProps` interface in `AddWeightForm.tsx`.
-[x] ID: 031: Call the `onWeightAdded` prop with the current `weight` value inside `AddWeightForm`'s `handleSubmit` function.
+[ ] ID: 032: Add `handleAddWeight` function to `Home.tsx`: Define `const handleAddWeight = (weight: number) => { console.log('Weight to add:', weight); };` within the `Home` component.
+[ ] ID: 033: Pass `handleAddWeight` to `AddWeightForm` in `Home.tsx`: Update the `AddWeightForm` component instance in `Home.tsx` to include the `onWeightAdded={handleAddWeight}` prop.
+[ ] ID: 034: Integrate `WeightRepository` into `handleAddWeight` in `Home.tsx`: Inside the `handleAddWeight` function, call `weightRepositoryRef.current.addWeightRecord(weight)` to persist the new weight.
+[ ] ID: 035: Update `Home.tsx` state after adding a record: Modify `handleAddWeight` to use the record returned by `addWeightRecord` to update the `weightRecords` state using `setWeightRecords`, ensuring the UI reflects the new data.
+[ ] ID: 036: Enhance `Home.test.tsx` to mock `WeightRepository` methods: Add `vi.mock` for `@/features/weight/repositories/weight.repository` at the top of `Home.test.tsx` to control the behavior of `addWeightRecord` and `getWeightRecords`.
+[ ] ID: 037: Add test case to `Home.test.tsx` for adding a record: Write a test that simulates entering a weight in `AddWeightForm`, submitting it, and then asserts that the newly added weight record is displayed on the page.
