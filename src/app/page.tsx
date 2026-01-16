@@ -25,6 +25,10 @@ export default function Home() {
     setWeightRecords(initialRecords);
   }, []); // Empty dependency array means this runs once on mount
 
+  const handleAddWeight = (weight: number) => {
+    console.log('Weight to add:', weight);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
