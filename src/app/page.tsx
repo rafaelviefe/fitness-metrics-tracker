@@ -27,6 +27,10 @@ export default function Home() {
 
   const handleAddWeight = (weight: number) => {
     console.log('Weight to add:', weight);
+    if (weightRepositoryRef.current) {
+      const newRecord = weightRepositoryRef.current.addWeightRecord(weight);
+      setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
+    }
   };
 
   return (
@@ -40,7 +44,7 @@ export default function Home() {
 
       <section className="mt-8 max-w-md w-full">
         {/* Render AddWeightForm here, before the "Your Weight Records" section */}
-        <AddWeightForm className="mb-6" />
+        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} />
 
         <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
         {weightRecords.length === 0 ? (

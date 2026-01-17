@@ -1,7 +1,7 @@
 # Project Roadmap
 
 [x] ID: 032: Add `handleAddWeight` function to `Home.tsx`: Define `const handleAddWeight = (weight: number) => { console.log('Weight to add:', weight); };` within the `Home` component.
-[ ] ID: 033: Pass `handleAddWeight` to `AddWeightForm` in `Home.tsx`: Update the `AddWeightForm` component instance in `Home.tsx` to include the `onWeightAdded={handleAddWeight}` prop.
+[x] ID: 033: Pass `handleAddWeight` to `AddWeightForm` in `Home.tsx`: Update the `AddWeightForm` component instance in `Home.tsx` to include the `onWeightAdded={handleAddWeight}` prop.
 [ ] ID: 034: Integrate `WeightRepository` into `handleAddWeight` in `Home.tsx`: Inside the `handleAddWeight` function, call `weightRepositoryRef.current.addWeightRecord(weight)` to persist the new weight.
 [ ] ID: 035: Update `Home.tsx` state after adding a record: Modify `handleAddWeight` to use the record returned by `addWeightRecord` to update the `weightRecords` state using `setWeightRecords`, ensuring the UI reflects the new data.
 [ ] ID: 036: Enhance `Home.test.tsx` to mock `WeightRepository` methods: Add `vi.mock` for `@/features/weight/repositories/weight.repository` at the top of `Home.test.tsx` to control the behavior of `addWeightRecord` and `getWeightRecords`.
