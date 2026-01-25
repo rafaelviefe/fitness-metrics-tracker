@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 
 interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
   record: WeightRecord;
+  onDelete?: (id: string) => void;
 }
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
