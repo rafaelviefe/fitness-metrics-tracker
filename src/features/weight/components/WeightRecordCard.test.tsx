@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import { WeightRecordCard } from './WeightRecordCard';
@@ -52,5 +52,14 @@ describe('WeightRecordCard', () => {
     const recordWithDifferentDate = { ...mockRecord, date: '2022-05-15T08:30:00.000Z' };
     render(<WeightRecordCard record={recordWithDifferentDate} />);
     expect(screen.getByText('May 15, 2022')).toBeInTheDocument();
+  });
+
+  it('accepts an onDelete prop (function) without issues', () => {
+    const handleDelete = vi.fn();
+    render(<WeightRecordCard record={mockRecord} onDelete={handleDelete} data-testid="weight-card" />);
+    const cardElement = screen.getByTestId('weight-card');
+    expect(cardElement).toBeInTheDocument();
+    // No direct UI interaction for onDelete in this component yet, just verifying prop acceptance.
+    expect(handleDelete).not.toHaveBeenCalled();
   });
 });
