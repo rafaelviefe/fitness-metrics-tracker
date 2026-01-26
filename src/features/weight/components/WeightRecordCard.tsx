@@ -10,13 +10,17 @@ interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
-  ({ record, className, ...props }, ref) => {
+  ({ record, className, onDelete, ...props }, ref) => {
     // Simple date formatting for display, could be enhanced with a date utility
     const formattedDate = new Date(record.date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
+
+    const handleDeleteClick = () => {
+      onDelete?.(record.id);
+    };
 
     return (
       <Card ref={ref} className={cn('flex justify-between items-center', className)} {...props}>
@@ -26,7 +30,7 @@ const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>
             {record.weight} kg
           </div>
           {/* TASK: Render delete button - do not connect onClick yet */}
-          <Button variant="destructive" size="sm">Delete</Button>
+          <Button variant="destructive" size="sm" onClick={handleDeleteClick}>Delete</Button>
         </div>
       </Card>
     );

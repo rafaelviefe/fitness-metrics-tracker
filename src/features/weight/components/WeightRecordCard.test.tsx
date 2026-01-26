@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import { WeightRecordCard } from './WeightRecordCard';
 import { WeightRecord } from '../types';
@@ -54,12 +54,27 @@ describe('WeightRecordCard', () => {
     expect(screen.getByText('May 15, 2022')).toBeInTheDocument();
   });
 
-  it('accepts an onDelete prop (function) without issues', () => {
+  it('calls onDelete with the record id when the delete button is clicked', () => {
     const handleDelete = vi.fn();
-    render(<WeightRecordCard record={mockRecord} onDelete={handleDelete} data-testid="weight-card" />);
-    const cardElement = screen.getByTestId('weight-card');
-    expect(cardElement).toBeInTheDocument();
-    // No direct UI interaction for onDelete in this component yet, just verifying prop acceptance.
-    expect(handleDelete).not.toHaveBeenCalled();
+    render(<WeightRecordCard record={mockRecord} onDelete={handleDelete} />);
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete' });
+    fireEvent.click(deleteButton);
+
+    expect(handleDelete).toHaveBeenCalledTimes(1);
+    expect(handleDelete).toHaveBeenCalledWith(mockRecord.id);
+  });
+
+  it('does not call onDelete if the prop is not provided and delete button is clicked', () => {
+    const consoleSpy = vi.spyOn(console, 'error'); // Using console.error for consistency with adapter error logging
+    consoleSpy.mockImplementation(() => {}); // Suppress console output for this test
+
+    render(<WeightRecordCard record={mockRecord} />); // No onDelete prop
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete' });
+    fireEvent.click(deleteButton);
+
+    expect(consoleSpy).not.toHaveBeenCalled(); // No error should be logged for missing onDelete prop
+    consoleSpy.mockRestore();
   });
 });
