@@ -58,11 +58,8 @@ def get_next_task() -> Optional[dict]:
     lines = content.splitlines()
     for i, line in enumerate(lines):
         line_stripped = line.strip()
-        if line_stripped.startswith("[ ]") or line_stripped.startswith("[!]"):
-            is_retry = line_stripped.startswith("[!]")
-            marker = "[!]" if is_retry else "[ ]"
-            
-            clean_line = line.replace(marker, "").strip()
+        if line_stripped.startswith("[ ]"):
+            clean_line = line.replace("[ ]", "").strip()
             
             if clean_line.startswith("ID:"):
                 clean_line = clean_line[3:].strip()
@@ -73,8 +70,7 @@ def get_next_task() -> Optional[dict]:
                 return {
                     "id": parts[0].strip(),
                     "desc": parts[1].strip(),
-                    "line_idx": i,
-                    "is_retry": is_retry
+                    "line_idx": i
                 }
     return None
 
@@ -84,10 +80,14 @@ def update_todo_status(line_idx: int, status: str):
     
     if "[ ]" in current_line:
         lines[line_idx] = current_line.replace("[ ]", f"[{status}]")
-    elif "[!]" in current_line:
-        lines[line_idx] = current_line.replace("[!]", f"[{status}]")
         
     write_file(TODO_PATH, "\n".join(lines))
+
+def truncate_todo(line_idx: int):
+    content = read_file(TODO_PATH)
+    lines = content.splitlines()
+    new_lines = lines[:line_idx]
+    write_file(TODO_PATH, "\n".join(new_lines))
 
 def get_code_context() -> str:
     context = ""
@@ -101,13 +101,10 @@ def get_code_context() -> str:
 def clean_json_response(response_text: str) -> str:
     """Removes Markdown code blocks if present to ensure valid JSON."""
     text = response_text.strip()
-    # Remove ```json ... ``` or just ``` ... ```
     if text.startswith("```"):
-        # Find first newline
         parts = text.split("\n", 1)
         if len(parts) > 1:
             text = parts[1]
-            # Remove last line if it is ```
             if text.strip().endswith("```"):
                 text = text.strip()[:-3].strip()
     return text
@@ -133,14 +130,6 @@ def generate_code(task: dict, error_log: str = "") -> dict:
     - NO explanations.
     - JSON ONLY.
     """
-
-    if task.get("is_retry"):
-        system_instruction += """
-        RETRY MODE ACTIVE:
-        1. Implement the solution in the SIMPLEST way possible.
-        2. Verify imports and variable names.
-        3. Focus on PASSING TESTS.
-        """
 
     system_instruction += f"""
     Example Output:
@@ -271,8 +260,6 @@ def coding_mode():
         return
 
     print(f"Starting Task: {task['id']} - {task['desc']}")
-    if task.get("is_retry"):
-        print(">>> WARNING: This is a RECOVERY ATTEMPT for a previously failed task. <<<")
     
     branch_name = f"feat/{task['id']}-{int(time.time())}"
     
@@ -324,7 +311,6 @@ def coding_mode():
                     print(f"    Error: Git Add failed.\n{add_error}")
                     return
 
-                # CORREÇÃO: Usar lista de argumentos para evitar erro de shell com aspas
                 commit_cmd = ["git", "commit", "-m", f"feat: {task['desc']}", "--no-verify"]
                 commit_success, commit_error = run_command(commit_cmd)
                 
@@ -363,27 +349,26 @@ def coding_mode():
         run_command("git reset --hard HEAD")
         run_command("git clean -fd")
     
-    print("CRITICAL: Failed to implement task after multiple attempts.")
+    print("CRITICAL: Failed to implement task after multiple attempts. Truncating roadmap...")
     
-    update_todo_status(task["line_idx"], "!")
+    truncate_todo(task["line_idx"])
     
-    print("    Committing failure status...")
+    print("    Committing truncation...")
     run_command("git add docs/todo.md")
     
-    # CORREÇÃO: Usar lista aqui também por segurança
-    run_command(["git", "commit", "-m", f"chore: mark task {task['id']} as failed", "--no-verify"])
+    run_command(["git", "commit", "-m", f"chore: truncate roadmap after task {task['id']} failure", "--no-verify"])
     
     run_command(f"git push origin {branch_name}")
 
     try:
         pr = repo.create_pull(
-            title=f"chore: Mark {task['id']} as Failed",
-            body=f"Agent failed to implement task {task['id']} after multiple attempts.",
+            title=f"chore: Truncate Roadmap at {task['id']}",
+            body=f"Agent failed to implement task {task['id']} after multiple attempts. Remaining tasks truncated to force replanning.",
             head=branch_name,
             base="main"
         )
         pr.enable_automerge(merge_method="SQUASH")
-        print(f"    PR Created for Failure Status: {pr.html_url}")
+        print(f"    PR Created for Truncation: {pr.html_url}")
     except GithubException as e:
         print(f"    GitHub API Error: {e}")
 
