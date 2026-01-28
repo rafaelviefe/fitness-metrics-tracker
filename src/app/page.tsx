@@ -33,6 +33,15 @@ export default function Home() {
     }
   };
 
+  const handleDeleteWeight = (id: string) => {
+    if (weightRepositoryRef.current) {
+      const isDeleted = weightRepositoryRef.current.deleteWeightRecord(id);
+      if (isDeleted) {
+        setWeightRecords((prevRecords) => prevRecords.filter((record) => record.id !== id));
+      }
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
@@ -53,7 +62,7 @@ export default function Home() {
           <ul className="space-y-3">
             {weightRecords.map((record) => (
               <li key={record.id}>
-                <WeightRecordCard record={record} />
+                <WeightRecordCard record={record} onDelete={handleDeleteWeight} />
               </li>
             ))}
           </ul>
