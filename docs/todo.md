@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 036: Add an `onDelete` prop (function accepting `string` id) to the `WeightRecordCardProps` interface in `src/features/weight/components/WeightRecordCard.tsx`.
-[x] ID: 037: Render a `Button` inside `WeightRecordCard.tsx` with text "Delete" or an appropriate icon, but do not yet connect its `onClick` handler to the `onDelete` prop. Place it next to the weight display.
-[x] ID: 038: Connect the `onClick` handler of the delete `Button` in `WeightRecordCard.tsx` to the `onDelete` prop, passing the `record.id`.
-[x] ID: 039: Add a test case to `src/features/weight/components/WeightRecordCard.test.tsx` to verify that clicking the delete button calls the `onDelete` prop with the correct `record.id`.
-[x] ID: 040: Implement a new function `handleDeleteWeight(id: string)` in `src/app/page.tsx` that calls `weightRepositoryRef.current.deleteWeightRecord(id)` and updates the `weightRecords` state to remove the deleted record.
-[x] ID: 041: Pass the `handleDeleteWeight` function to the `onDelete` prop of each `WeightRecordCard` component within the `map` loop in `src/app/page.tsx`.
+[ ] ID: 042: Add a `useState` variable named `error` of type `string | null` to the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx`, initialized to `null`.
+[ ] ID: 043: In `src/features/weight/components/AddWeightForm.tsx`, modify the `handleSubmit` function. After parsing `weight`, add a check: if `isNaN(parsedWeight)` or `parsedWeight <= 0`, set the `error` state with a message like "Weight must be a positive number" and `return` early. Also, reset the `error` state to `null` if validation passes.
+[ ] ID: 044: In `src/features/weight/components/AddWeightForm.tsx`, render a conditional `<p>` element below the `Input` component. This paragraph should display the `error` message (e.g., `<p className="text-red-500 text-sm mt-1">{error}</p>`) if the `error` state is not `null`.
+[ ] ID: 045: Add a `<label>` element with `htmlFor="weight-input"` and text content "Weight (kg)" immediately above the `Input` component within `AddWeightForm` in `src/features/weight/components/AddWeightForm.tsx`.
+[ ] ID: 046: Modify the `InputProps` interface in `src/components/ui/Input.tsx` to accept an optional `id` prop of type `string`, and pass this `id` prop down to the underlying `input` HTML element.
+[ ] ID: 047: In `src/features/weight/components/AddWeightForm.tsx`, update the `Input` component usage to include the `id="weight-input"` prop, linking it to the newly added `label` element.
