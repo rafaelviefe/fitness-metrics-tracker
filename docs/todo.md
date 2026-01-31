@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 042: Add a `useState` variable named `error` of type `string | null` to the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx`, initialized to `null`.
+[x] ID: 042: Add a `useState` variable named `error` of type `string | null` to the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx`, initialized to `null`.
 [ ] ID: 043: In `src/features/weight/components/AddWeightForm.tsx`, modify the `handleSubmit` function. After parsing `weight`, add a check: if `isNaN(parsedWeight)` or `parsedWeight <= 0`, set the `error` state with a message like "Weight must be a positive number" and `return` early. Also, reset the `error` state to `null` if validation passes.
 [ ] ID: 044: In `src/features/weight/components/AddWeightForm.tsx`, render a conditional `<p>` element below the `Input` component. This paragraph should display the `error` message (e.g., `<p className="text-red-500 text-sm mt-1">{error}</p>`) if the `error` state is not `null`.
 [ ] ID: 045: Add a `<label>` element with `htmlFor="weight-input"` and text content "Weight (kg)" immediately above the `Input` component within `AddWeightForm` in `src/features/weight/components/AddWeightForm.tsx`.
