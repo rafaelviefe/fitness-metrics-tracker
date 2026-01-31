@@ -9,6 +9,7 @@ interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 
 export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeightAdded, ...props }) => {
   const [weight, setWeight] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWeight(e.target.value);
@@ -23,6 +24,11 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
     const parsedWeight = parseFloat(weight);
     if (!isNaN(parsedWeight) && onWeightAdded) {
       onWeightAdded(parsedWeight);
+      setError(null);
+    } else if (isNaN(parsedWeight) && weight !== '') {
+      setError('Please enter a valid number for weight.');
+    } else if (weight === '') {
+      setError('Weight cannot be empty.');
     }
     setWeight(''); // Clear input after submission
   };
