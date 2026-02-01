@@ -13,23 +13,28 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWeight(e.target.value);
+    if (error) {
+      setError(null); // Clear error when user starts typing again
+    }
   };
 
   // Prevent default form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle submission logic here (e.g., call a repository method)
-    console.log('Submitting weight:', weight);
-
+    
     const parsedWeight = parseFloat(weight);
-    if (!isNaN(parsedWeight) && onWeightAdded) {
-      onWeightAdded(parsedWeight);
-      setError(null);
-    } else if (isNaN(parsedWeight) && weight !== '') {
-      setError('Please enter a valid number for weight.');
-    } else if (weight === '') {
-      setError('Weight cannot be empty.');
+
+    if (isNaN(parsedWeight) || parsedWeight <= 0) {
+      setError('Weight must be a positive number.');
+      return; 
     }
+
+    setError(null); // Clear any previous error
+    
+    if (onWeightAdded) {
+      onWeightAdded(parsedWeight);
+    }
+    
     setWeight(''); // Clear input after submission
   };
 
@@ -42,7 +47,10 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
         value={weight}
         onChange={handleWeightChange}
         className="mb-2"
+        aria-invalid={!!error}
+        aria-describedby={error ? 'weight-error' : undefined}
       />
+      {error && <p id="weight-error" className="text-red-500 text-sm mb-2">{error}</p>}
       <Button type="submit">Add Weight</Button>
     </form>
   );
