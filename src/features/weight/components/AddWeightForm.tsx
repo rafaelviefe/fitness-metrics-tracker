@@ -40,7 +40,9 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
 
   return (
     <form onSubmit={handleSubmit} className={className} {...props}>
+      <label htmlFor="weight-input" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Weight (kg)</label>
       <Input
+        id="weight-input"
         placeholder="Enter weight in kg"
         type="number"
         step="0.1"
