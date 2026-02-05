@@ -5,4 +5,4 @@
 [x] ID: 044: In `src/features/weight/components/AddWeightForm.tsx`, render a conditional `<p>` element below the `Input` component. This paragraph should display the `error` message (e.g., `<p className="text-red-500 text-sm mt-1">{error}</p>`) if the `error` state is not `null`.
 [x] ID: 045: Add a `<label>` element with `htmlFor="weight-input"` and text content "Weight (kg)" immediately above the `Input` component within `AddWeightForm` in `src/features/weight/components/AddWeightForm.tsx`.
 [x] ID: 046: Modify the `InputProps` interface in `src/components/ui/Input.tsx` to accept an optional `id` prop of type `string`, and pass this `id` prop down to the underlying `input` HTML element.
-[ ] ID: 047: In `src/features/weight/components/AddWeightForm.tsx`, update the `Input` component usage to include the `id="weight-input"` prop, linking it to the newly added `label` element.
+[x] ID: 047: In `src/features/weight/components/AddWeightForm.tsx`, update the `Input` component usage to include the `id="weight-input"` prop, linking it to the newly added `label` element.
