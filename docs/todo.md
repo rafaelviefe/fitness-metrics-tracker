@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[ ] ID: 048: Install the `clsx` and `tailwind-merge` npm packages as dependencies.
-[ ] ID: 049: Update the `cn` utility function in `src/lib/utils.ts` to use `clsx` and `tailwind-merge` for combining class names.
-[ ] ID: 050: Update the tests in `src/lib/utils.test.ts` to reflect the new behavior of the `cn` function, covering `clsx`'s object/array handling and `tailwind-merge`'s conflict resolution.
-[ ] ID: 051: Remove the hardcoded `bg-white` class from the `main` element in `src/app/page.tsx` to allow it to inherit the global theme background from `body`.
-[ ] ID: 052: Add an `isLoading` boolean prop to `ButtonProps` in `src/components/ui/Button.tsx` that automatically sets the `disabled` attribute to true when `isLoading` is true.
-[ ] ID: 053: Add a new test case to `src/components/ui/Button.test.tsx` to verify that the button is correctly disabled when the `isLoading` prop is set to true.
+[x] ID: 042: Add a `useState` variable named `error` of type `string | null` to the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx`, initialized to `null`.
+[x] ID: 043: In `src/features/weight/components/AddWeightForm.tsx`, modify the `handleSubmit` function. After parsing `weight`, add a check: if `isNaN(parsedWeight)` or `parsedWeight <= 0`, set the `error` state with a message like "Weight must be a positive number" and `return` early. Also, reset the `error` state to `null` if validation passes.
+[x] ID: 044: In `src/features/weight/components/AddWeightForm.tsx`, render a conditional `<p>` element below the `Input` component. This paragraph should display the `error` message (e.g., `<p className="text-red-500 text-sm mt-1">{error}</p>`) if the `error` state is not `null`.
+[x] ID: 045: Add a `<label>` element with `htmlFor="weight-input"` and text content "Weight (kg)" immediately above the `Input` component within `AddWeightForm` in `src/features/weight/components/AddWeightForm.tsx`.
+[ ] ID: 046: Modify the `InputProps` interface in `src/components/ui/Input.tsx` to accept an optional `id` prop of type `string`, and pass this `id` prop down to the underlying `input` HTML element.
+[ ] ID: 047: In `src/features/weight/components/AddWeightForm.tsx`, update the `Input` component usage to include the `id="weight-input"` prop, linking it to the newly added `label` element.
