@@ -84,4 +84,10 @@ describe('Input', () => {
     expect(input).toHaveClass('file:border-0');
     expect(input).toHaveClass('file:bg-transparent');
   });
+
+  it('applies the id prop to the input element', () => {
+    render(<Input id="my-unique-input" data-testid="id-input" />);
+    const input = screen.getByTestId('id-input');
+    expect(input).toHaveAttribute('id', 'my-unique-input');
+  });
 });
