@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 042: Add a `useState` variable named `error` of type `string | null` to the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx`, initialized to `null`.
-[x] ID: 043: In `src/features/weight/components/AddWeightForm.tsx`, modify the `handleSubmit` function. After parsing `weight`, add a check: if `isNaN(parsedWeight)` or `parsedWeight <= 0`, set the `error` state with a message like "Weight must be a positive number" and `return` early. Also, reset the `error` state to `null` if validation passes.
-[x] ID: 044: In `src/features/weight/components/AddWeightForm.tsx`, render a conditional `<p>` element below the `Input` component. This paragraph should display the `error` message (e.g., `<p className="text-red-500 text-sm mt-1">{error}</p>`) if the `error` state is not `null`.
-[x] ID: 045: Add a `<label>` element with `htmlFor="weight-input"` and text content "Weight (kg)" immediately above the `Input` component within `AddWeightForm` in `src/features/weight/components/AddWeightForm.tsx`.
-[x] ID: 046: Modify the `InputProps` interface in `src/components/ui/Input.tsx` to accept an optional `id` prop of type `string`, and pass this `id` prop down to the underlying `input` HTML element.
-[x] ID: 047: In `src/features/weight/components/AddWeightForm.tsx`, update the `Input` component usage to include the `id="weight-input"` prop, linking it to the newly added `label` element.
+[ ] ID: 048: Update `WeightRecordCardProps` interface in `src/features/weight/components/WeightRecordCard.tsx` to include an optional `onEdit` callback prop: `onEdit?: (record: WeightRecord) => void;`.
+[ ] ID: 049: Add an "Edit" `Button` component to `src/features/weight/components/WeightRecordCard.tsx`. Place it next to the existing "Delete" button, using `variant="secondary"` and `size="sm"` with the text "Edit". Do not connect `onClick` yet.
+[ ] ID: 050: Implement `handleEditClick` in `src/features/weight/components/WeightRecordCard.tsx` to call `onEdit?.(record)`. Connect this handler to the `onClick` prop of the "Edit" button added in the previous task.
+[ ] ID: 051: Add a new test case to `src/features/weight/components/WeightRecordCard.test.tsx` to verify that when the "Edit" button is clicked, the `onEdit` prop is called exactly once with the correct `WeightRecord` object.
+[ ] ID: 052: Create a new file `src/features/weight/components/EditWeightForm.tsx`. Define a basic functional component `EditWeightForm` that accepts `record: WeightRecord` as a prop and returns a simple `div` containing "Edit Form for {record.id}" for now.
+[ ] ID: 053: Create a new file `src/features/weight/components/EditWeightForm.test.tsx`. Add a basic rendering test to verify that the `EditWeightForm` component renders correctly with a mock `WeightRecord` prop.
