@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'; // Import Button
 interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
   record: WeightRecord;
   onDelete?: (id: string) => void;
+  onEdit?: (record: WeightRecord) => void;
 }
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
