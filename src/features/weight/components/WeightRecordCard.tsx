@@ -30,6 +30,8 @@ const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>
           <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
             {record.weight} kg
           </div>
+          {/* TASK: Render Edit button - do not connect onClick yet */}
+          <Button variant="secondary" size="sm">Edit</Button>
           {/* TASK: Render delete button - do not connect onClick yet */}
           <Button variant="destructive" size="sm" onClick={handleDeleteClick}>Delete</Button>
         </div>
