@@ -77,4 +77,28 @@ describe('WeightRecordCard', () => {
     expect(consoleSpy).not.toHaveBeenCalled(); // No error should be logged for missing onDelete prop
     consoleSpy.mockRestore();
   });
+
+  it('calls onEdit with the record when the edit button is clicked', () => {
+    const handleEdit = vi.fn();
+    render(<WeightRecordCard record={mockRecord} onEdit={handleEdit} />);
+
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    fireEvent.click(editButton);
+
+    expect(handleEdit).toHaveBeenCalledTimes(1);
+    expect(handleEdit).toHaveBeenCalledWith(mockRecord);
+  });
+
+  it('does not call onEdit if the prop is not provided and edit button is clicked', () => {
+    const consoleSpy = vi.spyOn(console, 'error');
+    consoleSpy.mockImplementation(() => {});
+
+    render(<WeightRecordCard record={mockRecord} />); // No onEdit prop
+
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    fireEvent.click(editButton);
+
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
 });
