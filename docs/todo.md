@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 054: Update `EditWeightFormProps` interface to include `onSave` and `onCancel` function props, and update the component signature to accept them.
+[x] ID: 054: Update `EditWeightFormProps` interface to include `onSave` and `onCancel` function props, and update the component signature to accept them.
 [ ] ID: 055: Add `useState` hooks for `editedWeight` (string), `editedDate` (string), and `error` (string or null) in `EditWeightForm`, initializing them from the `record` prop. Convert `record.date` to `YYYY-MM-DDTHH:mm` format for `datetime-local` input.
 [ ] ID: 056: Refactor the `EditWeightForm` JSX from a placeholder `div` to a `form` element, adding a basic `className`. Import `Input` and `Button` components.
 [ ] ID: 057: Render an `Input` component for the weight field within `EditWeightForm`, setting `id`, `type="number"`, `step="0.1"`, `placeholder`, `value` from `editedWeight` state, and an `onChange` handler (`handleWeightChange`). Include an associated `label`.
