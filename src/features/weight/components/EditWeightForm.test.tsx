@@ -1,21 +1,212 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { EditWeightForm } from './EditWeightForm';
 import { WeightRecord } from '../types';
 
 describe('EditWeightForm', () => {
-  it('renders correctly with a mock WeightRecord', () => {
-    const mockRecord: WeightRecord = {
-      id: 'mock-id-123',
-      date: '2023-10-27T10:00:00.000Z',
-      weight: 80.5,
-    };
-    const mockOnSave = vi.fn();
-    const mockOnCancel = vi.fn();
+  const mockRecord: WeightRecord = {
+    id: 'mock-id-123',
+    date: '2023-10-27T10:30:00.000Z',
+    weight: 80.5,
+  };
+  let mockOnSave: ReturnType<typeof vi.fn>;
+  let mockOnCancel: ReturnType<typeof vi.fn>;
 
+  // Helper to convert ISO string to the format expected by datetime-local input
+  const toDateTimeLocal = (isoDateString: string): string => {
+    const date = new Date(isoDateString);
+    // Handle invalid dates by falling back to a sensible default or empty string
+    if (isNaN(date.getTime())) {
+      const now = new Date();
+      return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    }
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  beforeEach(() => {
+    mockOnSave = vi.fn();
+    mockOnCancel = vi.fn();
+    // Ensure consistent time for tests where formatIsoToDateTimeLocal might fallback
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2023-11-01T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('renders correctly with initial weight and date values', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
 
-    // Verify that the component renders some expected content based on the mock record
-    expect(screen.getByText(`Edit Form for ${mockRecord.id}`)).toBeInTheDocument();
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+
+    expect(weightInput).toBeInTheDocument();
+    expect(weightInput.value).toBe(mockRecord.weight.toString());
+    expect(weightInput.type).toBe('number');
+    expect(weightInput).toHaveAttribute('step', '0.1');
+
+    expect(dateInput).toBeInTheDocument();
+    expect(dateInput.value).toBe(toDateTimeLocal(mockRecord.date));
+    expect(dateInput.type).toBe('datetime-local');
+
+    expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+  });
+
+  it('updates weight input value on change', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+
+    fireEvent.change(weightInput, { target: { value: '81.2' } });
+    expect(weightInput.value).toBe('81.2');
+  });
+
+  it('updates date input value on change', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const newDateTimeLocal = '2023-11-15T14:45';
+
+    fireEvent.change(dateInput, { target: { value: newDateTimeLocal } });
+    expect(dateInput.value).toBe(newDateTimeLocal);
+  });
+
+  it('calls onSave with updated record when form is submitted with valid data', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    const newWeight = '82.7';
+    const newDateTimeLocal = '2023-11-01T15:30';
+
+    fireEvent.change(weightInput, { target: { value: newWeight } });
+    fireEvent.change(dateInput, { target: { value: newDateTimeLocal } });
+    fireEvent.click(saveButton); // Submits the form
+
+    expect(mockOnSave).toHaveBeenCalledTimes(1);
+    expect(mockOnSave).toHaveBeenCalledWith({
+      ...mockRecord,
+      weight: parseFloat(newWeight),
+      date: new Date(newDateTimeLocal).toISOString(), // Should convert to ISO string
+    });
+    expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
+  });
+
+  it('calls onCancel when the Cancel button is clicked', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+
+    fireEvent.click(cancelButton);
+    expect(mockOnCancel).toHaveBeenCalledTimes(1);
+    expect(mockOnSave).not.toHaveBeenCalled();
+  });
+
+  it('displays an error message for invalid weight (zero)', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    fireEvent.change(weightInput, { target: { value: '0' } });
+    fireEvent.click(saveButton);
+
+    expect(mockOnSave).not.toHaveBeenCalled();
+    expect(screen.getByText('Weight must be a positive number.')).toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('displays an error message for invalid weight (negative)', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    fireEvent.change(weightInput, { target: { value: '-10' } });
+    fireEvent.click(saveButton);
+
+    expect(mockOnSave).not.toHaveBeenCalled();
+    expect(screen.getByText('Weight must be a positive number.')).toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('clears error message when input changes after an error', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    // Trigger error
+    fireEvent.change(weightInput, { target: { value: '0' } });
+    fireEvent.click(saveButton);
+    expect(screen.getByText('Weight must be a positive number.')).toBeInTheDocument();
+
+    // Clear error by typing valid input
+    fireEvent.change(weightInput, { target: { value: '70' } });
+    expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Input aria-invalid should be false after correcting
+  });
+
+  it('should not show an error for initial valid data', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+  });
+
+  it('applies additional custom class names', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} className="custom-form-style" data-testid="edit-form"/>);
+    const formElement = screen.getByTestId('edit-form');
+    expect(formElement).toHaveClass('custom-form-style');
+    expect(formElement).toHaveClass('space-y-4'); // Default class
+  });
+
+  it('handles invalid initial date string gracefully by falling back to current time', () => {
+    const invalidDateRecord: WeightRecord = {
+      id: 'mock-id-invalid-date',
+      date: 'invalid-date-string',
+      weight: 70
+    };
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<EditWeightForm record={invalidDateRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const now = new Date();
+    const expectedFallbackDate = toDateTimeLocal(now.toISOString());
+    expect(dateInput.value).toBe(expectedFallbackDate);
+    expect(consoleErrorSpy).toHaveBeenCalledWith("Invalid date string provided to formatIsoToDateTimeLocal:", "invalid-date-string");
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('shows an error if date input is cleared/invalid during submission', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    fireEvent.change(dateInput, { target: { value: '' } }); // Clear the date input
+    fireEvent.click(saveButton);
+
+    expect(mockOnSave).not.toHaveBeenCalled();
+    expect(screen.getByText('Invalid date selected.')).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('clears date error message when input changes after an error', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    // Trigger error
+    fireEvent.change(dateInput, { target: { value: '' } });
+    fireEvent.click(saveButton);
+    expect(screen.getByText('Invalid date selected.')).toBeInTheDocument();
+
+    // Clear error by typing valid input
+    fireEvent.change(dateInput, { target: { value: '2023-11-01T10:00' } });
+    expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'false');
   });
 });
