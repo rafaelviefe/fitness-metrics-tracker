@@ -9,6 +9,7 @@ import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // I
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
+  const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
