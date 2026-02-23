@@ -43,6 +43,11 @@ export default function Home() {
     }
   };
 
+  // New function to set the editing record ID
+  const handleEditWeight = (id: string) => {
+    setEditingRecordId(id);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
