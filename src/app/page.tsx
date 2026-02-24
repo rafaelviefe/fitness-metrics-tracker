@@ -68,7 +68,11 @@ export default function Home() {
           <ul className="space-y-3">
             {weightRecords.map((record) => (
               <li key={record.id}>
-                <WeightRecordCard record={record} onDelete={handleDeleteWeight} />
+                <WeightRecordCard 
+                  record={record} 
+                  onDelete={handleDeleteWeight}
+                  onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)} // Pass the ID from the record
+                />
               </li>
             ))}
           </ul>
