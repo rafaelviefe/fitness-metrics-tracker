@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { WeightRecord } from '@/features/weight/types';
 import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
 import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
+import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -48,6 +49,24 @@ export default function Home() {
     setEditingRecordId(id);
   };
 
+  // New function to handle saving an updated weight record
+  const handleSaveWeight = (updatedRecord: WeightRecord) => {
+    if (weightRepositoryRef.current) {
+      const result = weightRepositoryRef.current.updateWeightRecord(updatedRecord);
+      if (result) {
+        setWeightRecords((prevRecords) =>
+          prevRecords.map((record) => (record.id === updatedRecord.id ? updatedRecord : record))
+        );
+        setEditingRecordId(null); // Exit editing mode after saving
+      }
+    }
+  };
+
+  // New function to handle cancelling the edit operation
+  const handleCancelEdit = () => {
+    setEditingRecordId(null); // Exit editing mode without saving changes
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
@@ -68,11 +87,19 @@ export default function Home() {
           <ul className="space-y-3">
             {weightRecords.map((record) => (
               <li key={record.id}>
-                <WeightRecordCard 
-                  record={record} 
-                  onDelete={handleDeleteWeight}
-                  onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)} // Pass the ID from the record
-                />
+                {editingRecordId === record.id ? (
+                  <EditWeightForm
+                    record={record}
+                    onSave={handleSaveWeight}
+                    onCancel={handleCancelEdit}
+                  />
+                ) : (
+                  <WeightRecordCard
+                    record={record}
+                    onDelete={handleDeleteWeight}
+                    onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)}
+                  />
+                )}
               </li>
             ))}
           </ul>
