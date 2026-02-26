@@ -50,12 +50,12 @@ export default function Home() {
   };
 
   // New function to handle saving an updated weight record
-  const handleSaveWeight = (updatedRecord: WeightRecord) => {
+  const handleSaveEditedWeight = (updatedRecord: WeightRecord) => {
     if (weightRepositoryRef.current) {
       const result = weightRepositoryRef.current.updateWeightRecord(updatedRecord);
       if (result) {
         setWeightRecords((prevRecords) =>
-          prevRecords.map((record) => (record.id === updatedRecord.id ? updatedRecord : record))
+          prevRecords.map((record) => (record.id === updatedRecord.id ? result : record))
         );
         setEditingRecordId(null); // Exit editing mode after saving
       }
@@ -90,7 +90,7 @@ export default function Home() {
                 {editingRecordId === record.id ? (
                   <EditWeightForm
                     record={record}
-                    onSave={handleSaveWeight}
+                    onSave={handleSaveEditedWeight}
                     onCancel={handleCancelEdit}
                   />
                 ) : (
