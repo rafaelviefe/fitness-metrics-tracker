@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { EditWeightForm } from './EditWeightForm';
 import { WeightRecord } from '../types';
+import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // Import the utility function
 
 describe('EditWeightForm', () => {
   const mockRecord: WeightRecord = {
@@ -11,22 +12,6 @@ describe('EditWeightForm', () => {
   };
   let mockOnSave: ReturnType<typeof vi.fn>;
   let mockOnCancel: ReturnType<typeof vi.fn>;
-
-  // Helper to convert ISO string to the format expected by datetime-local input
-  const toDateTimeLocal = (isoDateString: string): string => {
-    const date = new Date(isoDateString);
-    // Handle invalid dates by falling back to a sensible default or empty string
-    if (isNaN(date.getTime())) {
-      const now = new Date();
-      return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    }
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
 
   beforeEach(() => {
     mockOnSave = vi.fn();
@@ -52,7 +37,8 @@ describe('EditWeightForm', () => {
     expect(weightInput).toHaveAttribute('step', '0.1');
 
     expect(dateInput).toBeInTheDocument();
-    expect(dateInput.value).toBe(toDateTimeLocal(mockRecord.date));
+    // Use the actual utility function for comparison
+    expect(dateInput.value).toBe(formatIsoToDateTimeLocal(mockRecord.date));
     expect(dateInput.type).toBe('datetime-local');
 
     expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
@@ -174,7 +160,8 @@ describe('EditWeightForm', () => {
 
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
     const now = new Date();
-    const expectedFallbackDate = toDateTimeLocal(now.toISOString());
+    // Use the actual utility function for the expected fallback
+    const expectedFallbackDate = formatIsoToDateTimeLocal(now.toISOString());
     expect(dateInput.value).toBe(expectedFallbackDate);
     expect(consoleErrorSpy).toHaveBeenCalledWith("Invalid date string provided to formatIsoToDateTimeLocal:", "invalid-date-string");
 
