@@ -15,3 +15,22 @@ export const formatIsoToDateTimeLocal = (isoDateString: string): string => {
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
+
+/**
+ * Formats an ISO date string into a display-friendly local date string (e.g., "October 27, 2023").
+ * Handles invalid date strings gracefully by returning 'Invalid Date' and logging an error.
+ * @param isoDateString The ISO 8601 date string to format.
+ * @returns The formatted date string or 'Invalid Date' if the input is invalid.
+ */
+export const formatDateForDisplay = (isoDateString: string): string => {
+  const date = new Date(isoDateString);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date string provided to formatDateForDisplay:", isoDateString);
+    return 'Invalid Date';
+  }
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
