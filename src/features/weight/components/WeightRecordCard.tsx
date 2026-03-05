@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { WeightRecord } from '../types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button'; // Import Button
+import { formatDateForDisplay } from '@/lib/date-utils'; // Import formatDateForDisplay
 
 interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
   record: WeightRecord;
@@ -12,12 +13,8 @@ interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
   ({ record, className, onDelete, onEdit, ...props }, ref) => {
-    // Simple date formatting for display, could be enhanced with a date utility
-    const formattedDate = new Date(record.date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    // Use the utility function for date formatting
+    const formattedDate = formatDateForDisplay(record.date);
 
     const handleDeleteClick = () => {
       onDelete?.(record.id);
