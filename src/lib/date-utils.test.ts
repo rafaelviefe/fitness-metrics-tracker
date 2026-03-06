@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { formatIsoToDateTimeLocal } from './date-utils';
+import { formatIsoToDateTimeLocal, formatDateForDisplay } from './date-utils';
 
 describe('formatIsoToDateTimeLocal', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -105,5 +105,75 @@ describe('formatIsoToDateTimeLocal', () => {
     const expected = `${year}-${month}-${day}T${hours}:${minutes}`;
 
     expect(formatIsoToDateTimeLocal(isoDate)).toBe(expected);
+  });
+});
+
+describe('formatDateForDisplay', () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    // Spy on console.error to check if it's called without printing to console
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    // Restore console.error to its original implementation
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should correctly format a valid ISO date string to "Month Day, Year" format', () => {
+    expect(formatDateForDisplay('2023-10-27T14:30:00.000Z')).toBe('October 27, 2023');
+    expect(formatDateForDisplay('2024-01-01T00:00:00.000Z')).toBe('January 1, 2024');
+    expect(formatDateForDisplay('2022-12-31T23:59:59.999Z')).toBe('December 31, 2022');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle dates with single digit day and month correctly', () => {
+    expect(formatDateForDisplay('2023-03-05T10:00:00.000Z')).toBe('March 5, 2023');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle leap year date correctly', () => {
+    expect(formatDateForDisplay('2024-02-29T12:00:00.000Z')).toBe('February 29, 2024');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should return "Invalid Date" for an invalid date string and log an error', () => {
+    const invalidDate = 'not-a-date';
+    expect(formatDateForDisplay(invalidDate)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateForDisplay:',
+      invalidDate
+    );
+
+    consoleErrorSpy.mockClear(); // Clear spy for next assertion
+
+    const emptyDate = '';
+    expect(formatDateForDisplay(emptyDate)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateForDisplay:',
+      emptyDate
+    );
+  });
+
+  it('should return "Invalid Date" for null or undefined input and log an error (though types prevent this)', () => {
+    // Although TypeScript types prevent direct `null` or `undefined`, JS allows it.
+    // The function should still handle it gracefully via `new Date(value)` returning Invalid Date.
+    expect(formatDateForDisplay(null as any)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateForDisplay:',
+      null
+    );
+    consoleErrorSpy.mockClear();
+
+    expect(formatDateForDisplay(undefined as any)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateForDisplay:',
+      undefined
+    );
   });
 });

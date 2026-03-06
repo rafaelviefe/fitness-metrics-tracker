@@ -23,9 +23,22 @@ export const formatIsoToDateTimeLocal = (isoDateString: string): string => {
  * @returns The formatted date string or 'Invalid Date' if the input is invalid.
  */
 export const formatDateForDisplay = (isoDateString: string): string => {
-  const date = new Date(isoDateString);
-  if (isNaN(date.getTime())) {
+  // Explicitly check for inputs that should result in 'Invalid Date' according to our logic,
+  // even if new Date() might interpret them differently (e.g., null, undefined, empty string can become epoch).
+  if (!isoDateString || (typeof isoDateString !== 'string')) {
     console.error("Invalid date string provided to formatDateForDisplay:", isoDateString);
+    return 'Invalid Date';
+  }
+
+  const trimmedDateString = isoDateString.trim();
+  if (trimmedDateString === '') {
+    console.error("Invalid date string provided to formatDateForDisplay:", isoDateString);
+    return 'Invalid Date';
+  }
+
+  const date = new Date(trimmedDateString);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date string provided to formatDateForDisplay:", trimmedDateString);
     return 'Invalid Date';
   }
   return date.toLocaleDateString('en-US', {
