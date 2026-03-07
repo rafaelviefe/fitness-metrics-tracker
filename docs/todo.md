@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 066: Create `./src/lib/date-utils.ts` and export a new function `formatIsoToDateTimeLocal` which contains the exact logic currently found in `src/features/weight/components/EditWeightForm.tsx` for converting an ISO date string to `YYYY-MM-DDTHH:mm` format, including the error handling and fallback to current time, ensuring it mirrors the existing implementation behavior.
-[x] ID: 067: In `./src/features/weight/components/EditWeightForm.tsx`, import `formatIsoToDateTimeLocal` from `../../../../lib/date-utils` and use it to initialize `editedDate` in the `useState` hook. Remove the duplicate local `formatIsoToDateTimeLocal` helper function definition from this component.
-[x] ID: 068: Create `./src/lib/date-utils.test.ts` and add tests for the `formatIsoToDateTimeLocal` function, covering valid ISO date strings, invalid date strings (to verify fallback to system time), and ensuring correct output format for both cases, using `vi.useFakeTimers` for consistent time.
-[x] ID: 069: In `./src/lib/date-utils.ts`, export a new function `formatDateForDisplay` that takes an ISO date string and returns a formatted date string using `Date.prototype.toLocaleDateString` with `en-US` locale and options `{ year: 'numeric', month: 'long', day: 'numeric' }`.
-[x] ID: 070: In `./src/features/weight/components/WeightRecordCard.tsx`, import `formatDateForDisplay` from `../../../../lib/date-utils` and use it to format `record.date` for the `formattedDate` variable. Remove the duplicate local date formatting logic.
-[x] ID: 071: In `./src/lib/date-utils.test.ts`, add tests for the `formatDateForDisplay` function, covering valid ISO date strings and verifying the expected "Month Day, Year" output format.
+[ ] ID: 072: Define `--card` and `--card-foreground` CSS custom properties in the `:root` and dark media query blocks in `src/app/globals.css`, mapping them to `var(--background)` and `var(--foreground)` respectively.
+[ ] ID: 073: Define `@apply` directives for `.bg-card` and `.text-card-foreground` within a `@layer components` block in `src/app/globals.css`, using the `--card` and `--card-foreground` CSS variables.
+[ ] ID: 074: Add an optional boolean prop `isError` to the `InputProps` interface in `src/components/ui/Input.tsx`.
+[ ] ID: 075: Modify the `Input` component implementation in `src/components/ui/Input.tsx` to apply `border-red-500` and `focus-visible:ring-red-500` classes when the `isError` prop is true.
+[ ] ID: 076: Update `src/features/weight/components/AddWeightForm.tsx` to pass the component's `error` state (converted to a boolean) to the `Input` component's new `isError` prop.
+[ ] ID: 077: Update `src/features/weight/components/EditWeightForm.tsx` to pass the component's `error` state (converted to a boolean) to both `Input` components' new `isError` prop.
