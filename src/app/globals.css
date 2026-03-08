@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: var(--background);
+  --card-foreground: var(--foreground);
 }
 
 @theme inline {
@@ -16,6 +18,8 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card: var(--background);
+    --card-foreground: var(--foreground);
   }
 }
 
