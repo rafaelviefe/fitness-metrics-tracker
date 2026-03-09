@@ -28,3 +28,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer components {
+  .bg-card {
+    @apply bg-[var(--card)];
+  }
+  .text-card-foreground {
+    @apply text-[var(--card-foreground)];
+  }
+}
