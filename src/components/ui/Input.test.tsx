@@ -18,6 +18,7 @@ describe('Input', () => {
     expect(input).toHaveClass('border');
     expect(input).toHaveClass('px-3');
     expect(input).toHaveClass('py-2');
+    expect(input).not.toHaveClass('border-red-500'); // No error class by default
   });
 
   it('renders with a custom type (number)', () => {
@@ -89,5 +90,30 @@ describe('Input', () => {
     render(<Input id="my-unique-input" data-testid="id-input" />);
     const input = screen.getByTestId('id-input');
     expect(input).toHaveAttribute('id', 'my-unique-input');
+  });
+
+  it('applies error styling when isError prop is true', () => {
+    render(<Input isError data-testid="error-input" />);
+    const input = screen.getByTestId('error-input');
+    expect(input).toHaveClass('border-red-500');
+    expect(input).toHaveClass('focus-visible:ring-red-500');
+    // Ensure default border is overridden or not present
+    expect(input).not.toHaveClass('border-neutral-200'); // Tailwind merge should handle this correctly
+  });
+
+  it('does not apply error styling when isError prop is false', () => {
+    render(<Input isError={false} data-testid="no-error-input" />);
+    const input = screen.getByTestId('no-error-input');
+    expect(input).not.toHaveClass('border-red-500');
+    expect(input).not.toHaveClass('focus-visible:ring-red-500');
+    expect(input).toHaveClass('border-neutral-200');
+  });
+
+  it('does not apply error styling when isError prop is undefined', () => {
+    render(<Input data-testid="undefined-error-input" />); // isError is undefined by default
+    const input = screen.getByTestId('undefined-error-input');
+    expect(input).not.toHaveClass('border-red-500');
+    expect(input).not.toHaveClass('focus-visible:ring-red-500');
+    expect(input).toHaveClass('border-neutral-200');
   });
 });
