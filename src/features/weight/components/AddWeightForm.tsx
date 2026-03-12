@@ -51,6 +51,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
         className="mb-2"
         aria-invalid={!!error}
         aria-describedby={error ? 'weight-error' : undefined}
+        isError={!!error} // Pass the error state to the Input component
       />
       {error && <p id="weight-error" className="text-red-500 text-sm mt-1">{error}</p>}
       <Button type="submit">Add Weight</Button>
