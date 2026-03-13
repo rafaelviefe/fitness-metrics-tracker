@@ -70,6 +70,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({ record, onSave, 
           placeholder="Enter weight in kg"
           aria-invalid={!!error}
           aria-describedby={error ? `weight-error-${record.id}` : undefined}
+          isError={!!error}
         />
         {error && <p id={`weight-error-${record.id}`} className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
@@ -84,6 +85,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({ record, onSave, 
           onChange={handleDateChange}
           aria-invalid={!!error}
           aria-describedby={error ? `date-error-${record.id}` : undefined}
+          isError={!!error}
         />
         {/* Error message for date is covered by the general 'error' state */}
       </div>
