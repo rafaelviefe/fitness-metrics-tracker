@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[ ] ID: 078: Add `clsx` and `tailwind-merge` as new dependencies to the project.
-[ ] ID: 079: Update the `cn` utility function in `src/lib/utils.ts` to use `clsx` for combining class names and `tailwind-merge` for intelligently merging Tailwind CSS classes.
-[ ] ID: 080: Modify `src/lib/utils.test.ts` to add a test case verifying `tailwind-merge` functionality by checking that conflicting Tailwind classes are correctly resolved (e.g., `cn('p-4', 'p-6')` should result in `p-6`).
-[ ] ID: 081: Modify `src/lib/utils.test.ts` to update or add test cases that demonstrate `clsx`'s ability to handle array and object arguments for class names, replacing the current limitation test.
-[ ] ID: 082: Implement sorting within the `getWeightRecords` method in `src/features/weight/repositories/weight.repository.ts` so that records are always returned sorted by `date` in descending order (newest first).
-[ ] ID: 083: Add a new test case to `src/features/weight/repositories/weight.repository.test.ts` specifically to verify that `getWeightRecords` returns records sorted by date in descending order.
+[x] ID: 072: Define `--card` and `--card-foreground` CSS custom properties in the `:root` and dark media query blocks in `src/app/globals.css`, mapping them to `var(--background)` and `var(--foreground)` respectively.
+[x] ID: 073: Define `@apply` directives for `.bg-card` and `.text-card-foreground` within a `@layer components` block in `src/app/globals.css`, using the `--card` and `--card-foreground` CSS variables.
+[x] ID: 074: Add an optional boolean prop `isError` to the `InputProps` interface in `src/components/ui/Input.tsx`.
+[x] ID: 075: Modify the `Input` component implementation in `src/components/ui/Input.tsx` to apply `border-red-500` and `focus-visible:ring-red-500` classes when the `isError` prop is true.
+[x] ID: 076: Update `src/features/weight/components/AddWeightForm.tsx` to pass the component's `error` state (converted to a boolean) to the `Input` component's new `isError` prop.
+[x] ID: 077: Update `src/features/weight/components/EditWeightForm.tsx` to pass the component's `error` state (converted to a boolean) to both `Input` components' new `isError` prop.
