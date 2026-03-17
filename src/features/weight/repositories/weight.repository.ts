@@ -86,6 +86,35 @@ export class WeightRepository {
   }
 
   /**
+   * Retrieves the weight record with the most recent date.
+   * @returns The latest WeightRecord or null if no records exist.
+   */
+  getLatestWeightRecord(): WeightRecord | null {
+    const records = this.getWeightRecords();
+    if (records.length === 0) {
+      return null;
+    }
+
+    // Sort records by date in descending order to find the latest.
+    // If dates are equal, sort by ID in descending order to ensure a stable tie-break
+    // (e.g., in case of mocked sequential IDs, a higher ID implies later addition).
+    const sortedRecords = [...records].sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      const dateComparison = dateB.getTime() - dateA.getTime(); // Descending date
+
+      if (dateComparison === 0) {
+        // If dates are identical, use ID as a tie-breaker. 
+        // Assuming IDs like 'id-1', 'id-2', 'id-3' where a higher number indicates a later record.
+        return b.id.localeCompare(a.id); // Descending ID sort
+      }
+      return dateComparison;
+    });
+
+    return sortedRecords[0];
+  }
+
+  /**
    * Clears all weight records from storage.
    */
   clearAllWeightRecords(): void {
