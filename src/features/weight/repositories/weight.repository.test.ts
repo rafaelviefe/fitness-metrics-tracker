@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { WeightRepository } from './weight.repository';
 import { StorageService } from '@/core/storage/storage.service';
 import { WeightRecord } from '../types';
@@ -180,5 +180,42 @@ describe('WeightRepository', () => {
     expect(newRecord.weight).toBe(80);
 
     vi.useRealTimers();
+  });
+
+  describe('getLatestWeightRecord', () => {
+    it('should return null if no records exist', () => {
+      expect(weightRepository.getLatestWeightRecord()).toBeNull();
+    });
+
+    it('should return the single record if only one exists', () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      expect(weightRepository.getLatestWeightRecord()).toEqual(record1);
+    });
+
+    it('should return the record with the most recent date from multiple records', () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const record2 = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
+      const record3 = weightRepository.addWeightRecord(72, '2023-01-01T09:00:00.000Z'); // Earlier date
+
+      expect(weightRepository.getLatestWeightRecord()).toEqual(record2);
+    });
+
+    it('should handle records added out of chronological order correctly', () => {
+      const recordEarly = weightRepository.addWeightRecord(65, '2023-01-01T08:00:00.000Z');
+      const recordMid = weightRepository.addWeightRecord(67, '2023-01-01T10:00:00.000Z');
+      const recordLate = weightRepository.addWeightRecord(68, '2023-01-01T12:00:00.000Z');
+      const recordNewest = weightRepository.addWeightRecord(69, '2023-01-02T09:00:00.000Z');
+
+      expect(weightRepository.getLatestWeightRecord()).toEqual(recordNewest);
+    });
+
+    it('should return one of the latest records if multiple have the same most recent date', () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const record2 = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
+      const record3 = weightRepository.addWeightRecord(72, '2023-01-02T10:00:00.000Z'); // Same latest date as record 2
+
+      // Expecting one of the two records with the latest date. Due to sort stability, it should be the one added last.
+      expect(weightRepository.getLatestWeightRecord()).toEqual(record3);
+    });
   });
 });
