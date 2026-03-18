@@ -209,13 +209,19 @@ describe('WeightRepository', () => {
       expect(weightRepository.getLatestWeightRecord()).toEqual(recordNewest);
     });
 
-    it('should return one of the latest records if multiple have the same most recent date', () => {
-      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
-      const record2 = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
-      const record3 = weightRepository.addWeightRecord(72, '2023-01-02T10:00:00.000Z'); // Same latest date as record 2
+    it('should return the record with the most recent date and highest ID if dates are identical', () => {
+      // Reset UUID index to ensure specific IDs for this test
+      uuidIndex = 0;
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-A');
+      const recordOld = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
 
-      // Expecting one of the two records with the latest date. Due to sort stability, it should be the one added last.
-      expect(weightRepository.getLatestWeightRecord()).toEqual(record3);
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-C'); // Higher ID
+      const recordLatestB = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
+
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-B'); // Lower ID but same latest date
+      const recordLatestA = weightRepository.addWeightRecord(72, '2023-01-02T10:00:00.000Z');
+
+      expect(weightRepository.getLatestWeightRecord()).toEqual(recordLatestB);
     });
   });
 });

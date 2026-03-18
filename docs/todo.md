@@ -1,7 +1,7 @@
 # Project Roadmap
 
 [x] ID: 078: Add a `getLatestWeightRecord` method to `WeightRepository` that returns the weight record with the most recent date.
-[ ] ID: 079: Add a test case for the `getLatestWeightRecord` method in `src/features/weight/repositories/weight.repository.test.ts`.
+[x] ID: 079: Add a test case for the `getLatestWeightRecord` method in `src/features/weight/repositories/weight.repository.test.ts`.
 [ ] ID: 080: Add a `getLowestWeightRecord` method to `WeightRepository` that returns the weight record with the minimum weight.
 [ ] ID: 081: Add a test case for the `getLowestWeightRecord` method in `src/features/weight/repositories/weight.repository.test.ts`.
 [ ] ID: 082: Add a `getHighestWeightRecord` method to `WeightRepository` that returns the weight record with the maximum weight.
