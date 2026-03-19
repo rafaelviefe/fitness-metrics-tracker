@@ -29,7 +29,7 @@ describe('WeightRepository', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   // Mock crypto.randomUUID to return predictable IDs for tests
-  const mockUUIDs = ['id-1', 'id-2', 'id-3', 'id-4'];
+  const mockUUIDs = ['id-1', 'id-2', 'id-3', 'id-4', 'id-5', 'id-6'];
   let uuidIndex = 0;
   beforeAll(() => {
     vi.spyOn(crypto, 'randomUUID').mockImplementation(() => {
@@ -213,15 +213,72 @@ describe('WeightRepository', () => {
       // Reset UUID index to ensure specific IDs for this test
       uuidIndex = 0;
       vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-A');
-      const recordOld = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
 
       vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-C'); // Higher ID
       const recordLatestB = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
 
       vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-B'); // Lower ID but same latest date
-      const recordLatestA = weightRepository.addWeightRecord(72, '2023-01-02T10:00:00.000Z');
+      weightRepository.addWeightRecord(72, '2023-01-02T10:00:00.000Z');
 
       expect(weightRepository.getLatestWeightRecord()).toEqual(recordLatestB);
+    });
+  });
+
+  describe('getLowestWeightRecord', () => {
+    it('should return null if no records exist', () => {
+      expect(weightRepository.getLowestWeightRecord()).toBeNull();
+    });
+
+    it('should return the single record if only one exists', () => {
+      const record1 = weightRepository.addWeightRecord(60.5, '2023-01-01T10:00:00.000Z');
+      expect(weightRepository.getLowestWeightRecord()).toEqual(record1);
+    });
+
+    it('should return the record with the minimum weight from multiple records', () => {
+      weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const lowestRecord = weightRepository.addWeightRecord(60, '2023-01-02T10:00:00.000Z');
+      weightRepository.addWeightRecord(65, '2023-01-03T10:00:00.000Z');
+
+      expect(weightRepository.getLowestWeightRecord()).toEqual(lowestRecord);
+    });
+
+    it('should return the oldest record among those with the same lowest weight', () => {
+      // Reset UUID index for this specific test block
+      uuidIndex = 0;
+
+      const recordMid = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z'); // id-1
+      const recordLowestOldest = weightRepository.addWeightRecord(60, '2023-01-02T09:00:00.000Z'); // id-2 - oldest date with lowest weight
+      const recordHighest = weightRepository.addWeightRecord(75, '2023-01-03T10:00:00.000Z'); // id-3
+      const recordLowestNewer = weightRepository.addWeightRecord(60, '2023-01-02T11:00:00.000Z'); // id-4 - newer date with lowest weight
+      const recordLowestNewest = weightRepository.addWeightRecord(60, '2023-01-04T10:00:00.000Z'); // id-5 - newest date with lowest weight
+
+      expect(weightRepository.getLowestWeightRecord()).toEqual(recordLowestOldest);
+    });
+
+    it('should handle records with decimal weights correctly', () => {
+      weightRepository.addWeightRecord(68.1, '2023-01-01T10:00:00.000Z');
+      weightRepository.addWeightRecord(67.9, '2023-01-02T10:00:00.000Z');
+      const lowestDecimalRecord = weightRepository.addWeightRecord(67.5, '2023-01-03T10:00:00.000Z');
+      weightRepository.addWeightRecord(68.0, '2023-01-04T10:00:00.000Z');
+
+      expect(weightRepository.getLowestWeightRecord()).toEqual(lowestDecimalRecord);
+    });
+
+    it('should ignore malformed records when finding the lowest weight', () => {
+      const goodRecord1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const malformedRecord = { id: 'malf', date: '2023-01-02T10:00:00.000Z' }; // Missing weight
+      const goodRecord2 = weightRepository.addWeightRecord(60, '2023-01-03T10:00:00.000Z');
+
+      // Manually add malformed record to the storage mock to simulate a persisted bad state
+      (storageService.getItem as vi.Mock).mockReturnValueOnce([
+        goodRecord1,
+        malformedRecord,
+        goodRecord2
+      ]);
+
+      expect(weightRepository.getLowestWeightRecord()).toEqual(goodRecord2);
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
     });
   });
 });
