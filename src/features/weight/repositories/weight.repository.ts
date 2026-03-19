@@ -115,6 +115,35 @@ export class WeightRepository {
   }
 
   /**
+   * Retrieves the weight record with the minimum weight.
+   * If multiple records have the same lowest weight, the oldest one (earliest date) is returned.
+   * @returns The lowest WeightRecord or null if no records exist.
+   */
+  getLowestWeightRecord(): WeightRecord | null {
+    const records = this.getWeightRecords();
+    if (records.length === 0) {
+      return null;
+    }
+
+    let lowestRecord: WeightRecord | null = null;
+
+    for (const record of records) {
+      if (lowestRecord === null || record.weight < lowestRecord.weight) {
+        lowestRecord = record;
+      } else if (record.weight === lowestRecord.weight) {
+        // If weights are equal, choose the older record
+        const dateA = new Date(record.date);
+        const dateB = new Date(lowestRecord.date);
+        if (dateA.getTime() < dateB.getTime()) {
+          lowestRecord = record;
+        }
+      }
+    }
+
+    return lowestRecord;
+  }
+
+  /**
    * Clears all weight records from storage.
    */
   clearAllWeightRecords(): void {
