@@ -281,4 +281,61 @@ describe('WeightRepository', () => {
       expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
     });
   });
+
+  describe('getHighestWeightRecord', () => {
+    it('should return null if no records exist', () => {
+      expect(weightRepository.getHighestWeightRecord()).toBeNull();
+    });
+
+    it('should return the single record if only one exists', () => {
+      const record1 = weightRepository.addWeightRecord(85.5, '2023-01-01T10:00:00.000Z');
+      expect(weightRepository.getHighestWeightRecord()).toEqual(record1);
+    });
+
+    it('should return the record with the maximum weight from multiple records', () => {
+      weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const highestRecord = weightRepository.addWeightRecord(90, '2023-01-02T10:00:00.000Z');
+      weightRepository.addWeightRecord(85, '2023-01-03T10:00:00.000Z');
+
+      expect(weightRepository.getHighestWeightRecord()).toEqual(highestRecord);
+    });
+
+    it('should return the oldest record among those with the same highest weight', () => {
+      // Reset UUID index for this specific test block
+      uuidIndex = 0;
+
+      const recordMid = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z'); // id-1
+      const recordHighestOldest = weightRepository.addWeightRecord(90, '2023-01-02T09:00:00.000Z'); // id-2 - oldest date with highest weight
+      const recordLowest = weightRepository.addWeightRecord(65, '2023-01-03T10:00:00.000Z'); // id-3
+      const recordHighestNewer = weightRepository.addWeightRecord(90, '2023-01-02T11:00:00.000Z'); // id-4 - newer date with highest weight
+      const recordHighestNewest = weightRepository.addWeightRecord(90, '2023-01-04T10:00:00.000Z'); // id-5 - newest date with highest weight
+
+      expect(weightRepository.getHighestWeightRecord()).toEqual(recordHighestOldest);
+    });
+
+    it('should handle records with decimal weights correctly', () => {
+      weightRepository.addWeightRecord(88.1, '2023-01-01T10:00:00.000Z');
+      weightRepository.addWeightRecord(89.9, '2023-01-02T10:00:00.000Z');
+      const highestDecimalRecord = weightRepository.addWeightRecord(90.5, '2023-01-03T10:00:00.000Z');
+      weightRepository.addWeightRecord(89.0, '2023-01-04T10:00:00.000Z');
+
+      expect(weightRepository.getHighestWeightRecord()).toEqual(highestDecimalRecord);
+    });
+
+    it('should ignore malformed records when finding the highest weight', () => {
+      const goodRecord1 = weightRepository.addWeightRecord(80, '2023-01-01T10:00:00.000Z');
+      const malformedRecord = { id: 'malf', date: '2023-01-02T10:00:00.000Z' }; // Missing weight
+      const goodRecord2 = weightRepository.addWeightRecord(90, '2023-01-03T10:00:00.000Z');
+
+      // Manually add malformed record to the storage mock to simulate a persisted bad state
+      (storageService.getItem as vi.Mock).mockReturnValueOnce([
+        goodRecord1,
+        malformedRecord,
+        goodRecord2
+      ]);
+
+      expect(weightRepository.getHighestWeightRecord()).toEqual(goodRecord2);
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
+    });
+  });
 });

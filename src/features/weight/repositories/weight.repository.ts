@@ -104,7 +104,7 @@ export class WeightRepository {
       const dateComparison = dateB.getTime() - dateA.getTime(); // Descending date
 
       if (dateComparison === 0) {
-        // If dates are identical, use ID as a tie-breaker. 
+        // If dates are identical, use ID as a tie-breaker.
         // Assuming IDs like 'id-1', 'id-2', 'id-3' where a higher number indicates a later record.
         return b.id.localeCompare(a.id); // Descending ID sort
       }
@@ -112,6 +112,35 @@ export class WeightRepository {
     });
 
     return sortedRecords[0];
+  }
+
+  /**
+   * Retrieves the weight record with the maximum weight.
+   * If multiple records have the same highest weight, the oldest one (earliest date) is returned.
+   * @returns The highest WeightRecord or null if no records exist.
+   */
+  getHighestWeightRecord(): WeightRecord | null {
+    const records = this.getWeightRecords();
+    if (records.length === 0) {
+      return null;
+    }
+
+    let highestRecord: WeightRecord | null = null;
+
+    for (const record of records) {
+      if (highestRecord === null || record.weight > highestRecord.weight) {
+        highestRecord = record;
+      } else if (record.weight === highestRecord.weight) {
+        // If weights are equal, choose the older record
+        const dateA = new Date(record.date);
+        const dateB = new Date(highestRecord.date);
+        if (dateA.getTime() < dateB.getTime()) {
+          highestRecord = record;
+        }
+      }
+    }
+
+    return highestRecord;
   }
 
   /**
