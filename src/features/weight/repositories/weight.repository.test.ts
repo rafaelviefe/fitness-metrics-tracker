@@ -304,11 +304,11 @@ describe('WeightRepository', () => {
       // Reset UUID index for this specific test block
       uuidIndex = 0;
 
-      const recordMid = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z'); // id-1
+      weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z'); // id-1
       const recordHighestOldest = weightRepository.addWeightRecord(90, '2023-01-02T09:00:00.000Z'); // id-2 - oldest date with highest weight
-      const recordLowest = weightRepository.addWeightRecord(65, '2023-01-03T10:00:00.000Z'); // id-3
-      const recordHighestNewer = weightRepository.addWeightRecord(90, '2023-01-02T11:00:00.000Z'); // id-4 - newer date with highest weight
-      const recordHighestNewest = weightRepository.addWeightRecord(90, '2023-01-04T10:00:00.000Z'); // id-5 - newest date with highest weight
+      weightRepository.addWeightRecord(65, '2023-01-03T10:00:00.000Z'); // id-3
+      weightRepository.addWeightRecord(90, '2023-01-02T11:00:00.000Z'); // id-4 - newer date with highest weight
+      weightRepository.addWeightRecord(90, '2023-01-04T10:00:00.000Z'); // id-5 - newest date with highest weight
 
       expect(weightRepository.getHighestWeightRecord()).toEqual(recordHighestOldest);
     });
