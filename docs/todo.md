@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 084: Create an empty file `src/features/weight/components/WeightStatisticsCard.tsx`.
+[x] ID: 084: Create an empty file `src/features/weight/components/WeightStatisticsCard.tsx`.
 [ ] ID: 085: Add necessary imports (`React`, `Card`, `cn`, `formatDateForDisplay`, `WeightRecord`) and define the `WeightStatisticsCardProps` interface in `src/features/weight/components/WeightStatisticsCard.tsx`, accepting `record?: WeightRecord` and `className`.
 [ ] ID: 086: Implement the `WeightStatisticsCard` functional component in `src/features/weight/components/WeightStatisticsCard.tsx` to display a single `WeightRecord` prop (for a 'Latest Weight' label) inside a `Card`. It should show "No records yet." if `record` is null/undefined.
 [ ] ID: 087: In `src/app/page.tsx`, add a new state variable `latestWeightRecord` using `useState<WeightRecord | null>(null)` and initialize it by calling `weightRepositoryRef.current.getLatestWeightRecord()` within the `useEffect` hook.
