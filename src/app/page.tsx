@@ -11,6 +11,7 @@ import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; //
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [latestWeightRecord, setLatestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
@@ -25,6 +26,10 @@ export default function Home() {
     // Load initial weight records from the repository
     const initialRecords = weightRepositoryRef.current.getWeightRecords();
     setWeightRecords(initialRecords);
+
+    // Initialize latestWeightRecord
+    const latestRecord = weightRepositoryRef.current.getLatestWeightRecord();
+    setLatestWeightRecord(latestRecord);
   }, []); // Empty dependency array means this runs once on mount
 
   const handleAddWeight = (weight: number) => {
