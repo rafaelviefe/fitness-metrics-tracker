@@ -5,7 +5,7 @@ import { formatDateForDisplay } from '@/lib/date-utils';
 import { WeightRecord } from '../types';
 
 interface WeightStatisticsCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  record?: WeightRecord; // Optional record prop
+  record?: WeightRecord | null; // Allow null for the record prop
   label: string; // Label for the statistic (e.g., "Latest Weight")
 }
 
