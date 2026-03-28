@@ -7,6 +7,7 @@ import { WeightRecord } from '@/features/weight/types';
 import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
 import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
 import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
+import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -37,6 +38,8 @@ export default function Home() {
     if (weightRepositoryRef.current) {
       const newRecord = weightRepositoryRef.current.addWeightRecord(weight);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
+      // After adding, update the latest record display
+      setLatestWeightRecord(newRecord);
     }
   };
 
@@ -44,7 +47,13 @@ export default function Home() {
     if (weightRepositoryRef.current) {
       const isDeleted = weightRepositoryRef.current.deleteWeightRecord(id);
       if (isDeleted) {
-        setWeightRecords((prevRecords) => prevRecords.filter((record) => record.id !== id));
+        setWeightRecords((prevRecords) => {
+          const updatedRecords = prevRecords.filter((record) => record.id !== id);
+          // After deleting, re-evaluate the latest record
+          const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
+          setLatestWeightRecord(newLatest || null);
+          return updatedRecords;
+        });
       }
     }
   };
@@ -59,9 +68,15 @@ export default function Home() {
     if (weightRepositoryRef.current) {
       const result = weightRepositoryRef.current.updateWeightRecord(updatedRecord);
       if (result) {
-        setWeightRecords((prevRecords) =>
-          prevRecords.map((record) => (record.id === updatedRecord.id ? result : record))
-        );
+        setWeightRecords((prevRecords) => {
+          const updatedRecords = prevRecords.map((record) =>
+            record.id === updatedRecord.id ? result : record
+          );
+          // After editing, re-evaluate the latest record
+          const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
+          setLatestWeightRecord(newLatest || null);
+          return updatedRecords;
+        });
         setEditingRecordId(null); // Exit editing mode after saving
       }
     }
@@ -84,6 +99,9 @@ export default function Home() {
       <section className="mt-8 max-w-md w-full">
         {/* Render AddWeightForm here, before the "Your Weight Records" section */}
         <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} />
+
+        {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
+        <WeightStatisticsCard record={latestWeightRecord} label="Latest Weight" className="mb-6" />
 
         <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
         {weightRecords.length === 0 ? (
