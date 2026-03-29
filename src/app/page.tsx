@@ -38,8 +38,9 @@ export default function Home() {
     if (weightRepositoryRef.current) {
       const newRecord = weightRepositoryRef.current.addWeightRecord(weight);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
-      // After adding, update the latest record display
-      setLatestWeightRecord(newRecord);
+      // After adding, re-fetch and update the latest record display from the repository
+      const newLatest = weightRepositoryRef.current.getLatestWeightRecord();
+      setLatestWeightRecord(newLatest || null);
     }
   };
 
