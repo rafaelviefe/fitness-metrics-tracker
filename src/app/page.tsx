@@ -13,6 +13,7 @@ export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [latestWeightRecord, setLatestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
+  const [highestWeightRecord, setHighestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
