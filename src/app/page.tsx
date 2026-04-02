@@ -33,6 +33,10 @@ export default function Home() {
     // Initialize latestWeightRecord
     const latestRecord = weightRepositoryRef.current.getLatestWeightRecord();
     setLatestWeightRecord(latestRecord);
+
+    // Initialize highestWeightRecord
+    const highestRecord = weightRepositoryRef.current.getHighestWeightRecord();
+    setHighestWeightRecord(highestRecord);
   }, []); // Empty dependency array means this runs once on mount
 
   const handleAddWeight = (weight: number) => {
@@ -43,6 +47,9 @@ export default function Home() {
       // After adding, re-fetch and update the latest record display from the repository
       const newLatest = weightRepositoryRef.current.getLatestWeightRecord();
       setLatestWeightRecord(newLatest || null);
+      // After adding, re-fetch and update the highest record display from the repository
+      const newHighest = weightRepositoryRef.current.getHighestWeightRecord();
+      setHighestWeightRecord(newHighest || null);
     }
   };
 
@@ -55,6 +62,9 @@ export default function Home() {
           // After deleting, re-evaluate the latest record
           const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
           setLatestWeightRecord(newLatest || null);
+          // After deleting, re-evaluate the highest record
+          const newHighest = weightRepositoryRef.current?.getHighestWeightRecord();
+          setHighestWeightRecord(newHighest || null);
           return updatedRecords;
         });
       }
@@ -78,6 +88,9 @@ export default function Home() {
           // After editing, re-evaluate the latest record
           const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
           setLatestWeightRecord(newLatest || null);
+          // After editing, re-evaluate the highest record
+          const newHighest = weightRepositoryRef.current?.getHighestWeightRecord();
+          setHighestWeightRecord(newHighest || null);
           return updatedRecords;
         });
         setEditingRecordId(null); // Exit editing mode after saving
@@ -105,6 +118,7 @@ export default function Home() {
 
         {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
         <WeightStatisticsCard record={latestWeightRecord} label="Latest Weight" className="mb-6" />
+        <WeightStatisticsCard record={highestWeightRecord} label="Highest Weight" className="mb-6" />
 
         <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
         {weightRecords.length === 0 ? (
