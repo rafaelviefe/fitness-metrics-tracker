@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 090: Add `highestWeightRecord` state declaration to `src/app/page.tsx`.
-[x] ID: 091: Add `lowestWeightRecord` state declaration to `src/app/page.tsx`.
-[x] ID: 092: Initialize `highestWeightRecord` state on mount within the `useEffect` hook in `src/app/page.tsx`.
-[x] ID: 093: Initialize `lowestWeightRecord` state on mount within the `useEffect` hook in `src/app/page.tsx`.
-[x] ID: 094: Update `highestWeightRecord` state after `handleAddWeight` in `src/app/page.tsx`.
-[x] ID: 095: Update `lowestWeightRecord` state after `handleAddWeight` in `src/app/page.tsx`.
+[ ] ID: 096: Modify `src/app/page.test.tsx` to add a `beforeEach` hook that clears `window.localStorage` to ensure a clean state for each test run.
+[ ] ID: 097: Add a new test case to `src/app/page.test.tsx` to verify the initial rendering of the `Home` page when `window.localStorage` is empty. Assert that the "No records yet." message is displayed for the weight record list and for all `WeightStatisticsCard` components.
+[ ] ID: 098: Add a new test case to `src/app/page.test.tsx` to simulate adding a new weight record. Interact with `AddWeightForm`, submit a valid weight, and then assert that the new record appears in the list, the `AddWeightForm` input is cleared, and all `WeightStatisticsCard` components display the updated statistics (latest, highest, lowest).
+[ ] ID: 099: Add a new test case to `src/app/page.test.tsx` to simulate deleting an existing weight record. First, add at least two records, then click the delete button for one of them. Assert that the record is removed from the list and all `WeightStatisticsCard` components reflect the updated statistics.
+[ ] ID: 100: Add a new test case to `src/app/page.test.tsx` to simulate entering edit mode for a weight record. Add a record, then click its "Edit" button. Assert that the `EditWeightForm` is rendered for that specific record and the `WeightRecordCard` is no longer visible for it.
+[ ] ID: 101: Add a new test case to `src/app/page.test.tsx` to simulate saving an edited weight record. Enter edit mode (from task 100), modify the weight and date in the `EditWeightForm`, then click "Save Changes". Assert that the record's updated details are displayed in the list, the `EditWeightForm` disappears, and all `WeightStatisticsCard` components show the corrected statistics.
