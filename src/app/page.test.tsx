@@ -26,4 +26,11 @@ describe('Home Page', () => {
     render(<Home />);
     expect(screen.getByText('No weight records found. Add some!')).toBeInTheDocument();
   });
+
+  it('displays "No records yet." for all statistics cards initially when localStorage is empty', () => {
+    render(<Home />);
+    // There are three WeightStatisticsCard components, each should show "No records yet."
+    const noRecordsMessages = screen.getAllByText('No records yet.');
+    expect(noRecordsMessages).toHaveLength(3);
+  });
 });
