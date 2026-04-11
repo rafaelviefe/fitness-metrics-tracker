@@ -115,6 +115,37 @@ export class WeightRepository {
   }
 
   /**
+   * Retrieves the weight record with the earliest date.
+   * If multiple records have the same earliest date, the one with the lexicographically smallest ID is returned.
+   * @returns The oldest WeightRecord or null if no records exist.
+   */
+  getOldestWeightRecord(): WeightRecord | null {
+    const records = this.getWeightRecords();
+    if (records.length === 0) {
+      return null;
+    }
+
+    let oldestRecord: WeightRecord = records[0];
+
+    for (let i = 1; i < records.length; i++) {
+      const record = records[i];
+      const dateA = new Date(record.date);
+      const dateB = new Date(oldestRecord.date);
+
+      if (dateA.getTime() < dateB.getTime()) {
+        oldestRecord = record;
+      } else if (dateA.getTime() === dateB.getTime()) {
+        // If dates are equal, use ID as a tie-breaker. Choose the record with the lexicographically smallest ID.
+        if (record.id.localeCompare(oldestRecord.id) < 0) {
+          oldestRecord = record;
+        }
+      }
+    }
+
+    return oldestRecord;
+  }
+
+  /**
    * Retrieves the weight record with the maximum weight.
    * If multiple records have the same highest weight, the oldest one (earliest date) is returned.
    * @returns The highest WeightRecord or null if no records exist.
