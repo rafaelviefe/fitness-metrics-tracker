@@ -225,6 +225,67 @@ describe('WeightRepository', () => {
     });
   });
 
+  describe('getOldestWeightRecord', () => {
+    it('should return null if no records exist', () => {
+      expect(weightRepository.getOldestWeightRecord()).toBeNull();
+    });
+
+    it('should return the single record if only one exists', () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      expect(weightRepository.getOldestWeightRecord()).toEqual(record1);
+    });
+
+    it('should return the record with the earliest date from multiple records', () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-02T10:00:00.000Z');
+      const oldestRecord = weightRepository.addWeightRecord(71, '2023-01-01T10:00:00.000Z');
+      const record3 = weightRepository.addWeightRecord(72, '2023-01-03T09:00:00.000Z');
+
+      expect(weightRepository.getOldestWeightRecord()).toEqual(oldestRecord);
+    });
+
+    it('should handle records added out of chronological order correctly', () => {
+      const recordMid = weightRepository.addWeightRecord(67, '2023-01-01T10:00:00.000Z');
+      const recordLate = weightRepository.addWeightRecord(68, '2023-01-01T12:00:00.000Z');
+      const recordNewest = weightRepository.addWeightRecord(69, '2023-01-02T09:00:00.000Z');
+      const recordEarliest = weightRepository.addWeightRecord(65, '2023-01-01T08:00:00.000Z');
+
+      expect(weightRepository.getOldestWeightRecord()).toEqual(recordEarliest);
+    });
+
+    it('should return the record with the earliest date and lowest ID if dates are identical', () => {
+      // Reset UUID index to ensure specific IDs for this test
+      uuidIndex = 0;
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-B'); // Higher ID than 'id-A'
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-A'); // Lower ID
+      const oldestRecordTie = weightRepository.addWeightRecord(71, '2023-01-01T10:00:00.000Z');
+
+      vi.spyOn(crypto, 'randomUUID').mockReturnValueOnce('id-C'); // Higher ID, same date
+      weightRepository.addWeightRecord(72, '2023-01-01T10:00:00.000Z');
+
+      expect(weightRepository.getOldestWeightRecord()).toEqual(oldestRecordTie);
+    });
+
+    it('should ignore malformed records when finding the oldest weight', () => {
+      const goodRecord1 = weightRepository.addWeightRecord(70, '2023-01-02T10:00:00.000Z');
+      const malformedRecord = { id: 'malf', date: '2023-01-01T10:00:00.000Z' }; // Malformed, but earliest date
+      const goodRecord2 = weightRepository.addWeightRecord(60, '2023-01-01T11:00:00.000Z'); // Second earliest valid
+      const goodRecordEarliest = weightRepository.addWeightRecord(55, '2023-01-01T09:00:00.000Z'); // Earliest valid
+
+      // Manually add malformed record to the storage mock to simulate a persisted bad state
+      (storageService.getItem as vi.Mock).mockReturnValueOnce([
+        goodRecord1,
+        malformedRecord,
+        goodRecord2,
+        goodRecordEarliest
+      ]);
+
+      expect(weightRepository.getOldestWeightRecord()).toEqual(goodRecordEarliest);
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
+    });
+  });
+
   describe('getLowestWeightRecord', () => {
     it('should return null if no records exist', () => {
       expect(weightRepository.getLowestWeightRecord()).toBeNull();

@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 098: Implement `getOldestWeightRecord` method in `src/features/weight/repositories/weight.repository.ts` to retrieve the weight record with the earliest date.
+[x] ID: 098: Implement `getOldestWeightRecord` method in `src/features/weight/repositories/weight.repository.ts` to retrieve the weight record with the earliest date.
 [ ] ID: 099: Add tests for the new `getOldestWeightRecord` method in `src/features/weight/repositories/weight.repository.test.ts`, covering cases like no records, single record, multiple records, and tie-breaking by date/ID.
 [ ] ID: 100: Add a new state variable `oldestWeightRecord` (initialized to `null`) in `src/app/page.tsx` and populate it using `weightRepositoryRef.current.getOldestWeightRecord()` within the `useEffect` hook.
 [ ] ID: 101: Update the `oldestWeightRecord` state after `handleAddWeight`, `handleDeleteWeight`, and `handleSaveEditedWeight` operations in `src/app/page.tsx` by re-fetching from the repository.
