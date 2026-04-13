@@ -12,9 +12,10 @@ import { WeightStatisticsCard } from '@/features/weight/components/WeightStatist
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  const [latestWeightRecord, setLatestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
-  const [highestWeightRecord, setHighestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
-  const [lowestWeightRecord, setLowestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
+  const [latestWeightRecord, setLatestWeightRecord] = useState<WeightRecord | null>(null);
+  const [highestWeightRecord, setHighestWeightRecord] = useState<WeightRecord | null>(null);
+  const [lowestWeightRecord, setLowestWeightRecord] = useState<WeightRecord | null>(null);
+  const [oldestWeightRecord, setOldestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
@@ -41,6 +42,10 @@ export default function Home() {
     // Initialize lowestWeightRecord
     const lowestRecord = weightRepositoryRef.current.getLowestWeightRecord();
     setLowestWeightRecord(lowestRecord);
+
+    // Initialize oldestWeightRecord
+    const oldestRecord = weightRepositoryRef.current.getOldestWeightRecord();
+    setOldestWeightRecord(oldestRecord);
   }, []); // Empty dependency array means this runs once on mount
 
   const handleAddWeight = (weight: number) => {
@@ -57,6 +62,9 @@ export default function Home() {
       // After adding, re-fetch and update the lowest record display from the repository
       const newLowest = weightRepositoryRef.current.getLowestWeightRecord();
       setLowestWeightRecord(newLowest || null);
+      // After adding, re-fetch and update the oldest record display from the repository
+      const newOldest = weightRepositoryRef.current.getOldestWeightRecord();
+      setOldestWeightRecord(newOldest || null);
     }
   };
 
@@ -75,6 +83,9 @@ export default function Home() {
           // After deleting, re-evaluate the lowest record
           const newLowest = weightRepositoryRef.current?.getLowestWeightRecord();
           setLowestWeightRecord(newLowest || null);
+          // After deleting, re-evaluate the oldest record
+          const newOldest = weightRepositoryRef.current?.getOldestWeightRecord();
+          setOldestWeightRecord(newOldest || null);
           return updatedRecords;
         });
       }
@@ -104,6 +115,9 @@ export default function Home() {
           // After editing, re-evaluate the lowest record
           const newLowest = weightRepositoryRef.current?.getLowestWeightRecord();
           setLowestWeightRecord(newLowest || null);
+          // After editing, re-evaluate the oldest record
+          const newOldest = weightRepositoryRef.current?.getOldestWeightRecord();
+          setOldestWeightRecord(newOldest || null);
           return updatedRecords;
         });
         setEditingRecordId(null); // Exit editing mode after saving
@@ -133,6 +147,7 @@ export default function Home() {
         <WeightStatisticsCard record={latestWeightRecord} label="Latest Weight" className="mb-6" />
         <WeightStatisticsCard record={highestWeightRecord} label="Highest Weight" className="mb-6" />
         <WeightStatisticsCard record={lowestWeightRecord} label="Lowest Weight" className="mb-6" />
+        <WeightStatisticsCard record={oldestWeightRecord} label="Oldest Weight" className="mb-6" />
 
         <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
         {weightRecords.length === 0 ? (
