@@ -8,6 +8,7 @@ import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard'
 import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
 import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
 import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
+import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -130,12 +131,24 @@ export default function Home() {
     setEditingRecordId(null); // Exit editing mode without saving changes
   };
 
+  // Function to clear all records
+  const handleClearAllRecords = () => {
+    if (weightRepositoryRef.current) {
+      weightRepositoryRef.current.clearAllWeightRecords();
+      setWeightRecords([]);
+      setLatestWeightRecord(null);
+      setHighestWeightRecord(null);
+      setLowestWeightRecord(null);
+      setOldestWeightRecord(null);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
         Fitness Metrics Tracker
       </h1>
-      <p className="text-neutral-500">
+      <p className="text-neutral-500"> 
         System Status: <span className="text-green-600 font-semibold">Online</span>
       </p>
 
@@ -149,7 +162,13 @@ export default function Home() {
         <WeightStatisticsCard record={lowestWeightRecord} label="Lowest Weight" className="mb-6" />
         <WeightStatisticsCard record={oldestWeightRecord} label="Oldest Weight" className="mb-6" />
 
-        <h2 className="text-2xl font-semibold mb-4 text-neutral-900">Your Weight Records</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
+          <Button variant="destructive" size="sm" onClick={handleClearAllRecords}>
+            Clear All Records
+          </Button>
+        </div>
+
         {weightRecords.length === 0 ? (
           <p className="text-neutral-500">No weight records found. Add some!</p>
         ) : (
