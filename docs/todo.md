@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 098: Implement `getOldestWeightRecord` method in `src/features/weight/repositories/weight.repository.ts` to retrieve the weight record with the earliest date.
-[x] ID: 099: Add tests for the new `getOldestWeightRecord` method in `src/features/weight/repositories/weight.repository.test.ts`, covering cases like no records, single record, multiple records, and tie-breaking by date/ID.
-[x] ID: 100: Add a new state variable `oldestWeightRecord` (initialized to `null`) in `src/app/page.tsx` and populate it using `weightRepositoryRef.current.getOldestWeightRecord()` within the `useEffect` hook.
-[x] ID: 101: Update the `oldestWeightRecord` state after `handleAddWeight`, `handleDeleteWeight`, and `handleSaveEditedWeight` operations in `src/app/page.tsx` by re-fetching from the repository.
-[x] ID: 102: Render a new `WeightStatisticsCard` in `src/app/page.tsx` to display the "Oldest Weight" using the `oldestWeightRecord` state.
-[x] ID: 103: Add a "Clear All Records" button to `src/app/page.tsx` that, when clicked, calls `weightRepositoryRef.current.clearAllWeightRecords()` and resets all relevant state variables (`weightRecords`, `latestWeightRecord`, `highestWeightRecord`, `lowestWeightRecord`, `oldestWeightRecord`) to their initial empty/null states.
+[ ] ID: 104: Refactor `EditWeightForm` to separate its `error` state into `weightError` and `dateError` state variables, both initialized to `null`.
+[ ] ID: 105: Modify `EditWeightForm`'s `handleSubmit` to set `weightError` if weight validation fails and `dateError` if date validation fails, ensuring both can be set independently if their respective fields are invalid.
+[ ] ID: 106: Update `EditWeightForm`'s `handleWeightChange` to clear `weightError` when the weight input changes, and `handleDateChange` to clear `dateError` when the date input changes.
+[ ] ID: 107: Adjust `EditWeightForm`'s JSX to display the `weightError` message specifically below the weight input and the `dateError` message specifically below the date input, applying the `isError` prop to the respective `Input` components.
+[ ] ID: 108: Create a new file `src/features/weight/utils/weight-utils.ts` and define an interface `WeightStatistics` to type the aggregated statistics (latest, highest, lowest, oldest records).
+[ ] ID: 109: Implement a utility function `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts` that accepts a `WeightRepository` instance and returns a `WeightStatistics` object by calling the appropriate repository methods.
