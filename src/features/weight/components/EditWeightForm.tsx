@@ -12,47 +12,64 @@ interface EditWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> 
   onCancel: () => void;
 }
 
-export const EditWeightForm: React.FC<EditWeightFormProps> = ({ record, onSave, onCancel, className, ...props }) => {
+export const EditWeightForm: React.FC<EditWeightFormProps> = ({
+  record,
+  onSave,
+  onCancel,
+  className,
+  ...props
+}) => {
   const [editedWeight, setEditedWeight] = useState<string>(record.weight.toString());
   const [editedDate, setEditedDate] = useState<string>(formatIsoToDateTimeLocal(record.date));
-  const [error, setError] = useState<string | null>(null);
+  const [weightError, setWeightError] = useState<string | null>(null); // Separate state for weight error
+  const [dateError, setDateError] = useState<string | null>(null);     // Separate state for date error
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedWeight(e.target.value);
-    if (error) setError(null); // Clear error on input change
+    if (weightError) setWeightError(null); // Clear weight error on weight input change
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedDate(e.target.value);
-    if (error) setError(null); // Clear error on input change
+    if (dateError) setDateError(null);     // Clear date error on date input change
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const parsedWeight = parseFloat(editedWeight);
-    // Create a Date object from the datetime-local string (parsed as local time)
-    const parsedDate = new Date(editedDate);
+    const parsedDate = new Date(editedDate); 
+
+    let currentWeightError: string | null = null;
+    let currentDateError: string | null = null;
+    let hasValidationErrors = false;
 
     if (isNaN(parsedWeight) || parsedWeight <= 0) {
-      setError('Weight must be a positive number.');
-      return;
+      currentWeightError = 'Weight must be a positive number.';
+      hasValidationErrors = true;
     }
 
     if (isNaN(parsedDate.getTime())) {
-      setError('Invalid date selected.');
+      currentDateError = 'Invalid date selected.';
+      hasValidationErrors = true;
+    }
+
+    // Update both error states simultaneously after all validations are checked
+    setWeightError(currentWeightError);
+    setDateError(currentDateError);
+
+    if (hasValidationErrors) {
       return;
     }
 
-    // Convert the local date-time input back to ISO string for storage (which is UTC)
+    // If no errors, proceed to save
     const updatedRecord: WeightRecord = {
       ...record,
       weight: parsedWeight,
-      date: parsedDate.toISOString(),
+      date: parsedDate.toISOString(), // Convert the local date-time input back to ISO string for storage (which is UTC)
     };
 
     onSave(updatedRecord);
-    setError(null); // Clear any error on successful save
   };
 
   return (
@@ -68,11 +85,11 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({ record, onSave, 
           value={editedWeight}
           onChange={handleWeightChange}
           placeholder="Enter weight in kg"
-          aria-invalid={!!error}
-          aria-describedby={error ? `weight-error-${record.id}` : undefined}
-          isError={!!error}
+          aria-invalid={!!weightError}
+          aria-describedby={weightError ? `weight-error-${record.id}` : undefined}
+          isError={!!weightError}
         />
-        {error && <p id={`weight-error-${record.id}`} className="text-red-500 text-sm mt-1">{error}</p>}
+        {weightError && <p id={`weight-error-${record.id}`} className="text-red-500 text-sm mt-1">{weightError}</p>}
       </div>
       <div>
         <label htmlFor={`edit-date-${record.id}`} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
@@ -83,11 +100,11 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({ record, onSave, 
           type="datetime-local"
           value={editedDate}
           onChange={handleDateChange}
-          aria-invalid={!!error}
-          aria-describedby={error ? `date-error-${record.id}` : undefined}
-          isError={!!error}
+          aria-invalid={!!dateError}
+          aria-describedby={dateError ? `date-error-${record.id}` : undefined}
+          isError={!!dateError}
         />
-        {/* Error message for date is covered by the general 'error' state */}
+        {dateError && <p id={`date-error-${record.id}`} className="text-red-500 text-sm mt-1">{dateError}</p>} {/* Display date error */}
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
