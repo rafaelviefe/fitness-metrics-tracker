@@ -5,4 +5,4 @@
 [x] ID: 106: Update `EditWeightForm`'s `handleWeightChange` to clear `weightError` when the weight input changes, and `handleDateChange` to clear `dateError` when the date input changes.
 [x] ID: 107: Adjust `EditWeightForm`'s JSX to display the `weightError` message specifically below the weight input and the `dateError` message specifically below the date input, applying the `isError` prop to the respective `Input` components.
 [x] ID: 108: Create a new file `src/features/weight/utils/weight-utils.ts` and define an interface `WeightStatistics` to type the aggregated statistics (latest, highest, lowest, oldest records).
-[ ] ID: 109: Implement a utility function `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts` that accepts a `WeightRepository` instance and returns a `WeightStatistics` object by calling the appropriate repository methods.
+[x] ID: 109: Implement a utility function `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts` that accepts a `WeightRepository` instance and returns a `WeightStatistics` object by calling the appropriate repository methods.
