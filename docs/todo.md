@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 104: Refactor `EditWeightForm` to separate its `error` state into `weightError` and `dateError` state variables, both initialized to `null`.
-[x] ID: 105: Modify `EditWeightForm`'s `handleSubmit` to set `weightError` if weight validation fails and `dateError` if date validation fails, ensuring both can be set independently if their respective fields are invalid.
-[x] ID: 106: Update `EditWeightForm`'s `handleWeightChange` to clear `weightError` when the weight input changes, and `handleDateChange` to clear `dateError` when the date input changes.
-[x] ID: 107: Adjust `EditWeightForm`'s JSX to display the `weightError` message specifically below the weight input and the `dateError` message specifically below the date input, applying the `isError` prop to the respective `Input` components.
-[x] ID: 108: Create a new file `src/features/weight/utils/weight-utils.ts` and define an interface `WeightStatistics` to type the aggregated statistics (latest, highest, lowest, oldest records).
-[x] ID: 109: Implement a utility function `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts` that accepts a `WeightRepository` instance and returns a `WeightStatistics` object by calling the appropriate repository methods.
+[ ] ID: 110: In `src/app/page.tsx`, import the `WeightStatistics` interface from `../features/weight/utils/weight-utils`.
+[ ] ID: 111: In `src/app/page.tsx`, import the `refreshWeightStatistics` function from `../features/weight/utils/weight-utils`.
+[ ] ID: 112: In `src/app/page.tsx`, replace the four individual `useState` declarations for `latestWeightRecord`, `highestWeightRecord`, `lowestWeightRecord`, and `oldestWeightRecord` with a single `useState` declaration for `weightStatistics` of type `WeightStatistics`, initialized to an object with all properties as `null`.
+[ ] ID: 113: In `src/app/page.tsx`, define a new helper function named `updateAllStatistics` that, if `weightRepositoryRef.current` exists, calls `weightRepositoryRef.current.getLatestWeightRecord()`, `getHighestWeightRecord()`, `getLowestWeightRecord()`, and `getOldestWeightRecord()` individually, then updates the new `weightStatistics` state using the results.
+[ ] ID: 114: In `src/app/page.tsx`, modify the `useEffect` hook to call the `updateAllStatistics` helper function after fetching `initialRecords`, removing the four individual statistic fetching and state update calls (`setLatestWeightRecord`, etc.).
+[ ] ID: 115: In `src/app/page.tsx`, modify the `handleAddWeight` function to call the `updateAllStatistics` helper function after `weightRepositoryRef.current.addWeightRecord`, removing the four individual statistic fetching and state update calls.
