@@ -9,7 +9,7 @@ import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // I
 import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
 import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
 import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
-import { WeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics
+import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics and refreshWeightStatistics
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
