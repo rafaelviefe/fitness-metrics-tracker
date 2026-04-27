@@ -14,10 +14,13 @@ import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/uti
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  const [latestWeightRecord, setLatestWeightRecord] = useState<WeightRecord | null>(null);
-  const [highestWeightRecord, setHighestWeightRecord] = useState<WeightRecord | null>(null);
-  const [lowestWeightRecord, setLowestWeightRecord] = useState<WeightRecord | null>(null);
-  const [oldestWeightRecord, setOldestWeightRecord] = useState<WeightRecord | null>(null); // New state variable
+  // Replace individual useState declarations with a single one for weightStatistics
+  const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
+    latest: null,
+    highest: null,
+    lowest: null,
+    oldest: null,
+  });
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
@@ -29,65 +32,42 @@ export default function Home() {
       weightRepositoryRef.current = new WeightRepository(localStorageAdapter);
     }
 
+    // Capture the non-null repository instance for use within useEffect
+    const repository = weightRepositoryRef.current;
+
     // Load initial weight records from the repository
-    const initialRecords = weightRepositoryRef.current.getWeightRecords();
+    const initialRecords = repository.getWeightRecords();
     setWeightRecords(initialRecords);
 
-    // Initialize latestWeightRecord
-    const latestRecord = weightRepositoryRef.current.getLatestWeightRecord();
-    setLatestWeightRecord(latestRecord);
-
-    // Initialize highestWeightRecord
-    const highestRecord = weightRepositoryRef.current.getHighestWeightRecord();
-    setHighestWeightRecord(highestRecord);
-
-    // Initialize lowestWeightRecord
-    const lowestRecord = weightRepositoryRef.current.getLowestWeightRecord();
-    setLowestWeightRecord(lowestRecord);
-
-    // Initialize oldestWeightRecord
-    const oldestRecord = weightRepositoryRef.current.getOldestWeightRecord();
-    setOldestWeightRecord(oldestRecord);
+    // Initialize weight statistics
+    const initialStats = refreshWeightStatistics(repository);
+    setWeightStatistics(initialStats);
   }, []); // Empty dependency array means this runs once on mount
 
   const handleAddWeight = (weight: number) => {
     console.log('Weight to add:', weight);
     if (weightRepositoryRef.current) {
-      const newRecord = weightRepositoryRef.current.addWeightRecord(weight);
+      // Capture the non-null repository instance
+      const repository = weightRepositoryRef.current;
+      const newRecord = repository.addWeightRecord(weight);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
-      // After adding, re-fetch and update the latest record display from the repository
-      const newLatest = weightRepositoryRef.current.getLatestWeightRecord();
-      setLatestWeightRecord(newLatest || null);
-      // After adding, re-fetch and update the highest record display from the repository
-      const newHighest = weightRepositoryRef.current.getHighestWeightRecord();
-      setHighestWeightRecord(newHighest || null);
-      // After adding, re-fetch and update the lowest record display from the repository
-      const newLowest = weightRepositoryRef.current.getLowestWeightRecord();
-      setLowestWeightRecord(newLowest || null);
-      // After adding, re-fetch and update the oldest record display from the repository
-      const newOldest = weightRepositoryRef.current.getOldestWeightRecord();
-      setOldestWeightRecord(newOldest || null);
+      // After adding, re-fetch and update all statistics
+      const newStats = refreshWeightStatistics(repository);
+      setWeightStatistics(newStats);
     }
   };
 
   const handleDeleteWeight = (id: string) => {
     if (weightRepositoryRef.current) {
-      const isDeleted = weightRepositoryRef.current.deleteWeightRecord(id);
+      // Capture the non-null repository instance
+      const repository = weightRepositoryRef.current;
+      const isDeleted = repository.deleteWeightRecord(id);
       if (isDeleted) {
         setWeightRecords((prevRecords) => {
           const updatedRecords = prevRecords.filter((record) => record.id !== id);
-          // After deleting, re-evaluate the latest record
-          const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
-          setLatestWeightRecord(newLatest || null);
-          // After deleting, re-evaluate the highest record
-          const newHighest = weightRepositoryRef.current?.getHighestWeightRecord();
-          setHighestWeightRecord(newHighest || null);
-          // After deleting, re-evaluate the lowest record
-          const newLowest = weightRepositoryRef.current?.getLowestWeightRecord();
-          setLowestWeightRecord(newLowest || null);
-          // After deleting, re-evaluate the oldest record
-          const newOldest = weightRepositoryRef.current?.getOldestWeightRecord();
-          setOldestWeightRecord(newOldest || null);
+          // After deleting, re-evaluate all statistics
+          const newStats = refreshWeightStatistics(repository);
+          setWeightStatistics(newStats);
           return updatedRecords;
         });
       }
@@ -102,24 +82,17 @@ export default function Home() {
   // New function to handle saving an updated weight record
   const handleSaveEditedWeight = (updatedRecord: WeightRecord) => {
     if (weightRepositoryRef.current) {
-      const result = weightRepositoryRef.current.updateWeightRecord(updatedRecord);
+      // Capture the non-null repository instance
+      const repository = weightRepositoryRef.current;
+      const result = repository.updateWeightRecord(updatedRecord);
       if (result) {
         setWeightRecords((prevRecords) => {
           const updatedRecords = prevRecords.map((record) =>
             record.id === updatedRecord.id ? result : record
           );
-          // After editing, re-evaluate the latest record
-          const newLatest = weightRepositoryRef.current?.getLatestWeightRecord();
-          setLatestWeightRecord(newLatest || null);
-          // After editing, re-evaluate the highest record
-          const newHighest = weightRepositoryRef.current?.getHighestWeightRecord();
-          setHighestWeightRecord(newHighest || null);
-          // After editing, re-evaluate the lowest record
-          const newLowest = weightRepositoryRef.current?.getLowestWeightRecord();
-          setLowestWeightRecord(newLowest || null);
-          // After editing, re-evaluate the oldest record
-          const newOldest = weightRepositoryRef.current?.getOldestWeightRecord();
-          setOldestWeightRecord(newOldest || null);
+          // After editing, re-evaluate all statistics
+          const newStats = refreshWeightStatistics(repository);
+          setWeightStatistics(newStats);
           return updatedRecords;
         });
         setEditingRecordId(null); // Exit editing mode after saving
@@ -135,12 +108,16 @@ export default function Home() {
   // Function to clear all records
   const handleClearAllRecords = () => {
     if (weightRepositoryRef.current) {
-      weightRepositoryRef.current.clearAllWeightRecords();
+      // Capture the non-null repository instance
+      const repository = weightRepositoryRef.current;
+      repository.clearAllWeightRecords();
       setWeightRecords([]);
-      setLatestWeightRecord(null);
-      setHighestWeightRecord(null);
-      setLowestWeightRecord(null);
-      setOldestWeightRecord(null);
+      setWeightStatistics({
+        latest: null,
+        highest: null,
+        lowest: null,
+        oldest: null,
+      });
     }
   };
 
@@ -158,10 +135,10 @@ export default function Home() {
         <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} />
 
         {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
-        <WeightStatisticsCard record={latestWeightRecord} label="Latest Weight" className="mb-6" />
-        <WeightStatisticsCard record={highestWeightRecord} label="Highest Weight" className="mb-6" />
-        <WeightStatisticsCard record={lowestWeightRecord} label="Lowest Weight" className="mb-6" />
-        <WeightStatisticsCard record={oldestWeightRecord} label="Oldest Weight" className="mb-6" />
+        <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" className="mb-6" />
+        <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" className="mb-6" />
+        <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" className="mb-6" />
+        <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" className="mb-6" />
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>

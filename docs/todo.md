@@ -2,7 +2,7 @@
 
 [x] ID: 110: In `src/app/page.tsx`, import the `WeightStatistics` interface from `../features/weight/utils/weight-utils`.
 [x] ID: 111: In `src/app/page.tsx`, import the `refreshWeightStatistics` function from `../features/weight/utils/weight-utils`.
-[ ] ID: 112: In `src/app/page.tsx`, replace the four individual `useState` declarations for `latestWeightRecord`, `highestWeightRecord`, `lowestWeightRecord`, and `oldestWeightRecord` with a single `useState` declaration for `weightStatistics` of type `WeightStatistics`, initialized to an object with all properties as `null`.
+[x] ID: 112: In `src/app/page.tsx`, replace the four individual `useState` declarations for `latestWeightRecord`, `highestWeightRecord`, `lowestWeightRecord`, and `oldestWeightRecord` with a single `useState` declaration for `weightStatistics` of type `WeightStatistics`, initialized to an object with all properties as `null`.
 [ ] ID: 113: In `src/app/page.tsx`, define a new helper function named `updateAllStatistics` that, if `weightRepositoryRef.current` exists, calls `weightRepositoryRef.current.getLatestWeightRecord()`, `getHighestWeightRecord()`, `getLowestWeightRecord()`, and `getOldestWeightRecord()` individually, then updates the new `weightStatistics` state using the results.
 [ ] ID: 114: In `src/app/page.tsx`, modify the `useEffect` hook to call the `updateAllStatistics` helper function after fetching `initialRecords`, removing the four individual statistic fetching and state update calls (`setLatestWeightRecord`, etc.).
 [ ] ID: 115: In `src/app/page.tsx`, modify the `handleAddWeight` function to call the `updateAllStatistics` helper function after `weightRepositoryRef.current.addWeightRecord`, removing the four individual statistic fetching and state update calls.
