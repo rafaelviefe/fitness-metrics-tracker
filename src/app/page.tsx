@@ -2,14 +2,14 @@
 
 import { WeightRepository } from '@/features/weight/repositories/weight.repository';
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { WeightRecord } from '@/features/weight/types';
 import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
 import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
 import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
 import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
 import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
-import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics and refreshWeightStatistics
+import { WeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics (refreshWeightStatistics is no longer directly used here)
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -24,6 +24,24 @@ export default function Home() {
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
+
+  // Define the new helper function to update all statistics
+  const updateAllStatistics = useCallback(() => {
+    if (weightRepositoryRef.current) {
+      const repository = weightRepositoryRef.current;
+      const latest = repository.getLatestWeightRecord();
+      const highest = repository.getHighestWeightRecord();
+      const lowest = repository.getLowestWeightRecord();
+      const oldest = repository.getOldestWeightRecord();
+
+      setWeightStatistics({
+        latest,
+        highest,
+        lowest,
+        oldest,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     // This code only runs on the client-side after component mounts
@@ -40,9 +58,8 @@ export default function Home() {
     setWeightRecords(initialRecords);
 
     // Initialize weight statistics
-    const initialStats = refreshWeightStatistics(repository);
-    setWeightStatistics(initialStats);
-  }, []); // Empty dependency array means this runs once on mount
+    updateAllStatistics();
+  }, [updateAllStatistics]); // Add updateAllStatistics to dependency array
 
   const handleAddWeight = (weight: number) => {
     console.log('Weight to add:', weight);
@@ -52,8 +69,7 @@ export default function Home() {
       const newRecord = repository.addWeightRecord(weight);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
       // After adding, re-fetch and update all statistics
-      const newStats = refreshWeightStatistics(repository);
-      setWeightStatistics(newStats);
+      updateAllStatistics();
     }
   };
 
@@ -66,8 +82,7 @@ export default function Home() {
         setWeightRecords((prevRecords) => {
           const updatedRecords = prevRecords.filter((record) => record.id !== id);
           // After deleting, re-evaluate all statistics
-          const newStats = refreshWeightStatistics(repository);
-          setWeightStatistics(newStats);
+          updateAllStatistics();
           return updatedRecords;
         });
       }
@@ -91,8 +106,7 @@ export default function Home() {
             record.id === updatedRecord.id ? result : record
           );
           // After editing, re-evaluate all statistics
-          const newStats = refreshWeightStatistics(repository);
-          setWeightStatistics(newStats);
+          updateAllStatistics();
           return updatedRecords;
         });
         setEditingRecordId(null); // Exit editing mode after saving
