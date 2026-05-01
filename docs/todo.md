@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 110: In `src/app/page.tsx`, import the `WeightStatistics` interface from `../features/weight/utils/weight-utils`.
-[x] ID: 111: In `src/app/page.tsx`, import the `refreshWeightStatistics` function from `../features/weight/utils/weight-utils`.
-[x] ID: 112: In `src/app/page.tsx`, replace the four individual `useState` declarations for `latestWeightRecord`, `highestWeightRecord`, `lowestWeightRecord`, and `oldestWeightRecord` with a single `useState` declaration for `weightStatistics` of type `WeightStatistics`, initialized to an object with all properties as `null`.
-[x] ID: 113: In `src/app/page.tsx`, define a new helper function named `updateAllStatistics` that, if `weightRepositoryRef.current` exists, calls `weightRepositoryRef.current.getLatestWeightRecord()`, `getHighestWeightRecord()`, `getLowestWeightRecord()`, and `getOldestWeightRecord()` individually, then updates the new `weightStatistics` state using the results.
-[x] ID: 114: In `src/app/page.tsx`, modify the `useEffect` hook to call the `updateAllStatistics` helper function after fetching `initialRecords`, removing the four individual statistic fetching and state update calls (`setLatestWeightRecord`, etc.).
-[x] ID: 115: In `src/app/page.tsx`, modify the `handleAddWeight` function to call the `updateAllStatistics` helper function after `weightRepositoryRef.current.addWeightRecord`, removing the four individual statistic fetching and state update calls.
+[ ] ID: 116: Import the `refreshWeightStatistics` function from `../utils/weight-utils` into `src/app/page.tsx`.
+[ ] ID: 117: Refactor the `updateAllStatistics` `useCallback` hook in `src/app/page.tsx` to utilize the imported `refreshWeightStatistics` utility function.
+[ ] ID: 118: Modify the `handleSubmit` function in `src/features/weight/components/AddWeightForm.tsx` to ensure the weight input field is cleared only upon a successful submission, not when validation fails.
+[ ] ID: 119: Update the test case in `src/features/weight/components/AddWeightForm.test.tsx` that submits an empty string, asserting that the weight input field retains an empty value (``) when validation fails.
+[ ] ID: 120: Add a new test case to `src/features/weight/components/WeightRecordCard.test.tsx` to verify that the component gracefully displays "Invalid Date" when provided with a `WeightRecord` containing an invalid date string.
+[ ] ID: 121: Add a new test case to `src/features/weight/components/WeightStatisticsCard.test.tsx` to ensure the component gracefully displays "Invalid Date" for the date portion when its `record` prop contains an invalid date string.
