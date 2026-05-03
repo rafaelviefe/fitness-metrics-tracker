@@ -28,18 +28,8 @@ export default function Home() {
   // Define the new helper function to update all statistics
   const updateAllStatistics = useCallback(() => {
     if (weightRepositoryRef.current) {
-      const repository = weightRepositoryRef.current;
-      const latest = repository.getLatestWeightRecord();
-      const highest = repository.getHighestWeightRecord();
-      const lowest = repository.getLowestWeightRecord();
-      const oldest = repository.getOldestWeightRecord();
-
-      setWeightStatistics({
-        latest,
-        highest,
-        lowest,
-        oldest,
-      });
+      const newStatistics = refreshWeightStatistics(weightRepositoryRef.current);
+      setWeightStatistics(newStatistics);
     }
   }, []);
 
