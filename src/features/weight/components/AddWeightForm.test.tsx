@@ -48,10 +48,10 @@ describe('AddWeightForm', () => {
 
     expect(handleWeightAdded).not.toHaveBeenCalled();
     expect(await screen.findByText('Weight must be a positive number.')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Enter weight in kg')).toHaveValue(null); // Input clears even on error
+    expect(screen.getByPlaceholderText('Enter weight in kg')).toHaveValue(null); // Input is initially null/empty
   });
 
-  it('does not call onWeightAdded if the prop is not provided (and no error is shown)', async () => {
+  it('clears the input field after successful submission even if onWeightAdded is not provided', async () => {
     // This test has been adjusted as the component no longer logs to console in this scenario.
     render(<AddWeightForm />); // No onWeightAdded prop
 
@@ -64,20 +64,6 @@ describe('AddWeightForm', () => {
     // The component logic dictates that if onWeightAdded is not provided, nothing happens with the weight value.
     expect(weightInput).toHaveValue(null); // Input still clears
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument(); // No error for valid weight
-  });
-
-  it('clears the input field after successful submission', async () => {
-    const handleWeightAdded = vi.fn();
-    render(<AddWeightForm onWeightAdded={handleWeightAdded} />);
-
-    const weightInput = screen.getByPlaceholderText('Enter weight in kg');
-    const addButton = screen.getByRole('button', { name: 'Add Weight' });
-
-    fireEvent.change(weightInput, { target: { value: '80' } });
-    fireEvent.click(addButton);
-
-    expect(weightInput).toHaveValue(null);
-    expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument(); // No error on valid submission
   });
 
   it('shows an error if a negative weight is entered', async () => {
