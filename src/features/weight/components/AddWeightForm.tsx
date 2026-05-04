@@ -26,16 +26,19 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
 
     if (isNaN(parsedWeight) || parsedWeight <= 0) {
       setError('Weight must be a positive number.');
+      // Do not clear weight input on validation failure
       return; 
     }
 
     setError(null); // Clear any previous error
     
+    // Clear the input field immediately after successful validation.
+    // This ensures it clears even if no onWeightAdded prop is provided.
+    setWeight('');
+
     if (onWeightAdded) {
       onWeightAdded(parsedWeight);
     }
-    
-    setWeight(''); // Clear input after submission
   };
 
   return (
@@ -51,7 +54,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
         className="mb-2"
         aria-invalid={!!error}
         aria-describedby={error ? 'weight-error' : undefined}
-        isError={!!error} // Pass the error state to the Input component
+        isError={!!error}
       />
       {error && <p id="weight-error" className="text-red-500 text-sm mt-1">{error}</p>}
       <Button type="submit">Add Weight</Button>
