@@ -48,7 +48,8 @@ describe('AddWeightForm', () => {
 
     expect(handleWeightAdded).not.toHaveBeenCalled();
     expect(await screen.findByText('Weight must be a positive number.')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Enter weight in kg')).toHaveValue(null); // Input is initially null/empty
+    // Input value for type="number" will be null when visually empty
+    expect(screen.getByPlaceholderText('Enter weight in kg')).toHaveValue(null);
   });
 
   it('clears the input field after successful submission even if onWeightAdded is not provided', async () => {
