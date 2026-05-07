@@ -82,4 +82,26 @@ describe('WeightStatisticsCard', () => {
     render(<WeightStatisticsCard record={recordWithDifferentDate} label="Latest Weight" />);
     expect(screen.getByText('January 1, 2022')).toBeInTheDocument();
   });
+
+  it('gracefully displays "Invalid Date" when record contains an invalid date string', () => {
+    const invalidDateRecord: WeightRecord = {
+      id: 'mock-id-invalid-date',
+      date: 'this-is-not-a-valid-date',
+      weight: 70.0,
+    };
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
+    render(<WeightStatisticsCard record={invalidDateRecord} label="Latest Weight" />);
+
+    expect(screen.getByText('70 kg')).toBeInTheDocument();
+    expect(screen.getByText('Invalid Date')).toBeInTheDocument();
+    // Verify that the console.error was called due to the invalid date
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateForDisplay:',
+      'this-is-not-a-valid-date'
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
 });
