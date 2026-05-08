@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 116: Import the `refreshWeightStatistics` function from `../utils/weight-utils` into `src/app/page.tsx`.
-[x] ID: 117: Refactor the `updateAllStatistics` `useCallback` hook in `src/app/page.tsx` to utilize the imported `refreshWeightStatistics` utility function.
-[x] ID: 118: Modify the `handleSubmit` function in `src/features/weight/components/AddWeightForm.tsx` to ensure the weight input field is cleared only upon a successful submission, not when validation fails.
-[x] ID: 119: Update the test case in `src/features/weight/components/AddWeightForm.test.tsx` that submits an empty string, asserting that the weight input field retains an empty value (``) when validation fails.
-[x] ID: 120: Add a new test case to `src/features/weight/components/WeightRecordCard.test.tsx` to verify that the component gracefully displays "Invalid Date" when provided with a `WeightRecord` containing an invalid date string.
-[x] ID: 121: Add a new test case to `src/features/weight/components/WeightStatisticsCard.test.tsx` to ensure the component gracefully displays "Invalid Date" for the date portion when its `record` prop contains an invalid date string.
+[ ] ID: 122: Wrap the `WeightStatisticsCard` components in a grid container with a gap on `src/app/page.tsx` to improve layout.
+[ ] ID: 123: Modify the `focus-visible:ring-red-500` class within the `isError` conditional in `src/components/ui/Input.tsx` to `focus-visible:ring-red-500/50` for a subtle ring transparency.
+[ ] ID: 124: Implement logic to disable the "Add Weight" button in `src/features/weight/components/AddWeightForm.tsx` if the `weight` input field is currently empty or has a validation error.
+[ ] ID: 125: Implement logic to disable the "Save Changes" button in `src/features/weight/components/EditWeightForm.tsx` if either the `weightError` or `dateError` states are active.
+[ ] ID: 126: Add descriptive `title` attributes to the "Edit" and "Delete" `Button` components within `src/features/weight/components/WeightRecordCard.tsx` for improved accessibility.
+[ ] ID: 127: Add a `hover:shadow-md` class to the base styling of the `Card` component in `src/components/ui/Card.tsx` for a subtle visual hover effect.
