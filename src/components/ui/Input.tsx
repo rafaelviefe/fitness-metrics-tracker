@@ -18,7 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300',
           // Conditional border styling based on isError prop
           isError
-            ? 'border border-red-500 focus-visible:ring-red-500'
+            ? 'border border-red-500 focus-visible:ring-red-500/50'
             : 'border border-neutral-200 dark:border-neutral-800',
           className
         )}

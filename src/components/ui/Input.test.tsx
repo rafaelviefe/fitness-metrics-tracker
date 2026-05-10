@@ -96,7 +96,7 @@ describe('Input', () => {
     render(<Input isError data-testid="error-input" />);
     const input = screen.getByTestId('error-input');
     expect(input).toHaveClass('border-red-500');
-    expect(input).toHaveClass('focus-visible:ring-red-500');
+    expect(input).toHaveClass('focus-visible:ring-red-500/50');
     // Ensure default border is overridden or not present
     expect(input).not.toHaveClass('border-neutral-200'); // Tailwind merge should handle this correctly
   });
