@@ -41,6 +41,9 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
     }
   };
 
+  // Button should be disabled if weight is empty or there's an error
+  const isSubmitDisabled = !weight || !!error;
+
   return (
     <form onSubmit={handleSubmit} className={className} {...props}>
       <label htmlFor="weight-input" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Weight (kg)</label>
@@ -57,7 +60,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({ className, onWeigh
         isError={!!error}
       />
       {error && <p id="weight-error" className="text-red-500 text-sm mt-1">{error}</p>}
-      <Button type="submit">Add Weight</Button>
+      <Button type="submit" disabled={isSubmitDisabled}>Add Weight</Button>
     </form>
   );
 };
