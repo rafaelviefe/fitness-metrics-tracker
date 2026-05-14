@@ -51,12 +51,12 @@ export default function Home() {
     updateAllStatistics();
   }, [updateAllStatistics]); // Add updateAllStatistics to dependency array
 
-  const handleAddWeight = (weight: number) => {
-    console.log('Weight to add:', weight);
+  const handleAddWeight = (weight: number, date: string) => {
+    console.log('Weight to add:', weight, 'Date:', date);
     if (weightRepositoryRef.current) {
       // Capture the non-null repository instance
       const repository = weightRepositoryRef.current;
-      const newRecord = repository.addWeightRecord(weight);
+      const newRecord = repository.addWeightRecord(weight, date);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
       // After adding, re-fetch and update all statistics
       updateAllStatistics();

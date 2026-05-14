@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 125: Add `addedDate` state, `dateError` state, and `handleDateChange` to `src/features/weight/components/AddWeightForm.tsx`, initializing date with current local time.
+[x] ID: 125: Add `addedDate` state, `dateError` state, and `handleDateChange` to `src/features/weight/components/AddWeightForm.tsx`, initializing date with current local time.
 [ ] ID: 126: Render a labeled `datetime-local` input field in `src/features/weight/components/AddWeightForm.tsx`, bound to the new `addedDate` state and `dateError`.
 [ ] ID: 127: Implement date validation logic within `AddWeightForm`'s `handleSubmit` function in `src/features/weight/components/AddWeightForm.tsx`, setting `dateError` if invalid.
 [ ] ID: 128: Define a new utility function `formatDateWithTimeForDisplay` in `src/lib/date-utils.ts` that formats an ISO date string to include time (e.g., "Month Day, Year, HH:MM AM/PM").
