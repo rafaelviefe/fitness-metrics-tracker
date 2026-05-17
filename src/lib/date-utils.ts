@@ -47,3 +47,43 @@ export const formatDateForDisplay = (isoDateString: string): string => {
     day: 'numeric',
   });
 };
+
+/**
+ * Formats an ISO date string into a display-friendly local date and time string (e.g., "Month Day, Year, HH:MM AM/PM").
+ * Handles invalid date strings gracefully by returning 'Invalid Date' and logging an error.
+ * @param isoDateString The ISO 8601 date string to format.
+ * @returns The formatted date and time string or 'Invalid Date' if the input is invalid.
+ */
+export const formatDateWithTimeForDisplay = (isoDateString: string): string => {
+  if (!isoDateString || (typeof isoDateString !== 'string')) {
+    console.error("Invalid date string provided to formatDateWithTimeForDisplay:", isoDateString);
+    return 'Invalid Date';
+  }
+
+  const trimmedDateString = isoDateString.trim();
+  if (trimmedDateString === '') {
+    console.error("Invalid date string provided to formatDateWithTimeForDisplay:", isoDateString);
+    return 'Invalid Date';
+  }
+
+  const date = new Date(trimmedDateString);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date string provided to formatDateWithTimeForDisplay:", trimmedDateString);
+    return 'Invalid Date';
+  }
+  
+  // Separate date and time formatting to control the separator and hour format
+  const formattedDate = date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: 'numeric', // Use 'numeric' to avoid leading zeros for single-digit hours
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `${formattedDate}, ${formattedTime}`;
+};

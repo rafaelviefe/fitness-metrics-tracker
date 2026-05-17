@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { formatIsoToDateTimeLocal, formatDateForDisplay } from './date-utils';
+import { formatIsoToDateTimeLocal, formatDateForDisplay, formatDateWithTimeForDisplay } from './date-utils';
 
 describe('formatIsoToDateTimeLocal', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -173,6 +173,96 @@ describe('formatDateForDisplay', () => {
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Invalid date string provided to formatDateForDisplay:',
+      undefined
+    );
+  });
+});
+
+describe('formatDateWithTimeForDisplay', () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should correctly format a valid ISO date string to "Month Day, Year, HH:MM AM/PM" format', () => {
+    // Ensure consistent timezone for testing. For toLocaleDateString, it uses local system's time.
+    // We will test with a specific UTC date and assume a common local offset for the expected string.
+    // Example: 2023-10-27T14:30:00.000Z in UTC is 10:30 AM in PDT (UTC-7) or 3:30 PM in CEST (UTC+2).
+    // For this test, we will assume a generic 'en-US' locale behaviour which will convert to local time.
+    // To make this test universally stable across different environments/timezones, one might need `mockDate` or explicit `Intl.DateTimeFormat` with `timeZone: 'UTC'`
+
+    // Let's test with a date that results in common AM/PM format, assuming test runner's local timezone
+    // If the test runner is in a timezone like PST (UTC-7), 2023-10-27T14:30:00.000Z becomes 2023-10-27 07:30 AM PDT
+    // If the test runner is in a timezone like EST (UTC-5), 2023-10-27T14:30:00.000Z becomes 2023-10-27 09:30 AM EST
+    // If the test runner is in a timezone like GMT (UTC+0), 2023-10-27T14:30:00.000Z becomes 2023-10-27 02:30 PM GMT
+
+    // For Vitest and Node.js environments, the default timezone is usually UTC unless configured.
+    // So, `new Date('2023-10-27T14:30:00.000Z')` will be a Date object representing that exact UTC moment.
+    // `toLocaleDateString` called without explicit timezone will use the default locale and timezone of the Node.js process.
+    // By default, Node.js uses UTC if no `TZ` environment variable is set.
+
+    // Therefore, `new Date('2023-10-27T14:30:00.000Z').toLocaleDateString('en-US', { ... })` in a default Node.js environment (UTC):
+    // month: 'long' -> October
+    // day: 'numeric' -> 27
+    // year: 'numeric' -> 2023
+    // hour: '2-digit' -> 02 (for 14:00)
+    // minute: '2-digit' -> 30
+    // hour12: true -> 02 PM
+    expect(formatDateWithTimeForDisplay('2023-10-27T14:30:00.000Z')).toBe('October 27, 2023, 2:30 PM');
+    expect(formatDateWithTimeForDisplay('2024-01-01T00:00:00.000Z')).toBe('January 1, 2024, 12:00 AM');
+    expect(formatDateWithTimeForDisplay('2022-12-31T23:59:59.999Z')).toBe('December 31, 2022, 11:59 PM');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle dates with single digit day and month correctly', () => {
+    expect(formatDateWithTimeForDisplay('2023-03-05T08:05:00.000Z')).toBe('March 5, 2023, 8:05 AM');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle leap year date correctly', () => {
+    expect(formatDateWithTimeForDisplay('2024-02-29T12:00:00.000Z')).toBe('February 29, 2024, 12:00 PM');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should return "Invalid Date" for an invalid date string and log an error', () => {
+    const invalidDate = 'not-a-valid-date-string';
+    expect(formatDateWithTimeForDisplay(invalidDate)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateWithTimeForDisplay:',
+      invalidDate
+    );
+    consoleErrorSpy.mockClear();
+
+    const emptyDate = '';
+    expect(formatDateWithTimeForDisplay(emptyDate)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateWithTimeForDisplay:',
+      emptyDate
+    );
+  });
+
+  it('should return "Invalid Date" for null or undefined input and log an error', () => {
+    // Although TypeScript types prevent direct `null` or `undefined`, JS allows it.
+    // The function should still handle it gracefully via `new Date(value)` returning Invalid Date.
+    expect(formatDateWithTimeForDisplay(null as any)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateWithTimeForDisplay:',
+      null
+    );
+    consoleErrorSpy.mockClear();
+
+    expect(formatDateWithTimeForDisplay(undefined as any)).toBe('Invalid Date');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateWithTimeForDisplay:',
       undefined
     );
   });
