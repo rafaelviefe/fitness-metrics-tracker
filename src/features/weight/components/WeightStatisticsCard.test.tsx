@@ -11,7 +11,7 @@ describe('WeightStatisticsCard', () => {
     weight: 78.9,
   };
 
-  it('renders correctly with a provided record', () => {
+  it('renders correctly with a provided record and default displayTime (false)', () => {
     render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" data-testid="stat-card" />);
 
     const cardElement = screen.getByTestId('stat-card');
@@ -19,12 +19,29 @@ describe('WeightStatisticsCard', () => {
     expect(screen.getByRole('heading', { name: 'Latest Weight' })).toBeInTheDocument();
     expect(screen.getByText('78.9 kg')).toBeInTheDocument();
     expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+    expect(screen.queryByText('2:30 PM')).not.toBeInTheDocument(); // Should not display time by default
     expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
 
     // Check some default classes for Card and component specific ones
     expect(cardElement).toHaveClass('rounded-lg');
     expect(cardElement).toHaveClass('p-6');
     expect(cardElement).toHaveClass('flex-col');
+  });
+
+  it('renders correctly with displayTime set to true', () => {
+    render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" displayTime={true} data-testid="stat-card" />);
+
+    expect(screen.getByText('78.9 kg')).toBeInTheDocument();
+    expect(screen.getByText('October 27, 2023, 2:30 PM')).toBeInTheDocument(); // Should display date AND time
+    expect(screen.queryByText('October 27, 2023')).not.toBeInTheDocument(); // Only date without time should not be present alone
+  });
+
+  it('renders correctly with displayTime explicitly set to false', () => {
+    render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" displayTime={false} data-testid="stat-card" />);
+
+    expect(screen.getByText('78.9 kg')).toBeInTheDocument();
+    expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+    expect(screen.queryByText('2:30 PM')).not.toBeInTheDocument(); // Should not display time
   });
 
   it('renders "No records yet." when record is undefined', () => {
@@ -100,6 +117,28 @@ describe('WeightStatisticsCard', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Invalid date string provided to formatDateForDisplay:',
       'this-is-not-a-valid-date'
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('gracefully displays "Invalid Date" with displayTime=true when record contains an invalid date string', () => {
+    const invalidDateRecord: WeightRecord = {
+      id: 'mock-id-invalid-date-with-time',
+      date: 'yet-another-invalid-date',
+      weight: 70.0,
+    };
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
+    render(<WeightStatisticsCard record={invalidDateRecord} label="Latest Weight" displayTime={true} />);
+
+    expect(screen.getByText('70 kg')).toBeInTheDocument();
+    expect(screen.getByText('Invalid Date')).toBeInTheDocument();
+    // Verify that the console.error was called due to the invalid date
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatDateWithTimeForDisplay:',
+      'yet-another-invalid-date'
     );
 
     consoleErrorSpy.mockRestore();

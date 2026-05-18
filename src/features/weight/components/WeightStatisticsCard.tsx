@@ -1,20 +1,25 @@
 import * as React from 'react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
-import { formatDateForDisplay } from '@/lib/date-utils';
+import { formatDateForDisplay, formatDateWithTimeForDisplay } from '@/lib/date-utils';
 import { WeightRecord } from '../types';
 
 interface WeightStatisticsCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  record?: WeightRecord | null; // Allow null for the record prop
-  label: string; // Label for the statistic (e.g., "Latest Weight")
+  record?: WeightRecord | null;
+  label: string;
+  displayTime?: boolean; // New prop for conditional time display
 }
 
 const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCardProps>(
-  ({ record, label, className, ...props }, ref) => {
+  ({ record, label, className, displayTime = false, ...props }, ref) => {
+    const formattedDate = record
+      ? (displayTime ? formatDateWithTimeForDisplay(record.date) : formatDateForDisplay(record.date))
+      : null;
+
     const content = record ? (
       <div className="flex items-baseline space-x-2">
         <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{record.weight} kg</p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">{formatDateForDisplay(record.date)}</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">{formattedDate}</p>
       </div>
     ) : (
       <p className="text-neutral-500 dark:text-neutral-400">No records yet.</p>
