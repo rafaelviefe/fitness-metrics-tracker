@@ -29,3 +29,14 @@ export const refreshWeightStatistics = (repository: WeightRepository): WeightSta
     oldest,
   };
 };
+
+/**
+ * Converts a weight value from kilograms (kg) to pounds (lbs).
+ * 1 kg = 2.20462 lbs.
+ * @param kg The weight in kilograms.
+ * @returns The weight in pounds.
+ */
+export const convertKgToLbs = (kg: number): number => {
+  const CONVERSION_FACTOR = 2.20462;
+  return kg * CONVERSION_FACTOR;
+};
