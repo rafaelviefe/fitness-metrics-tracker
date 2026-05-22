@@ -126,4 +126,10 @@ describe('convertKgToLbs', () => {
     const expectedLbs = -5 * 2.20462;
     expect(convertKgToLbs(kg)).toBeCloseTo(expectedLbs);
   });
+
+  it('should correctly convert another sample weight from kg to lbs', () => {
+    const kg = 68.3;
+    const expectedLbs = 68.3 * 2.20462;
+    expect(convertKgToLbs(kg)).toBeCloseTo(expectedLbs);
+  });
 });
