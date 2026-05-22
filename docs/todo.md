@@ -1,7 +1,7 @@
 # Project Roadmap
 
 [x] ID: 131: Add a new function `convertKgToLbs(kg: number): number` to `src/features/weight/utils/weight-utils.ts` that converts kilograms to pounds (1 kg = 2.20462 lbs).
-[ ] ID: 132: Add a test case for the `convertKgToLbs` function in `src/features/weight/utils/weight-utils.test.ts` to verify its correct conversion with a sample value.
+[x] ID: 132: Add a test case for the `convertKgToLbs` function in `src/features/weight/utils/weight-utils.test.ts` to verify its correct conversion with a sample value.
 [ ] ID: 133: In `src/app/page.tsx`, introduce a `useState` variable named `displayUnit` (initialized to `'kg'`) to control the preferred unit for displaying weights.
 [ ] ID: 134: In `src/app/page.tsx`, pass the `displayUnit` state as a new prop named `unitPreference` to the `WeightRecordCard` component.
 [ ] ID: 135: Update the `WeightRecordCardProps` interface in `src/features/weight/components/WeightRecordCard.tsx` to include an optional `unitPreference?: 'kg' | 'lbs'` prop.
