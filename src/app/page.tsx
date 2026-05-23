@@ -14,6 +14,8 @@ import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/uti
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  // Introduce displayUnit state variable
+  const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>('kg');
   // Replace individual useState declarations with a single one for weightStatistics
   const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
     latest: null,
