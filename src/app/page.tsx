@@ -172,6 +172,7 @@ export default function Home() {
                     record={record}
                     onDelete={handleDeleteWeight}
                     onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)}
+                    unitPreference={displayUnit} // Pass displayUnit as unitPreference
                   />
                 )}
               </li>
