@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import { WeightRecordCard } from './WeightRecordCard';
 import { WeightRecord } from '../types';
+import { convertKgToLbs } from '../utils/weight-utils';
 
 describe('WeightRecordCard', () => {
   const mockRecord: WeightRecord = {
@@ -11,12 +12,29 @@ describe('WeightRecordCard', () => {
     weight: 75.5,
   };
 
-  it('renders the weight record date and weight correctly', () => {
+  it('renders the weight record date and weight correctly with default kg unit', () => {
     render(<WeightRecordCard record={mockRecord} />);
 
     // Check for formatted date string (adjust based on locale if needed, 'en-US' used in component)
     expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
     expect(screen.getByText('75.5 kg')).toBeInTheDocument();
+  });
+
+  it('renders the weight record date and weight correctly with kg unit explicitly set', () => {
+    render(<WeightRecordCard record={mockRecord} unitPreference="kg" />);
+
+    expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+    expect(screen.getByText('75.5 kg')).toBeInTheDocument();
+    expect(screen.queryByText(/lbs/i)).not.toBeInTheDocument();
+  });
+
+  it('renders the weight record with lbs unit when unitPreference is lbs', () => {
+    const expectedLbs = convertKgToLbs(mockRecord.weight).toFixed(1);
+    render(<WeightRecordCard record={mockRecord} unitPreference="lbs" />);
+
+    expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    expect(screen.queryByText(/kg/i)).not.toBeInTheDocument();
   });
 
   it('applies additional custom class names', () => {
@@ -42,10 +60,17 @@ describe('WeightRecordCard', () => {
     expect(cardElement).toHaveAttribute('id', 'myWeightCard');
   });
 
-  it('renders different weight values', () => {
+  it('renders different weight values in kg', () => {
     const recordWithDifferentWeight = { ...mockRecord, weight: 80.2 };
     render(<WeightRecordCard record={recordWithDifferentWeight} />);
     expect(screen.getByText('80.2 kg')).toBeInTheDocument();
+  });
+
+  it('renders different weight values in lbs', () => {
+    const recordWithDifferentWeight = { ...mockRecord, weight: 80.2 };
+    const expectedLbs = convertKgToLbs(recordWithDifferentWeight.weight).toFixed(1);
+    render(<WeightRecordCard record={recordWithDifferentWeight} unitPreference="lbs" />);
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
   });
 
   it('renders different dates', () => {

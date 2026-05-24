@@ -4,17 +4,25 @@ import { WeightRecord } from '../types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button'; // Import Button
 import { formatDateForDisplay } from '@/lib/date-utils'; // Import formatDateForDisplay
+import { convertKgToLbs } from '../utils/weight-utils'; // Import conversion utility
 
 interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
   record: WeightRecord;
   onDelete?: (id: string) => void;
   onEdit?: (record: WeightRecord) => void;
+  unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
 }
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
-  ({ record, className, onDelete, onEdit, ...props }, ref) => {
+  ({ record, className, onDelete, onEdit, unitPreference = 'kg', ...props }, ref) => {
     // Use the utility function for date formatting
     const formattedDate = formatDateForDisplay(record.date);
+
+    // Convert weight if unitPreference is 'lbs'
+    const displayedWeight = unitPreference === 'lbs'
+      ? convertKgToLbs(record.weight).toFixed(1) // Format to one decimal place for lbs
+      : record.weight;
+    const displayedUnit = unitPreference;
 
     const handleDeleteClick = () => {
       onDelete?.(record.id);
@@ -29,7 +37,7 @@ const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>
         <div className="text-sm text-neutral-600 dark:text-neutral-400">{formattedDate}</div>
         <div className="flex items-center space-x-2">
           <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-            {record.weight} kg
+            {displayedWeight} {displayedUnit}
           </div>
           <Button variant="secondary" size="sm" onClick={handleEditClick}>Edit</Button>
           <Button variant="destructive" size="sm" onClick={handleDeleteClick}>Delete</Button>
