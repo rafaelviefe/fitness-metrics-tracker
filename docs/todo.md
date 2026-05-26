@@ -5,4 +5,4 @@
 [x] ID: 133: In `src/app/page.tsx`, introduce a `useState` variable named `displayUnit` (initialized to `'kg'`) to control the preferred unit for displaying weights.
 [x] ID: 134: In `src/app/page.tsx`, pass the `displayUnit` state as a new prop named `unitPreference` to the `WeightRecordCard` component.
 [x] ID: 135: Update the `WeightRecordCardProps` interface in `src/features/weight/components/WeightRecordCard.tsx` to include an optional `unitPreference?: 'kg' | 'lbs'` prop.
-[ ] ID: 136: In `src/features/weight/components/WeightRecordCard.tsx`, import `convertKgToLbs` and use the `unitPreference` prop to conditionally format and display the `record.weight` (in kilograms or converted to pounds) and append the corresponding unit string (e.g., "kg" or "lbs").
+[x] ID: 136: In `src/features/weight/components/WeightRecordCard.tsx`, import `convertKgToLbs` and use the `unitPreference` prop to conditionally format and display the `record.weight` (in kilograms or converted to pounds) and append the corresponding unit string (e.g., "kg" or "lbs").
