@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 131: Add a new function `convertKgToLbs(kg: number): number` to `src/features/weight/utils/weight-utils.ts` that converts kilograms to pounds (1 kg = 2.20462 lbs).
-[x] ID: 132: Add a test case for the `convertKgToLbs` function in `src/features/weight/utils/weight-utils.test.ts` to verify its correct conversion with a sample value.
-[x] ID: 133: In `src/app/page.tsx`, introduce a `useState` variable named `displayUnit` (initialized to `'kg'`) to control the preferred unit for displaying weights.
-[x] ID: 134: In `src/app/page.tsx`, pass the `displayUnit` state as a new prop named `unitPreference` to the `WeightRecordCard` component.
-[x] ID: 135: Update the `WeightRecordCardProps` interface in `src/features/weight/components/WeightRecordCard.tsx` to include an optional `unitPreference?: 'kg' | 'lbs'` prop.
-[x] ID: 136: In `src/features/weight/components/WeightRecordCard.tsx`, import `convertKgToLbs` and use the `unitPreference` prop to conditionally format and display the `record.weight` (in kilograms or converted to pounds) and append the corresponding unit string (e.g., "kg" or "lbs").
+[ ] ID: 137: Create `src/components/ui/toggle-group.tsx` with a basic `ToggleGroup` component that accepts `children`, `type="single"`, `value`, and `onValueChange` props. Include a `ToggleGroupItem` sub-component with `value` prop. No complex logic or styling yet, just the basic structure and prop types for a controlled component.
+[ ] ID: 138: Implement basic styling for `ToggleGroup` and `ToggleGroupItem` in `src/components/ui/toggle-group.tsx` using `cn` and Tailwind classes, ensuring visual distinction for selected items. Add `variant` and `size` props for `ToggleGroupItem` to mirror `Button`'s styling.
+[ ] ID: 139: Add a test file `src/components/ui/toggle-group.test.tsx` for the `ToggleGroup` component, including tests for rendering, initial value, and `onValueChange` callback when an item is clicked (single selection type).
+[ ] ID: 140: Integrate the `ToggleGroup` component into `src/app/page.tsx` to control the `displayUnit` state variable. Place it appropriately in the UI, rendering two `ToggleGroupItem`s for "kg" and "lbs".
+[ ] ID: 141: Add a new utility function `convertLbsToKg` to `src/features/weight/utils/weight-utils.ts` that converts pounds to kilograms (1 lbs = 0.453592 kg).
+[ ] ID: 142: Add a new `unitPreference` prop to `AddWeightForm.tsx` (defaulting to 'kg') of type `'kg' | 'lbs'` to control the displayed unit in the input label. Do not implement conversion logic yet.
