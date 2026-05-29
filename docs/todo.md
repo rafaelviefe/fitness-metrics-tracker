@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 137: Create `src/components/ui/toggle-group.tsx` with a basic `ToggleGroup` component that accepts `children`, `type="single"`, `value`, and `onValueChange` props. Include a `ToggleGroupItem` sub-component with `value` prop. No complex logic or styling yet, just the basic structure and prop types for a controlled component.
+[x] ID: 137: Create `src/components/ui/toggle-group.tsx` with a basic `ToggleGroup` component that accepts `children`, `type="single"`, `value`, and `onValueChange` props. Include a `ToggleGroupItem` sub-component with `value` prop. No complex logic or styling yet, just the basic structure and prop types for a controlled component.
 [ ] ID: 138: Implement basic styling for `ToggleGroup` and `ToggleGroupItem` in `src/components/ui/toggle-group.tsx` using `cn` and Tailwind classes, ensuring visual distinction for selected items. Add `variant` and `size` props for `ToggleGroupItem` to mirror `Button`'s styling.
 [ ] ID: 139: Add a test file `src/components/ui/toggle-group.test.tsx` for the `ToggleGroup` component, including tests for rendering, initial value, and `onValueChange` callback when an item is clicked (single selection type).
 [ ] ID: 140: Integrate the `ToggleGroup` component into `src/app/page.tsx` to control the `displayUnit` state variable. Place it appropriately in the UI, rendering two `ToggleGroupItem`s for "kg" and "lbs".
