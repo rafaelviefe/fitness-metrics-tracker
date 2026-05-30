@@ -25,7 +25,7 @@ describe('ToggleGroup', () => {
   });
 
   describe('type="single"', () => {
-    it('initializes with the correct selected value', () => {
+    it('initializes with the correct selected value and default styling', () => {
       render(
         <ToggleGroup type="single" value="option-2" onValueChange={vi.fn()}>
           <ToggleGroupItem value="option-1">Option 1</ToggleGroupItem>
@@ -42,10 +42,53 @@ describe('ToggleGroup', () => {
       expect(option2).toHaveAttribute('aria-pressed', 'true');
       expect(option3).not.toHaveAttribute('aria-pressed', 'true');
 
-      // Check styling for selected/unselected
-      expect(option1).toHaveClass('bg-gray-100');
-      expect(option2).toHaveClass('bg-blue-600');
+      // Check styling for selected/unselected with default variant and size
+      expect(option1).toHaveClass('bg-gray-100'); // Default unselected background
+      expect(option2).toHaveClass('bg-blue-600'); // Selected background
       expect(option3).toHaveClass('bg-gray-100');
+      expect(option1).toHaveClass('h-10 px-4 py-2'); // Default size
+      expect(option2).toHaveClass('h-10 px-4 py-2'); // Default size
+    });
+
+    it('applies custom variant to unselected item', () => {
+      render(
+        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>
+          <ToggleGroupItem value="option-1">Option 1</ToggleGroupItem>
+          <ToggleGroupItem value="option-2" variant="destructive">Option 2</ToggleGroupItem>
+        </ToggleGroup>
+      );
+      const option2 = screen.getByText('Option 2');
+      expect(option2).not.toHaveAttribute('aria-pressed', 'true');
+      expect(option2).toHaveClass('bg-red-50'); // Destructive unselected background
+    });
+
+    it('applies custom size to items', () => {
+      render(
+        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>
+          <ToggleGroupItem value="option-1" size="sm">Option 1</ToggleGroupItem>
+          <ToggleGroupItem value="option-2" size="lg">Option 2</ToggleGroupItem>
+        </ToggleGroup>
+      );
+      const option1 = screen.getByText('Option 1');
+      const option2 = screen.getByText('Option 2');
+
+      expect(option1).toHaveClass('h-9 px-3'); // sm size
+      expect(option2).toHaveClass('h-11 px-8'); // lg size
+    });
+
+    it('selected item overrides variant background and text color', () => {
+      render(
+        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>
+          <ToggleGroupItem value="option-1" variant="destructive">Option 1</ToggleGroupItem>
+          <ToggleGroupItem value="option-2">Option 2</ToggleGroupItem>
+        </ToggleGroup>
+      );
+      const option1 = screen.getByText('Option 1');
+
+      expect(option1).toHaveAttribute('aria-pressed', 'true');
+      expect(option1).toHaveClass('bg-blue-600'); // Selected state overrides destructive variant
+      expect(option1).toHaveClass('text-white'); // Selected state overrides destructive variant
+      expect(option1).not.toHaveClass('bg-red-50');
     });
 
     it('calls onValueChange with the new value when a different item is clicked', () => {
@@ -115,7 +158,7 @@ describe('ToggleGroup', () => {
     it('forwards ref to ToggleGroupItem', () => {
       const ref = React.createRef<HTMLButtonElement>();
       render(
-        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>
+        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>^
           <ToggleGroupItem value="option-1" ref={ref}>Option 1</ToggleGroupItem>
         </ToggleGroup>
       );
@@ -163,9 +206,8 @@ describe('ToggleGroup', () => {
       );
       const option1 = screen.getByText('Option 1');
       fireEvent.click(option1);
-      expect(handleItemClick).toHaveBeenCalledTimes(1); // Custom click should still fire
+      expect(handleItemClick).toHaveBeenCalledTimes(1);
       expect(handleValueChange).not.toHaveBeenCalled(); // But onValueChange should not for already selected
     });
-
   });
 });
