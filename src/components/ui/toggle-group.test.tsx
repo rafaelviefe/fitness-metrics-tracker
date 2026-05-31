@@ -158,7 +158,7 @@ describe('ToggleGroup', () => {
     it('forwards ref to ToggleGroupItem', () => {
       const ref = React.createRef<HTMLButtonElement>();
       render(
-        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>^
+        <ToggleGroup type="single" value="option-1" onValueChange={vi.fn()}>
           <ToggleGroupItem value="option-1" ref={ref}>Option 1</ToggleGroupItem>
         </ToggleGroup>
       );
