@@ -10,6 +10,7 @@ import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; //
 import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
 import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
 import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics (refreshWeightStatistics is no longer directly used here)
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup and ToggleGroupItem
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -150,6 +151,10 @@ export default function Home() {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
+          <ToggleGroup type="single" value={displayUnit} onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')} className="space-x-2">
+            <ToggleGroupItem value="kg">kg</ToggleGroupItem>
+            <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
+          </ToggleGroup>
           <Button variant="destructive" size="sm" onClick={handleClearAllRecords}>
             Clear All Records
           </Button>
