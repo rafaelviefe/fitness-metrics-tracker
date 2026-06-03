@@ -40,3 +40,14 @@ export const convertKgToLbs = (kg: number): number => {
   const CONVERSION_FACTOR = 2.20462;
   return kg * CONVERSION_FACTOR;
 };
+
+/**
+ * Converts a weight value from pounds (lbs) to kilograms (kg).
+ * 1 lbs = 0.453592 kg.
+ * @param lbs The weight in pounds.
+ * @returns The weight in kilograms.
+ */
+export const convertLbsToKg = (lbs: number): number => {
+  const CONVERSION_FACTOR = 0.453592;
+  return lbs * CONVERSION_FACTOR;
+};

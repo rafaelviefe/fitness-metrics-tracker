@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { refreshWeightStatistics, convertKgToLbs } from './weight-utils';
+import { refreshWeightStatistics, convertKgToLbs, convertLbsToKg } from './weight-utils';
 import { WeightRepository } from '../repositories/weight.repository';
 import { WeightRecord } from '../types';
 
@@ -131,5 +131,49 @@ describe('convertKgToLbs', () => {
     const kg = 68.3;
     const expectedLbs = 68.3 * 2.20462;
     expect(convertKgToLbs(kg)).toBeCloseTo(expectedLbs);
+  });
+});
+
+describe('convertLbsToKg', () => {
+  it('should convert pounds to kilograms correctly for a positive integer', () => {
+    const lbs = 20;
+    const expectedKg = 20 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should convert pounds to kilograms correctly for a decimal number', () => {
+    const lbs = 150.8;
+    const expectedKg = 150.8 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should return 0 when converting 0 lbs', () => {
+    const lbs = 0;
+    const expectedKg = 0 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should convert a small positive number correctly', () => {
+    const lbs = 1.1;
+    const expectedKg = 1.1 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should convert a large number correctly', () => {
+    const lbs = 2200;
+    const expectedKg = 2200 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should handle negative numbers (though weight is typically positive, function should behave predictably)', () => {
+    const lbs = -10;
+    const expectedKg = -10 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
+  });
+
+  it('should correctly convert another sample weight from lbs to kg', () => {
+    const lbs = 175.0;
+    const expectedKg = 175.0 * 0.453592;
+    expect(convertLbsToKg(lbs)).toBeCloseTo(expectedKg);
   });
 });
