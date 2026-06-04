@@ -23,7 +23,7 @@ describe('AddWeightForm', () => {
 
   const getInitialDateTimeLocal = () => formatIsoToDateTimeLocal(new Date('2023-11-15T10:00:00.000Z').toISOString());
 
-  it('renders correctly with initial weight (empty) and date (current local time)', () => {
+  it('renders correctly with default unit preference (kg)', () => {
     render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
 
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
@@ -45,6 +45,15 @@ describe('AddWeightForm', () => {
     expect(addButton).toBeDisabled(); // Button disabled initially as weight is empty
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+  });
+
+  it('renders correctly with unit preference set to lbs', () => {
+    render(<AddWeightForm onWeightAdded={mockOnWeightAdded} unitPreference="lbs" />);
+
+    const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
+    expect(weightInput).toBeInTheDocument();
+    expect(weightInput.value).toBe('');
+    expect(weightInput.type).toBe('number');
   });
 
   it('updates weight input value on change', () => {
