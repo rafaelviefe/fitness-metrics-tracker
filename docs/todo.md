@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 137: Create `src/components/ui/toggle-group.tsx` with a basic `ToggleGroup` component that accepts `children`, `type="single"`, `value`, and `onValueChange` props. Include a `ToggleGroupItem` sub-component with `value` prop. No complex logic or styling yet, just the basic structure and prop types for a controlled component.
-[x] ID: 138: Implement basic styling for `ToggleGroup` and `ToggleGroupItem` in `src/components/ui/toggle-group.tsx` using `cn` and Tailwind classes, ensuring visual distinction for selected items. Add `variant` and `size` props for `ToggleGroupItem` to mirror `Button`'s styling.
-[x] ID: 139: Add a test file `src/components/ui/toggle-group.test.tsx` for the `ToggleGroup` component, including tests for rendering, initial value, and `onValueChange` callback when an item is clicked (single selection type).
-[x] ID: 140: Integrate the `ToggleGroup` component into `src/app/page.tsx` to control the `displayUnit` state variable. Place it appropriately in the UI, rendering two `ToggleGroupItem`s for "kg" and "lbs".
-[x] ID: 141: Add a new utility function `convertLbsToKg` to `src/features/weight/utils/weight-utils.ts` that converts pounds to kilograms (1 lbs = 0.453592 kg).
-[x] ID: 142: Add a new `unitPreference` prop to `AddWeightForm.tsx` (defaulting to 'kg') of type `'kg' | 'lbs'` to control the displayed unit in the input label. Do not implement conversion logic yet.
+[ ] ID: 143: Modify the `cn` function in `src/lib/utils.ts` to flatten a single level of nested arrays when processing class names.
+[ ] ID: 144: Update `src/lib/utils.test.ts` to modify the existing test case that asserts `cn` does *not* flatten arrays, changing it to assert that it now *does* flatten a single level of arrays.
+[ ] ID: 145: In `src/features/weight/components/AddWeightForm.tsx`, add logic to convert the input `weight` from pounds to kilograms using `convertLbsToKg` if `unitPreference` is `'lbs'` before passing it to `onWeightAdded`.
+[ ] ID: 146: In `src/features/weight/components/AddWeightForm.test.tsx`, add a new test case to verify that when `unitPreference` is `'lbs'`, the `onWeightAdded` callback receives the weight value correctly converted to kilograms.
+[ ] ID: 147: In `src/features/weight/components/WeightRecordCard.tsx`, introduce a new optional boolean prop `displayTime` (defaulting to `false`). Use this prop to conditionally format the record's date using `formatDateWithTimeForDisplay` when `true`, otherwise use `formatDateForDisplay`.
+[ ] ID: 148: In `src/features/weight/components/WeightRecordCard.test.tsx`, add a new test case to verify that when the `displayTime` prop is set to `true`, the date displayed includes the time component.
