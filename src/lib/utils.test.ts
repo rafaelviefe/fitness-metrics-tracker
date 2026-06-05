@@ -25,7 +25,7 @@ describe('cn', () => {
 
   it('should convert boolean true to string "true" if not conditionally handled', () => {
     // Note: In real-world usage with clsx/tailwind-merge, booleans are often for conditional rendering.
-    // This simple `cn` converts `true` to the string "true".
+    // This simple `cn` converts `true` to the string "true" if it's passed directly.
     expect(cn('base', true, 'modifier')).toBe('base true modifier');
   });
 
@@ -40,9 +40,16 @@ describe('cn', () => {
     expect(cn('w-1/2', 'h-full')).toBe('w-1/2 h-full');
   });
 
-  it('should not flatten arrays of class names (limitation of simple cn)', () => {
-    // This utility does not mimic `clsx`'s ability to flatten arrays.
-    // An array argument will be stringified using its `toString()` method.
-    expect(cn('base', ['item-a', 'item-b'], 'end')).toBe('base item-a,item-b end');
+  it('should flatten a single level of arrays of class names', () => {
+    expect(cn('base', ['item-a', 'item-b'], 'end')).toBe('base item-a item-b end');
+  });
+
+  it('should ignore falsy values within nested arrays', () => {
+    expect(cn('start', ['item-x', null, 'item-y', undefined, false, ''], 'end')).toBe('start item-x item-y end');
+  });
+
+  it('should handle deeply nested arrays by only flattening one level', () => {
+    // A second-level array should be stringified by Array.prototype.join(',') before being filtered and joined.
+    expect(cn('outer', ['inner-a', ['deep-a', 'deep-b']], 'outer-end')).toBe('outer inner-a deep-a,deep-b outer-end');
   });
 });
