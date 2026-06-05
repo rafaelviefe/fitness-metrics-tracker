@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 143: Modify the `cn` function in `src/lib/utils.ts` to flatten a single level of nested arrays when processing class names.
+[x] ID: 143: Modify the `cn` function in `src/lib/utils.ts` to flatten a single level of nested arrays when processing class names.
 [ ] ID: 144: Update `src/lib/utils.test.ts` to modify the existing test case that asserts `cn` does *not* flatten arrays, changing it to assert that it now *does* flatten a single level of arrays.
 [ ] ID: 145: In `src/features/weight/components/AddWeightForm.tsx`, add logic to convert the input `weight` from pounds to kilograms using `convertLbsToKg` if `unitPreference` is `'lbs'` before passing it to `onWeightAdded`.
 [ ] ID: 146: In `src/features/weight/components/AddWeightForm.test.tsx`, add a new test case to verify that when `unitPreference` is `'lbs'`, the `onWeightAdded` callback receives the weight value correctly converted to kilograms.
