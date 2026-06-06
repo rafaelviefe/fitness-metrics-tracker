@@ -48,8 +48,8 @@ describe('cn', () => {
     expect(cn('start', ['item-x', null, 'item-y', undefined, false, ''], 'end')).toBe('start item-x item-y end');
   });
 
-  it('should handle deeply nested arrays by only flattening one level', () => {
-    // A second-level array should be stringified by Array.prototype.join(',') before being filtered and joined.
+  it('should flatten a single level of arrays and stringify deeper arrays', () => {
+    // The `flat()` method only flattens one level by default. Arrays nested deeper will be stringified.
     expect(cn('outer', ['inner-a', ['deep-a', 'deep-b']], 'outer-end')).toBe('outer inner-a deep-a,deep-b outer-end');
   });
 });
