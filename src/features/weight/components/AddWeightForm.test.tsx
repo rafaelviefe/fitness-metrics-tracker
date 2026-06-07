@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AddWeightForm } from './AddWeightForm';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // For comparison with initial date
+import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility for tests
 
 describe('AddWeightForm', () => {
   let mockOnWeightAdded: ReturnType<typeof vi.fn>;
@@ -73,7 +74,7 @@ describe('AddWeightForm', () => {
     expect(dateInput.value).toBe(newDateTimeLocal);
   });
 
-  it('calls onWeightAdded with correct weight and date (ISO string) on valid submission', () => {
+  it('calls onWeightAdded with correct weight and date (ISO string) on valid submission (kg)', () => {
     render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
@@ -96,6 +97,31 @@ describe('AddWeightForm', () => {
     expect(addButton).toBeDisabled(); // Button should be disabled again
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+  });
+
+  it('calls onWeightAdded with weight converted to kg when unitPreference is lbs', () => {
+    render(<AddWeightForm onWeightAdded={mockOnWeightAdded} unitPreference="lbs" />);
+    const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const addButton = screen.getByRole('button', { name: 'Add Weight' });
+
+    const newWeightLbs = '170.0'; // Example weight in lbs
+    const newDateTimeLocal = '2023-11-17T09:00';
+    const expectedIsoDate = new Date(newDateTimeLocal).toISOString();
+    const expectedWeightKg = convertLbsToKg(parseFloat(newWeightLbs));
+
+    fireEvent.change(weightInput, { target: { value: newWeightLbs } });
+    fireEvent.change(dateInput, { target: { value: newDateTimeLocal } });
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(addButton);
+
+    expect(mockOnWeightAdded).toHaveBeenCalledTimes(1);
+    // Expect onWeightAdded to receive the converted weight in kg
+    expect(mockOnWeightAdded).toHaveBeenCalledWith(expect.closeTo(expectedWeightKg), expectedIsoDate);
+    expect(weightInput.value).toBe('');
+    expect(dateInput.value).toBe(getInitialDateTimeLocal());
+    expect(addButton).toBeDisabled();
   });
 
   it('shows an error for invalid weight (zero) and keeps date valid', () => {
