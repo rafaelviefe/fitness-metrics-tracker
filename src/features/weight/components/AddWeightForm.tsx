@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // Import date utility
+import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
 
 interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   onWeightAdded?: (weight: number, date: string) => void;
@@ -62,11 +63,17 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
       return;
     }
 
+    // Convert weight to kg if unitPreference is 'lbs'
+    let weightInKg = parsedWeight;
+    if (unitPreference === 'lbs') {
+      weightInKg = convertLbsToKg(parsedWeight);
+    }
+
     setWeight('');
     setAddedDate(formatIsoToDateTimeLocal(new Date().toISOString()));
 
     if (onWeightAdded) {
-      onWeightAdded(parsedWeight, parsedDate.toISOString());
+      onWeightAdded(weightInKg, parsedDate.toISOString());
     }
   };
 
