@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { WeightRecord } from '../types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button'; // Import Button
-import { formatDateForDisplay } from '@/lib/date-utils'; // Import formatDateForDisplay
+import { formatDateForDisplay, formatDateWithTimeForDisplay } from '@/lib/date-utils'; // Import date formatters
 import { convertKgToLbs } from '../utils/weight-utils'; // Import conversion utility
 
 interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -11,12 +11,15 @@ interface WeightRecordCardProps extends React.HTMLAttributes<HTMLDivElement> {
   onDelete?: (id: string) => void;
   onEdit?: (record: WeightRecord) => void;
   unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
+  displayTime?: boolean; // New prop for conditional time display
 }
 
 const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>(
-  ({ record, className, onDelete, onEdit, unitPreference = 'kg', ...props }, ref) => {
-    // Use the utility function for date formatting
-    const formattedDate = formatDateForDisplay(record.date);
+  ({ record, className, onDelete, onEdit, unitPreference = 'kg', displayTime = false, ...props }, ref) => {
+    // Use the utility function for date formatting, conditionally including time
+    const formattedDate = displayTime
+      ? formatDateWithTimeForDisplay(record.date)
+      : formatDateForDisplay(record.date);
 
     // Convert weight if unitPreference is 'lbs'
     const displayedWeight = unitPreference === 'lbs'
