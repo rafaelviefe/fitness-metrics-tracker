@@ -1,7 +1,8 @@
 # Project Roadmap
 
-[x] ID: 143: Modify the `cn` function in `src/lib/utils.ts` to flatten a single level of nested arrays when processing class names.
-[x] ID: 144: Update `src/lib/utils.test.ts` to modify the existing test case that asserts `cn` does *not* flatten arrays, changing it to assert that it now *does* flatten a single level of arrays.
-[x] ID: 145: In `src/features/weight/components/AddWeightForm.tsx`, add logic to convert the input `weight` from pounds to kilograms using `convertLbsToKg` if `unitPreference` is `'lbs'` before passing it to `onWeightAdded`.
-[x] ID: 146: In `src/features/weight/components/AddWeightForm.test.tsx`, add a new test case to verify that when `unitPreference` is `'lbs'`, the `onWeightAdded` callback receives the weight value correctly converted to kilograms.
-[x] ID: 147: In `src/features/weight/components/WeightRecordCard.tsx`, introduce a new optional boolean prop `displayTime` (defaulting to `false`). Use this prop to conditionally format the record's date using `formatDateWithTimeForDisplay` when `true`, otherwise use `formatDateForDisplay`.
+[ ] ID: 148: Add `unitPreference?: 'kg' | 'lbs';` to the `WeightStatisticsCardProps` interface in `./src/features/weight/components/WeightStatisticsCard.tsx`.
+[ ] ID: 149: Pass the `displayUnit` state variable from `page.tsx` to all `WeightStatisticsCard` components as the `unitPreference` prop.
+[ ] ID: 150: In `./src/features/weight/components/WeightStatisticsCard.tsx`, modify the `content` JSX to display the `unitPreference` alongside the weight.
+[ ] ID: 151: In `./src/features/weight/components/WeightStatisticsCard.tsx`, import `convertKgToLbs` from `../utils/weight-utils` and apply the conversion to `record.weight` if `unitPreference` is 'lbs' before displaying.
+[ ] ID: 152: Add a new test case in `./src/features/weight/components/WeightStatisticsCard.test.tsx` to verify that the component displays weight in `lbs` when `unitPreference` is set to 'lbs', including the correct unit label and conversion.
+[ ] ID: 153: Add a new test case in `./src/features/weight/components/WeightStatisticsCard.test.tsx` to explicitly verify that the component displays weight in `kg` when `unitPreference` is set to 'kg'.
