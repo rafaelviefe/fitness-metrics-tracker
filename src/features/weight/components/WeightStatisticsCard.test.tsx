@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import { WeightStatisticsCard } from './WeightStatisticsCard';
 import { WeightRecord } from '../types';
+import { convertKgToLbs } from '../utils/weight-utils'; // Import conversion utility
 
 describe('WeightStatisticsCard', () => {
   const mockRecord: WeightRecord = {
@@ -11,7 +12,7 @@ describe('WeightStatisticsCard', () => {
     weight: 78.9,
   };
 
-  it('renders correctly with a provided record and default displayTime (false)', () => {
+  it('renders correctly with a provided record and default displayTime (false) and unit (kg)', () => {
     render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" data-testid="stat-card" />);
 
     const cardElement = screen.getByTestId('stat-card');
@@ -44,6 +45,29 @@ describe('WeightStatisticsCard', () => {
     expect(screen.queryByText('2:30 PM')).not.toBeInTheDocument(); // Should not display time
   });
 
+  it('renders weight in lbs when unitPreference is lbs', () => {
+    const expectedLbs = convertKgToLbs(mockRecord.weight).toFixed(1); // 78.9 kg * 2.20462 = 173.945898 -> 173.9
+    render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" unitPreference="lbs" data-testid="stat-card" />);
+
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    expect(screen.queryByText(/kg/i)).not.toBeInTheDocument();
+  });
+
+  it('renders weight in kg when unitPreference is kg', () => {
+    render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" unitPreference="kg" data-testid="stat-card" />);
+
+    expect(screen.getByText('78.9 kg')).toBeInTheDocument();
+    expect(screen.queryByText(/lbs/i)).not.toBeInTheDocument();
+  });
+
+  it('renders weight in lbs with time when displayTime is true and unitPreference is lbs', () => {
+    const expectedLbs = convertKgToLbs(mockRecord.weight).toFixed(1);
+    render(<WeightStatisticsCard record={mockRecord} label="Latest Weight" displayTime={true} unitPreference="lbs" data-testid="stat-card" />);
+
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    expect(screen.getByText('October 27, 2023, 2:30 PM')).toBeInTheDocument();
+  });
+
   it('renders "No records yet." when record is undefined', () => {
     render(<WeightStatisticsCard label="Latest Weight" data-testid="stat-card" />);
 
@@ -52,6 +76,7 @@ describe('WeightStatisticsCard', () => {
     expect(screen.getByRole('heading', { name: 'Latest Weight' })).toBeInTheDocument();
     expect(screen.getByText('No records yet.')).toBeInTheDocument();
     expect(screen.queryByText(/kg/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/lbs/)).not.toBeInTheDocument();
     expect(screen.queryByText(/\d{4}/)).not.toBeInTheDocument(); // No date displayed
   });
 
@@ -60,6 +85,7 @@ describe('WeightStatisticsCard', () => {
 
     expect(screen.getByText('No records yet.')).toBeInTheDocument();
     expect(screen.queryByText(/kg/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/lbs/)).not.toBeInTheDocument();
   });
 
   it('applies additional custom class names', () => {
