@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 148: Add `unitPreference?: 'kg' | 'lbs';` to the `WeightStatisticsCardProps` interface in `./src/features/weight/components/WeightStatisticsCard.tsx`.
+[x] ID: 148: Add `unitPreference?: 'kg' | 'lbs';` to the `WeightStatisticsCardProps` interface in `./src/features/weight/components/WeightStatisticsCard.tsx`.
 [ ] ID: 149: Pass the `displayUnit` state variable from `page.tsx` to all `WeightStatisticsCard` components as the `unitPreference` prop.
 [ ] ID: 150: In `./src/features/weight/components/WeightStatisticsCard.tsx`, modify the `content` JSX to display the `unitPreference` alongside the weight.
 [ ] ID: 151: In `./src/features/weight/components/WeightStatisticsCard.tsx`, import `convertKgToLbs` from `../utils/weight-utils` and apply the conversion to `record.weight` if `unitPreference` is 'lbs' before displaying.
