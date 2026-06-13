@@ -139,14 +139,14 @@ export default function Home() {
 
       <section className="mt-8 max-w-md w-full">
         {/* Render AddWeightForm here, before the "Your Weight Records" section */}
-        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} />
+        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} />
 
         {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" />
-          <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" />
-          <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" />
-          <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" />
+          <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} />
+          <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} />
+          <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} />
+          <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} />
         </div>
 
         <div className="flex justify-between items-center mb-4">
