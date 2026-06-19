@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 148: Add `unitPreference?: 'kg' | 'lbs';` to the `WeightStatisticsCardProps` interface in `./src/features/weight/components/WeightStatisticsCard.tsx`.
-[x] ID: 149: Pass the `displayUnit` state variable from `page.tsx` to all `WeightStatisticsCard` components as the `unitPreference` prop.
-[x] ID: 150: In `./src/features/weight/components/WeightStatisticsCard.tsx`, modify the `content` JSX to display the `unitPreference` alongside the weight.
-[x] ID: 151: In `./src/features/weight/components/WeightStatisticsCard.tsx`, import `convertKgToLbs` from `../utils/weight-utils` and apply the conversion to `record.weight` if `unitPreference` is 'lbs' before displaying.
-[x] ID: 152: Add a new test case in `./src/features/weight/components/WeightStatisticsCard.test.tsx` to verify that the component displays weight in `lbs` when `unitPreference` is set to 'lbs', including the correct unit label and conversion.
-[x] ID: 153: Add a new test case in `./src/features/weight/components/WeightStatisticsCard.test.tsx` to explicitly verify that the component displays weight in `kg` when `unitPreference` is set to 'kg'.
+[ ] ID: 154: In the `Home` component, declare a new state variable `displayTime` and initialize it to `false` using `useState`.
+[ ] ID: 155: In the `Home` component, pass the `displayTime` state variable as the `displayTime` prop to each `WeightStatisticsCard` instance.
+[ ] ID: 156: In the `Home` component, pass the `displayTime` state variable as the `displayTime` prop to the `WeightRecordCard` component within the `map` function.
+[ ] ID: 157: In the `Home` component, modify the `div` containing the unit preference `ToggleGroup` and "Clear All Records" `Button` to also contain a new `ToggleGroup` component for `displayTime`, setting its `type` to "single" and adding appropriate `className` for layout.
+[ ] ID: 158: Inside the new `displayTime` `ToggleGroup` component in `Home`, add two `ToggleGroupItem` components: one with `value="false"` and children "Date Only", and another with `value="true"` and children "Date & Time".
+[ ] ID: 159: In the `Home` component, set the `value` prop of the `displayTime` `ToggleGroup` to `displayTime.toString()`. Implement the `onValueChange` handler for this `ToggleGroup` to update the `displayTime` state by converting the incoming string `value` from the `ToggleGroupItem` to a boolean.
