@@ -17,6 +17,8 @@ export default function Home() {
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   // Introduce displayUnit state variable
   const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>('kg');
+  // Introduce displayTime state variable
+  const [displayTime, setDisplayTime] = useState<boolean>(false);
   // Replace individual useState declarations with a single one for weightStatistics
   const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
     latest: null,
