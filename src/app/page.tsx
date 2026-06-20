@@ -145,10 +145,10 @@ export default function Home() {
 
         {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} />
-          <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} />
-          <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} />
-          <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} />
+          <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} displayTime={displayTime} />
+          <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} displayTime={displayTime} />
+          <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} displayTime={displayTime} />
+          <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} displayTime={displayTime} />
         </div>
 
         <div className="flex justify-between items-center mb-4">
