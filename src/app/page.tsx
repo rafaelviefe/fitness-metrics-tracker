@@ -180,6 +180,7 @@ export default function Home() {
                     onDelete={handleDeleteWeight}
                     onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)}
                     unitPreference={displayUnit} // Pass displayUnit as unitPreference
+                    displayTime={displayTime} // Pass displayTime state variable
                   />
                 )}
               </li>
