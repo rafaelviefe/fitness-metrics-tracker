@@ -153,10 +153,17 @@ export default function Home() {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
-          <ToggleGroup type="single" value={displayUnit} onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')} className="space-x-2">
-            <ToggleGroupItem value="kg">kg</ToggleGroupItem>
-            <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
-          </ToggleGroup>
+          <div className="flex items-center gap-4"> {/* New wrapper to group settings toggles */}
+            <ToggleGroup type="single" value={displayUnit} onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')} className="space-x-2">
+              <ToggleGroupItem value="kg">kg</ToggleGroupItem>
+              <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
+            </ToggleGroup>
+            {/* New ToggleGroup for displayTime */}
+            <ToggleGroup type="single" value={displayTime ? 'yes' : 'no'} onValueChange={(value) => setDisplayTime(value === 'yes')} className="space-x-2">
+              <ToggleGroupItem value="yes">Show Time</ToggleGroupItem>
+              <ToggleGroupItem value="no">Hide Time</ToggleGroupItem>
+            </ToggleGroup>
+          </div>
           <Button variant="destructive" size="sm" onClick={handleClearAllRecords}>
             Clear All Records
           </Button>
