@@ -159,9 +159,9 @@ export default function Home() {
               <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
             </ToggleGroup>
             {/* New ToggleGroup for displayTime */}
-            <ToggleGroup type="single" value={displayTime ? 'yes' : 'no'} onValueChange={(value) => setDisplayTime(value === 'yes')} className="space-x-2">
-              <ToggleGroupItem value="yes">Show Time</ToggleGroupItem>
-              <ToggleGroupItem value="no">Hide Time</ToggleGroupItem>
+            <ToggleGroup type="single" value={displayTime.toString()} onValueChange={(value) => setDisplayTime(value === 'true')} className="space-x-2">
+              <ToggleGroupItem value="true">Date & Time</ToggleGroupItem>
+              <ToggleGroupItem value="false">Date Only</ToggleGroupItem>
             </ToggleGroup>
           </div>
           <Button variant="destructive" size="sm" onClick={handleClearAllRecords}>
