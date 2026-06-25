@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 154: In the `Home` component, declare a new state variable `displayTime` and initialize it to `false` using `useState`.
-[x] ID: 155: In the `Home` component, pass the `displayTime` state variable as the `displayTime` prop to each `WeightStatisticsCard` instance.
-[x] ID: 156: In the `Home` component, pass the `displayTime` state variable as the `displayTime` prop to the `WeightRecordCard` component within the `map` function.
-[x] ID: 157: In the `Home` component, modify the `div` containing the unit preference `ToggleGroup` and "Clear All Records" `Button` to also contain a new `ToggleGroup` component for `displayTime`, setting its `type` to "single" and adding appropriate `className` for layout.
-[x] ID: 158: Inside the new `displayTime` `ToggleGroup` component in `Home`, add two `ToggleGroupItem` components: one with `value="false"` and children "Date Only", and another with `value="true"` and children "Date & Time".
-[x] ID: 159: In the `Home` component, set the `value` prop of the `displayTime` `ToggleGroup` to `displayTime.toString()`. Implement the `onValueChange` handler for this `ToggleGroup` to update the `displayTime` state by converting the incoming string `value` from the `ToggleGroupItem` to a boolean.
+[ ] ID: 160: Modify `src/app/page.tsx` to read the initial `displayUnit` state from `localStorage` (using `LocalStorageAdapter.getItem`). If no value is stored, default to 'kg'.
+[ ] ID: 161: Modify `src/app/page.tsx` to save the `displayUnit` preference to `localStorage` (using `LocalStorageAdapter.setItem`) whenever the `displayUnit` state changes.
+[ ] ID: 162: Modify `src/app/page.tsx` to read the initial `displayTime` state (as a boolean) from `localStorage`. If no value is stored, default to `false`.
+[ ] ID: 163: Modify `src/app/page.tsx` to save the `displayTime` preference to `localStorage` whenever the `displayTime` state changes.
+[ ] ID: 164: Add a new method `getAverageWeight(): number | null` to `src/features/weight/repositories/weight.repository.ts`. This method should calculate the average weight of all valid records and return it, or `null` if no records exist.
+[ ] ID: 165: Add a new `describe` block or `it` statement within the `WeightRepository` test file (`src/features/weight/repositories/weight.repository.test.ts`) to test the `getAverageWeight` method. Include tests for empty records, single record, multiple records, and records with decimal values.
