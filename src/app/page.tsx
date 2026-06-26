@@ -12,11 +12,20 @@ import { Button } from '@/components/ui/Button'; // Import Button for Clear All 
 import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics (refreshWeightStatistics is no longer directly used here)
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup and ToggleGroupItem
 
+const UNIT_PREFERENCE_KEY = 'unitPreference';
+
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  // Introduce displayUnit state variable
-  const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>('kg');
+  // Introduce displayUnit state variable, initialized from localStorage or defaults to 'kg'
+  const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>(() => {
+    if (typeof window !== 'undefined') {
+      const localStorageAdapter = new LocalStorageAdapter();
+      const storedUnit = localStorageAdapter.getItem<'kg' | 'lbs'>(UNIT_PREFERENCE_KEY);
+      return storedUnit || 'kg';
+    }
+    return 'kg'; // Default for SSR or when window is not available
+  });
   // Introduce displayTime state variable
   const [displayTime, setDisplayTime] = useState<boolean>(false);
   // Replace individual useState declarations with a single one for weightStatistics
@@ -29,6 +38,7 @@ export default function Home() {
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
+  const localStorageAdapterRef = useRef<LocalStorageAdapter | null>(null);
 
   // Define the new helper function to update all statistics
   const updateAllStatistics = useCallback(() => {
@@ -41,8 +51,8 @@ export default function Home() {
   useEffect(() => {
     // This code only runs on the client-side after component mounts
     if (weightRepositoryRef.current === null) {
-      const localStorageAdapter = new LocalStorageAdapter(); // Access window.localStorage here
-      weightRepositoryRef.current = new WeightRepository(localStorageAdapter);
+      localStorageAdapterRef.current = new LocalStorageAdapter(); // Access window.localStorage here
+      weightRepositoryRef.current = new WeightRepository(localStorageAdapterRef.current);
     }
 
     // Capture the non-null repository instance for use within useEffect
@@ -55,6 +65,13 @@ export default function Home() {
     // Initialize weight statistics
     updateAllStatistics();
   }, [updateAllStatistics]); // Add updateAllStatistics to dependency array
+
+  // Effect to save unit preference to localStorage whenever it changes
+  useEffect(() => {
+    if (localStorageAdapterRef.current) {
+      localStorageAdapterRef.current.setItem(UNIT_PREFERENCE_KEY, displayUnit);
+    }
+  }, [displayUnit]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
@@ -135,7 +152,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
         Fitness Metrics Tracker
       </h1>
-      <p className="text-neutral-500"> 
+      <p className="text-neutral-500">
         System Status: <span className="text-green-600 font-semibold">Online</span>
       </p>
 
