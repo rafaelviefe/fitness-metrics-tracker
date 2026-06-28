@@ -13,6 +13,7 @@ import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/uti
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup and ToggleGroupItem
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
+const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference'; // New constant for displayTime localStorage key
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -26,8 +27,16 @@ export default function Home() {
     }
     return 'kg'; // Default for SSR or when window is not available
   });
-  // Introduce displayTime state variable
-  const [displayTime, setDisplayTime] = useState<boolean>(false);
+  // Introduce displayTime state variable, initialized from localStorage or defaults to false
+  const [displayTime, setDisplayTime] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const localStorageAdapter = new LocalStorageAdapter();
+      const storedDisplayTime = localStorageAdapter.getItem<string>(DISPLAY_TIME_PREFERENCE_KEY);
+      // Convert stored string ('true' or 'false') to boolean, default to false if not found
+      return storedDisplayTime === 'true';
+    }
+    return false; // Default for SSR or when window is not available
+  });
   // Replace individual useState declarations with a single one for weightStatistics
   const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
     latest: null,
@@ -72,6 +81,14 @@ export default function Home() {
       localStorageAdapterRef.current.setItem(UNIT_PREFERENCE_KEY, displayUnit);
     }
   }, [displayUnit]);
+
+  // Effect to save displayTime preference to localStorage whenever it changes
+  useEffect(() => {
+    if (localStorageAdapterRef.current) {
+      // Store boolean as a string 'true' or 'false'
+      localStorageAdapterRef.current.setItem(DISPLAY_TIME_PREFERENCE_KEY, displayTime.toString());
+    }
+  }, [displayTime]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
