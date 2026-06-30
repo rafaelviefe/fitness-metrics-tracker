@@ -204,6 +204,20 @@ export class WeightRepository {
   }
 
   /**
+   * Calculates the average weight of all valid records.
+   * @returns The average weight as a number, or null if no records exist or all are malformed.
+   */
+  getAverageWeight(): number | null {
+    const records = this.getWeightRecords();
+    if (records.length === 0) {
+      return null;
+    }
+
+    const totalWeight = records.reduce((sum, record) => sum + record.weight, 0);
+    return totalWeight / records.length;
+  }
+
+  /**
    * Clears all weight records from storage.
    */
   clearAllWeightRecords(): void {
