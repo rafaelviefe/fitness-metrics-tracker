@@ -399,4 +399,62 @@ describe('WeightRepository', () => {
       expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
     });
   });
+
+  describe('getAverageWeight', () => {
+    it('should return null if no records exist', () => {
+      expect(weightRepository.getAverageWeight()).toBeNull();
+    });
+
+    it('should return the weight of the single record if only one exists', () => {
+      weightRepository.addWeightRecord(75, '2023-01-01T10:00:00.000Z');
+      expect(weightRepository.getAverageWeight()).toBe(75);
+    });
+
+    it('should calculate the average weight correctly for multiple records', () => {
+      weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      weightRepository.addWeightRecord(80, '2023-01-02T10:00:00.000Z');
+      weightRepository.addWeightRecord(75, '2023-01-03T10:00:00.000Z');
+      // (70 + 80 + 75) / 3 = 225 / 3 = 75
+      expect(weightRepository.getAverageWeight()).toBe(75);
+    });
+
+    it('should calculate the average weight correctly for records with decimal values', () => {
+      weightRepository.addWeightRecord(68.5, '2023-01-01T10:00:00.000Z');
+      weightRepository.addWeightRecord(70.0, '2023-01-02T10:00:00.000Z');
+      weightRepository.addWeightRecord(71.5, '2023-01-03T10:00:00.000Z');
+      // (68.5 + 70.0 + 71.5) / 3 = 210 / 3 = 70
+      expect(weightRepository.getAverageWeight()).toBe(70);
+    });
+
+    it('should ignore malformed records when calculating average weight', () => {
+      const goodRecord1: WeightRecord = { id: 'id-good-1', date: '2023-01-01T10:00:00.000Z', weight: 60 };
+      const badRecord = { id: 'id-bad', date: '2023-01-02T10:00:00.000Z' }; // Missing weight
+      const goodRecord2: WeightRecord = { id: 'id-good-2', date: '2023-01-03T10:00:00.000Z', weight: 70 };
+
+      // Manually set mock storage data with a mix of good and bad records
+      (storageService.getItem as vi.Mock).mockReturnValueOnce([
+        goodRecord1,
+        badRecord,
+        goodRecord2
+      ]);
+
+      // Only goodRecord1 and goodRecord2 should be included in the average
+      // (60 + 70) / 2 = 65
+      expect(weightRepository.getAverageWeight()).toBe(65);
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for filtering malformed records
+    });
+
+    it('should return null if all records are malformed', () => {
+      const badRecord1 = { id: 'id-bad-1', date: '2023-01-01T10:00:00.000Z' };
+      const badRecord2 = { id: 'id-bad-2', weight: 70 };
+
+      (storageService.getItem as vi.Mock).mockReturnValueOnce([
+        badRecord1,
+        badRecord2
+      ]);
+
+      expect(weightRepository.getAverageWeight()).toBeNull();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+  });
 });
