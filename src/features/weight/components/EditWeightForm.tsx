@@ -10,6 +10,7 @@ interface EditWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> 
   record: WeightRecord;
   onSave: (updatedRecord: WeightRecord) => void;
   onCancel: () => void;
+  unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
 }
 
 export const EditWeightForm: React.FC<EditWeightFormProps> = ({
@@ -17,6 +18,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
   onSave,
   onCancel,
   className,
+  unitPreference = 'kg',
   ...props
 }) => {
   const [editedWeight, setEditedWeight] = useState<string>(record.weight.toString());
@@ -76,7 +78,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div>
         <label htmlFor={`edit-weight-${record.id}`} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-          Weight (kg)
+          Weight ({unitPreference})
         </label>
         <Input
           id={`edit-weight-${record.id}`}
@@ -84,7 +86,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
           step="0.1"
           value={editedWeight}
           onChange={handleWeightChange}
-          placeholder="Enter weight in kg"
+          placeholder={`Enter weight in ${unitPreference}`}
           aria-invalid={!!weightError}
           aria-describedby={weightError ? `weight-error-${record.id}` : undefined}
           isError={!!weightError}
