@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { EditWeightForm } from './EditWeightForm';
 import { WeightRecord } from '../types';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // Import the utility function
+import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
 
 describe('EditWeightForm', () => {
   const mockRecord: WeightRecord = {
@@ -25,7 +26,7 @@ describe('EditWeightForm', () => {
     vi.useRealTimers();
   });
 
-  it('renders correctly with initial weight and date values', () => {
+  it('renders correctly with initial weight and date values (kg default)', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
 
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
@@ -50,6 +51,15 @@ describe('EditWeightForm', () => {
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
   });
 
+  it('renders correctly with initial weight and date values (lbs unitPreference)', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} unitPreference="lbs"/>);
+
+    const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
+
+    expect(weightInput).toBeInTheDocument();
+    expect(weightInput.value).toBe(mockRecord.weight.toString()); // Value is still kg here, conversion happens on save
+  });
+
   it('updates weight input value on change', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
@@ -67,7 +77,7 @@ describe('EditWeightForm', () => {
     expect(dateInput.value).toBe(newDateTimeLocal);
   });
 
-  it('calls onSave with updated record when form is submitted with valid data', () => {
+  it('calls onSave with updated record when form is submitted with valid data (kg)', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
@@ -90,6 +100,28 @@ describe('EditWeightForm', () => {
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
     expect(weightInput).toHaveAttribute('aria-invalid', 'false');
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
+  });
+
+  it('calls onSave with updated record (weight converted to kg) when form is submitted with valid data (lbs)', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} unitPreference="lbs"/>);
+    const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+
+    const newWeightLbs = '180.0';
+    const newDateTimeLocal = '2023-11-01T15:30';
+    const expectedWeightKg = convertLbsToKg(parseFloat(newWeightLbs));
+
+    fireEvent.change(weightInput, { target: { value: newWeightLbs } });
+    fireEvent.change(dateInput, { target: { value: newDateTimeLocal } });
+    fireEvent.click(saveButton); // Submits the form
+
+    expect(mockOnSave).toHaveBeenCalledTimes(1);
+    expect(mockOnSave).toHaveBeenCalledWith({
+      ...mockRecord,
+      weight: expect.closeTo(expectedWeightKg), // Converted to kg
+      date: new Date(newDateTimeLocal).toISOString(),
+    });
   });
 
   it('calls onCancel when the Cancel button is clicked', () => {
