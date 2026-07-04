@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils';
+import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
 
 interface EditWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   record: WeightRecord;
@@ -39,7 +40,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const parsedWeight = parseFloat(editedWeight);
+    let parsedWeight = parseFloat(editedWeight);
     const parsedDate = new Date(editedDate); 
 
     let currentWeightError: string | null = null;
@@ -62,6 +63,11 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
 
     if (hasValidationErrors) {
       return;
+    }
+
+    // Convert weight to kg if unitPreference is 'lbs' for storage
+    if (unitPreference === 'lbs') {
+      parsedWeight = convertLbsToKg(parsedWeight);
     }
 
     // If no errors, proceed to save
