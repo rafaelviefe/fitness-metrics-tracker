@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 168: Add `average: number | null;` to the `WeightStatistics` interface in `src/features/weight/utils/weight-utils.ts`.
+[x] ID: 168: Add `average: number | null;` to the `WeightStatistics` interface in `src/features/weight/utils/weight-utils.ts`.
 [ ] ID: 169: Call `repository.getAverageWeight()` and assign its result to the `average` property in the returned `WeightStatistics` object within `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts`.
 [ ] ID: 170: Add a `WeightStatisticsCard` for `weightStatistics.average` with the label "Average Weight" to the grid of statistics cards in `src/app/page.tsx`. Pass `unitPreference` and `displayTime` props.
 [ ] ID: 171: Add a new `useState` variable `sortOrder` to `Home` in `src/app/page.tsx` for managing the display order of records, initializing it to `'date_desc'` (for descending date order).

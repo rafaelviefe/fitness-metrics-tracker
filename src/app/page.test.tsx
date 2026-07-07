@@ -29,8 +29,8 @@ describe('Home Page', () => {
 
   it('displays "No records yet." for all statistics cards initially when localStorage is empty', () => {
     render(<Home />);
-    // There are now four WeightStatisticsCard components, each should show "No records yet."
+    // There are now five WeightStatisticsCard components (latest, highest, lowest, oldest, average), each should show "No records yet."
     const noRecordsMessages = screen.getAllByText('No records yet.');
-    expect(noRecordsMessages).toHaveLength(4);
+    expect(noRecordsMessages).toHaveLength(5);
   });
 });

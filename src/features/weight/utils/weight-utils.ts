@@ -9,24 +9,27 @@ export interface WeightStatistics {
   highest: WeightRecord | null;
   lowest: WeightRecord | null;
   oldest: WeightRecord | null;
+  average: number | null;
 }
 
 /**
  * Refreshes and returns the aggregated weight statistics using the provided WeightRepository.
  * @param repository An instance of WeightRepository.
- * @returns A WeightStatistics object containing the latest, highest, lowest, and oldest weight records.
+ * @returns A WeightStatistics object containing the latest, highest, lowest, oldest, and average weight.
  */
 export const refreshWeightStatistics = (repository: WeightRepository): WeightStatistics => {
   const latest = repository.getLatestWeightRecord();
   const highest = repository.getHighestWeightRecord();
   const lowest = repository.getLowestWeightRecord();
   const oldest = repository.getOldestWeightRecord();
+  const average = repository.getAverageWeight();
 
   return {
     latest,
     highest,
     lowest,
     oldest,
+    average,
   };
 };
 

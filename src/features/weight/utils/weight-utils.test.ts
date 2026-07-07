@@ -9,6 +9,7 @@ const mockWeightRepository = {
   getHighestWeightRecord: vi.fn(),
   getLowestWeightRecord: vi.fn(),
   getOldestWeightRecord: vi.fn(),
+  getAverageWeight: vi.fn(), // Mock the new method
   // Include other methods from WeightRepository to satisfy TypeScript, even if not called by this utility
   getWeightRecords: vi.fn(),
   addWeightRecord: vi.fn(),
@@ -28,11 +29,13 @@ describe('refreshWeightStatistics', () => {
     const mockHighest: WeightRecord = { id: 'h1', date: '2023-09-01T10:00:00.000Z', weight: 90 };
     const mockLowest: WeightRecord = { id: 'lo1', date: '2023-08-15T10:00:00.000Z', weight: 70 };
     const mockOldest: WeightRecord = { id: 'o1', date: '2023-07-01T10:00:00.000Z', weight: 75 };
+    const mockAverage = 78.3; // Mock average value
 
     mockWeightRepository.getLatestWeightRecord.mockReturnValue(mockLatest);
     mockWeightRepository.getHighestWeightRecord.mockReturnValue(mockHighest);
     mockWeightRepository.getLowestWeightRecord.mockReturnValue(mockLowest);
     mockWeightRepository.getOldestWeightRecord.mockReturnValue(mockOldest);
+    mockWeightRepository.getAverageWeight.mockReturnValue(mockAverage); // Mock average
 
     const result = refreshWeightStatistics(mockWeightRepository);
 
@@ -40,12 +43,14 @@ describe('refreshWeightStatistics', () => {
     expect(mockWeightRepository.getHighestWeightRecord).toHaveBeenCalledTimes(1);
     expect(mockWeightRepository.getLowestWeightRecord).toHaveBeenCalledTimes(1);
     expect(mockWeightRepository.getOldestWeightRecord).toHaveBeenCalledTimes(1);
+    expect(mockWeightRepository.getAverageWeight).toHaveBeenCalledTimes(1);
 
     expect(result).toEqual({
       latest: mockLatest,
       highest: mockHighest,
       lowest: mockLowest,
       oldest: mockOldest,
+      average: mockAverage, // Assert average
     });
   });
 
@@ -54,6 +59,7 @@ describe('refreshWeightStatistics', () => {
     mockWeightRepository.getHighestWeightRecord.mockReturnValue(null);
     mockWeightRepository.getLowestWeightRecord.mockReturnValue(null);
     mockWeightRepository.getOldestWeightRecord.mockReturnValue(null);
+    mockWeightRepository.getAverageWeight.mockReturnValue(null); // Mock average as null
 
     const result = refreshWeightStatistics(mockWeightRepository);
 
@@ -61,23 +67,27 @@ describe('refreshWeightStatistics', () => {
     expect(mockWeightRepository.getHighestWeightRecord).toHaveBeenCalledTimes(1);
     expect(mockWeightRepository.getLowestWeightRecord).toHaveBeenCalledTimes(1);
     expect(mockWeightRepository.getOldestWeightRecord).toHaveBeenCalledTimes(1);
+    expect(mockWeightRepository.getAverageWeight).toHaveBeenCalledTimes(1);
 
     expect(result).toEqual({
       latest: null,
       highest: null,
       lowest: null,
       oldest: null,
+      average: null, // Assert average is null
     });
   });
 
   it('should correctly combine a mix of existing and null records', () => {
     const mockLatest: WeightRecord = { id: 'l1', date: '2023-10-30T10:00:00.000Z', weight: 80 };
     const mockLowest: WeightRecord = { id: 'lo1', date: '2023-08-15T10:00:00.000Z', weight: 70 };
+    const mockAverage = 75.5; // Mock average value
 
     mockWeightRepository.getLatestWeightRecord.mockReturnValue(mockLatest);
     mockWeightRepository.getHighestWeightRecord.mockReturnValue(null); // No highest
     mockWeightRepository.getLowestWeightRecord.mockReturnValue(mockLowest);
     mockWeightRepository.getOldestWeightRecord.mockReturnValue(null); // No oldest
+    mockWeightRepository.getAverageWeight.mockReturnValue(mockAverage); // Mock average
 
     const result = refreshWeightStatistics(mockWeightRepository);
 
@@ -86,6 +96,7 @@ describe('refreshWeightStatistics', () => {
       highest: null,
       lowest: mockLowest,
       oldest: null,
+      average: mockAverage, // Assert average
     });
   });
 });
