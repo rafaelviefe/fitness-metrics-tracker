@@ -9,7 +9,7 @@ import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // I
 import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
 import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
 import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
-import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils'; // Import WeightStatistics (refreshWeightStatistics is no longer directly used here)
+import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup and ToggleGroupItem
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
@@ -43,6 +43,7 @@ export default function Home() {
     highest: null,
     lowest: null,
     oldest: null,
+    average: null,
   });
 
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
@@ -160,6 +161,7 @@ export default function Home() {
         highest: null,
         lowest: null,
         oldest: null,
+        average: null,
       });
     }
   };
@@ -183,6 +185,13 @@ export default function Home() {
           <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} displayTime={displayTime} />
+          {/* A dedicated card for average weight, as it's not a single record */} 
+          <WeightStatisticsCard 
+            record={weightStatistics.average !== null ? { id: 'average', date: new Date().toISOString(), weight: weightStatistics.average } : null} 
+            label="Average Weight" 
+            unitPreference={displayUnit} 
+            displayTime={false} // Average doesn't typically need a specific date/time for display 
+          />
         </div>
 
         <div className="flex justify-between items-center mb-4">
@@ -214,6 +223,7 @@ export default function Home() {
                     record={record}
                     onSave={handleSaveEditedWeight}
                     onCancel={handleCancelEdit}
+                    unitPreference={displayUnit}
                   />
                 ) : (
                   <WeightRecordCard
