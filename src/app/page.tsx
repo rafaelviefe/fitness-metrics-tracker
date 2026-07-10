@@ -46,6 +46,9 @@ export default function Home() {
     average: null,
   });
 
+  // New state for managing the display order of records
+  const [sortOrder, setSortOrder] = useState<'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc'>('date_desc');
+
   // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
   const localStorageAdapterRef = useRef<LocalStorageAdapter | null>(null);
@@ -185,12 +188,12 @@ export default function Home() {
           <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} displayTime={displayTime} />
-          {/* A dedicated card for average weight, as it's not a single record */} 
-          <WeightStatisticsCard 
-            record={weightStatistics.average !== null ? { id: 'average', date: new Date().toISOString(), weight: weightStatistics.average } : null} 
-            label="Average Weight" 
-            unitPreference={displayUnit} 
-            displayTime={false} // Average doesn't typically need a specific date/time for display 
+          {/* A dedicated card for average weight, as it's not a single record */}
+          <WeightStatisticsCard
+            record={weightStatistics.average !== null ? { id: 'average', date: new Date().toISOString(), weight: weightStatistics.average } : null}
+            label="Average Weight"
+            unitPreference={displayUnit}
+            displayTime={false} // Average doesn't typically need a specific date/time for display
           />
         </div>
 
