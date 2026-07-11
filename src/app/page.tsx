@@ -2,42 +2,38 @@
 
 import { WeightRepository } from '@/features/weight/repositories/weight.repository';
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { WeightRecord } from '@/features/weight/types';
 import { WeightRecordCard } from '@/features/weight/components/WeightRecordCard';
-import { AddWeightForm } from '@/features/weight/components/AddWeightForm'; // Import AddWeightForm
-import { EditWeightForm } from '@/features/weight/components/EditWeightForm'; // Import EditWeightForm
-import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard'; // Import WeightStatisticsCard
-import { Button } from '@/components/ui/Button'; // Import Button for Clear All Records
+import { AddWeightForm } from '@/features/weight/components/AddWeightForm';
+import { EditWeightForm } from '@/features/weight/components/EditWeightForm';
+import { WeightStatisticsCard } from '@/features/weight/components/WeightStatisticsCard';
+import { Button } from '@/components/ui/Button';
 import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup and ToggleGroupItem
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
-const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference'; // New constant for displayTime localStorage key
+const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  // Introduce displayUnit state variable, initialized from localStorage or defaults to 'kg'
   const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>(() => {
     if (typeof window !== 'undefined') {
       const localStorageAdapter = new LocalStorageAdapter();
       const storedUnit = localStorageAdapter.getItem<'kg' | 'lbs'>(UNIT_PREFERENCE_KEY);
       return storedUnit || 'kg';
     }
-    return 'kg'; // Default for SSR or when window is not available
+    return 'kg';
   });
-  // Introduce displayTime state variable, initialized from localStorage or defaults to false
   const [displayTime, setDisplayTime] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const localStorageAdapter = new LocalStorageAdapter();
       const storedDisplayTime = localStorageAdapter.getItem<string>(DISPLAY_TIME_PREFERENCE_KEY);
-      // Convert stored string ('true' or 'false') to boolean, default to false if not found
       return storedDisplayTime === 'true';
     }
-    return false; // Default for SSR or when window is not available
+    return false;
   });
-  // Replace individual useState declarations with a single one for weightStatistics
   const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
     latest: null,
     highest: null,
@@ -46,14 +42,11 @@ export default function Home() {
     average: null,
   });
 
-  // New state for managing the display order of records
   const [sortOrder, setSortOrder] = useState<'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc'>('date_desc');
 
-  // Use useRef to hold the repository instance, ensuring it's only created once on the client
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
   const localStorageAdapterRef = useRef<LocalStorageAdapter | null>(null);
 
-  // Define the new helper function to update all statistics
   const updateAllStatistics = useCallback(() => {
     if (weightRepositoryRef.current) {
       const newStatistics = refreshWeightStatistics(weightRepositoryRef.current);
@@ -62,34 +55,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // This code only runs on the client-side after component mounts
     if (weightRepositoryRef.current === null) {
-      localStorageAdapterRef.current = new LocalStorageAdapter(); // Access window.localStorage here
+      localStorageAdapterRef.current = new LocalStorageAdapter();
       weightRepositoryRef.current = new WeightRepository(localStorageAdapterRef.current);
     }
 
-    // Capture the non-null repository instance for use within useEffect
     const repository = weightRepositoryRef.current;
 
-    // Load initial weight records from the repository
     const initialRecords = repository.getWeightRecords();
     setWeightRecords(initialRecords);
 
-    // Initialize weight statistics
     updateAllStatistics();
-  }, [updateAllStatistics]); // Add updateAllStatistics to dependency array
+  }, [updateAllStatistics]);
 
-  // Effect to save unit preference to localStorage whenever it changes
   useEffect(() => {
     if (localStorageAdapterRef.current) {
       localStorageAdapterRef.current.setItem(UNIT_PREFERENCE_KEY, displayUnit);
     }
   }, [displayUnit]);
 
-  // Effect to save displayTime preference to localStorage whenever it changes
   useEffect(() => {
     if (localStorageAdapterRef.current) {
-      // Store boolean as a string 'true' or 'false'
       localStorageAdapterRef.current.setItem(DISPLAY_TIME_PREFERENCE_KEY, displayTime.toString());
     }
   }, [displayTime]);
@@ -97,24 +83,20 @@ export default function Home() {
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
     if (weightRepositoryRef.current) {
-      // Capture the non-null repository instance
       const repository = weightRepositoryRef.current;
       const newRecord = repository.addWeightRecord(weight, date);
       setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
-      // After adding, re-fetch and update all statistics
       updateAllStatistics();
     }
   };
 
   const handleDeleteWeight = (id: string) => {
     if (weightRepositoryRef.current) {
-      // Capture the non-null repository instance
       const repository = weightRepositoryRef.current;
       const isDeleted = repository.deleteWeightRecord(id);
       if (isDeleted) {
         setWeightRecords((prevRecords) => {
           const updatedRecords = prevRecords.filter((record) => record.id !== id);
-          // After deleting, re-evaluate all statistics
           updateAllStatistics();
           return updatedRecords;
         });
@@ -122,15 +104,12 @@ export default function Home() {
     }
   };
 
-  // New function to set the editing record ID
   const handleEditWeight = (id: string) => {
     setEditingRecordId(id);
   };
 
-  // New function to handle saving an updated weight record
   const handleSaveEditedWeight = (updatedRecord: WeightRecord) => {
     if (weightRepositoryRef.current) {
-      // Capture the non-null repository instance
       const repository = weightRepositoryRef.current;
       const result = repository.updateWeightRecord(updatedRecord);
       if (result) {
@@ -138,24 +117,20 @@ export default function Home() {
           const updatedRecords = prevRecords.map((record) =>
             record.id === updatedRecord.id ? result : record
           );
-          // After editing, re-evaluate all statistics
           updateAllStatistics();
           return updatedRecords;
         });
-        setEditingRecordId(null); // Exit editing mode after saving
+        setEditingRecordId(null);
       }
     }
   };
 
-  // New function to handle cancelling the edit operation
   const handleCancelEdit = () => {
-    setEditingRecordId(null); // Exit editing mode without saving changes
+    setEditingRecordId(null);
   };
 
-  // Function to clear all records
   const handleClearAllRecords = () => {
     if (weightRepositoryRef.current) {
-      // Capture the non-null repository instance
       const repository = weightRepositoryRef.current;
       repository.clearAllWeightRecords();
       setWeightRecords([]);
@@ -169,6 +144,37 @@ export default function Home() {
     }
   };
 
+  const sortedWeightRecords = useMemo(() => {
+    const sorted = [...weightRecords].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortOrder) {
+        case 'date_desc':
+          comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
+          break;
+        case 'date_asc':
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          break;
+        case 'weight_desc':
+          comparison = b.weight - a.weight;
+          break;
+        case 'weight_asc':
+          comparison = a.weight - b.weight;
+          break;
+        default:
+          break;
+      }
+
+      // Secondary tie-breaker: sort by ID ascending if primary comparison is equal
+      if (comparison === 0) {
+        return a.id.localeCompare(b.id);
+      }
+
+      return comparison;
+    });
+    return sorted;
+  }, [weightRecords, sortOrder]);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
@@ -179,32 +185,28 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
-        {/* Render AddWeightForm here, before the "Your Weight Records" section */}
         <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} />
 
-        {/* Render WeightStatisticsCard here, above "Your Weight Records" */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.highest} label="Highest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} displayTime={displayTime} />
-          {/* A dedicated card for average weight, as it's not a single record */}
           <WeightStatisticsCard
             record={weightStatistics.average !== null ? { id: 'average', date: new Date().toISOString(), weight: weightStatistics.average } : null}
             label="Average Weight"
             unitPreference={displayUnit}
-            displayTime={false} // Average doesn't typically need a specific date/time for display
+            displayTime={false}
           />
         </div>
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
-          <div className="flex items-center gap-4"> {/* New wrapper to group settings toggles */}
+          <div className="flex items-center gap-4">
             <ToggleGroup type="single" value={displayUnit} onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')} className="space-x-2">
               <ToggleGroupItem value="kg">kg</ToggleGroupItem>
               <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
             </ToggleGroup>
-            {/* New ToggleGroup for displayTime */}
             <ToggleGroup type="single" value={displayTime.toString()} onValueChange={(value) => setDisplayTime(value === 'true')} className="space-x-2">
               <ToggleGroupItem value="true">Date & Time</ToggleGroupItem>
               <ToggleGroupItem value="false">Date Only</ToggleGroupItem>
@@ -215,11 +217,22 @@ export default function Home() {
           </Button>
         </div>
 
+        {/* New controls for sorting */} 
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
+          <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as any)}>
+            <ToggleGroupItem value="date_desc" size="sm">Date (Newest)</ToggleGroupItem>
+            <ToggleGroupItem value="date_asc" size="sm">Date (Oldest)</ToggleGroupItem>
+            <ToggleGroupItem value="weight_desc" size="sm">Weight (Highest)</ToggleGroupItem>
+            <ToggleGroupItem value="weight_asc" size="sm">Weight (Lowest)</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
         {weightRecords.length === 0 ? (
           <p className="text-neutral-500">No weight records found. Add some!</p>
         ) : (
           <ul className="space-y-3">
-            {weightRecords.map((record) => (
+            {sortedWeightRecords.map((record) => (
               <li key={record.id}>
                 {editingRecordId === record.id ? (
                   <EditWeightForm
@@ -233,8 +246,8 @@ export default function Home() {
                     record={record}
                     onDelete={handleDeleteWeight}
                     onEdit={(recordToEdit) => handleEditWeight(recordToEdit.id)}
-                    unitPreference={displayUnit} // Pass displayUnit as unitPreference
-                    displayTime={displayTime} // Pass displayTime state variable
+                    unitPreference={displayUnit}
+                    displayTime={displayTime}
                   />
                 )}
               </li>
