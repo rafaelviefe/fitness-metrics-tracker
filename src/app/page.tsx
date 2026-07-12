@@ -217,7 +217,7 @@ export default function Home() {
           </Button>
         </div>
 
-        {/* New controls for sorting */} 
+        {/* New controls for sorting */}
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
           <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as any)}>
