@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 168: Add `average: number | null;` to the `WeightStatistics` interface in `src/features/weight/utils/weight-utils.ts`.
-[x] ID: 169: Call `repository.getAverageWeight()` and assign its result to the `average` property in the returned `WeightStatistics` object within `refreshWeightStatistics` in `src/features/weight/utils/weight-utils.ts`.
-[x] ID: 170: Add a `WeightStatisticsCard` for `weightStatistics.average` with the label "Average Weight" to the grid of statistics cards in `src/app/page.tsx`. Pass `unitPreference` and `displayTime` props.
-[x] ID: 171: Add a new `useState` variable `sortOrder` to `Home` in `src/app/page.tsx` for managing the display order of records, initializing it to `'date_desc'` (for descending date order).
-[x] ID: 172: In `src/app/page.tsx`, create a `sortedWeightRecords` memoized value that sorts the `weightRecords` array based on the `sortOrder` state, before rendering them. Implement sorting for `'date_desc'`, `'date_asc'`, `'weight_desc'`, and `'weight_asc'`, using `record.id` as a secondary tie-breaker (ascending) for consistency.
-[x] ID: 173: In `src/app/page.tsx`, add a new `ToggleGroup` component above the list of records to allow users to select the `sortOrder` (e.g., `'date_desc'`, `'date_asc'`, `'weight_desc'`, `'weight_asc'`), binding its value and `onValueChange` to the `sortOrder` state.
+[ ] ID: 174: Modify the `WeightStatisticsCard` component in `src/features/weight/components/WeightStatisticsCard.tsx` to suppress the rendering of the date and time paragraph element if the `record` prop is provided and its `id` is 'average'. This will ensure only the weight and label are displayed for the average statistic.
+[ ] ID: 175: In `src/app/page.tsx`, update the `WeightStatisticsCard` component responsible for displaying "Average Weight". When `weightStatistics.average` is not null, ensure the `record` prop passed to the card is an object with `id: 'average'`, `date: new Date().toISOString()`, and `weight: weightStatistics.average`, so that the date suppression logic (from previous task) is correctly triggered.
+[ ] ID: 176: Change the `console.error` call within `src/lib/date-utils.ts`'s `formatIsoToDateTimeLocal` function to `console.warn` when falling back to the current date due to an invalid input string.
+[ ] ID: 177: In `src/app/page.tsx`, initialize the `sortOrder` state by attempting to retrieve the user's preference from local storage using `LocalStorageAdapter`, defaulting to 'date_desc' if no preference is found.
+[ ] ID: 178: In `src/app/page.tsx`, add a `useEffect` hook to persist the `sortOrder` state to local storage whenever it changes, using `LocalStorageAdapter` and a new constant key for the storage key.
+[ ] ID: 179: In `src/app/page.tsx`, add descriptive `aria-label` attributes to the `ToggleGroupItem` components used for sorting, clarifying the action of each sort option for accessibility.
