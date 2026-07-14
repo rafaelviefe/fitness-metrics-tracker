@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 174: Modify the `WeightStatisticsCard` component in `src/features/weight/components/WeightStatisticsCard.tsx` to suppress the rendering of the date and time paragraph element if the `record` prop is provided and its `id` is 'average'. This will ensure only the weight and label are displayed for the average statistic.
+[x] ID: 174: Modify the `WeightStatisticsCard` component in `src/features/weight/components/WeightStatisticsCard.tsx` to suppress the rendering of the date and time paragraph element if the `record` prop is provided and its `id` is 'average'. This will ensure only the weight and label are displayed for the average statistic.
 [ ] ID: 175: In `src/app/page.tsx`, update the `WeightStatisticsCard` component responsible for displaying "Average Weight". When `weightStatistics.average` is not null, ensure the `record` prop passed to the card is an object with `id: 'average'`, `date: new Date().toISOString()`, and `weight: weightStatistics.average`, so that the date suppression logic (from previous task) is correctly triggered.
 [ ] ID: 176: Change the `console.error` call within `src/lib/date-utils.ts`'s `formatIsoToDateTimeLocal` function to `console.warn` when falling back to the current date due to an invalid input string.
 [ ] ID: 177: In `src/app/page.tsx`, initialize the `sortOrder` state by attempting to retrieve the user's preference from local storage using `LocalStorageAdapter`, defaulting to 'date_desc' if no preference is found.

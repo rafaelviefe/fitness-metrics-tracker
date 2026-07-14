@@ -14,7 +14,10 @@ interface WeightStatisticsCardProps extends React.HTMLAttributes<HTMLDivElement>
 
 const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCardProps>(
   ({ record, label, className, displayTime = false, unitPreference = 'kg', ...props }, ref) => {
-    const formattedDate = record
+    // Suppress date display if record exists and its ID is 'average'
+    const shouldDisplayDate = record && record.id !== 'average';
+
+    const formattedDate = shouldDisplayDate
       ? (displayTime ? formatDateWithTimeForDisplay(record.date) : formatDateForDisplay(record.date))
       : null;
 
@@ -27,7 +30,9 @@ const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCa
     const content = record ? (
       <div className="flex items-baseline space-x-2">
         <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{displayedWeight} {displayedUnit}</p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">{formattedDate}</p>
+        {shouldDisplayDate && (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">{formattedDate}</p>
+        )}
       </div>
     ) : (
       <p className="text-neutral-500 dark:text-neutral-400">No records yet.</p>
