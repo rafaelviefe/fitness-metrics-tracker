@@ -169,4 +169,18 @@ describe('WeightStatisticsCard', () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it('should suppress date display for average weight if record id is "average" (even if displayTime is true)', () => {
+    const averageRecord: WeightRecord = {
+      id: 'average', 
+      date: '2023-10-27T10:00:00.000Z', 
+      weight: 75.0,
+    };
+    render(<WeightStatisticsCard record={averageRecord} label="Average Weight" displayTime={true} />);
+
+    expect(screen.getByText('75 kg')).toBeInTheDocument();
+    expect(screen.queryByText(/2023/)).not.toBeInTheDocument(); // Date should be suppressed
+    expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument(); // Time should be suppressed
+    expect(screen.queryByText('October 27, 2023, 10:00 AM')).not.toBeInTheDocument(); // Full date with time should be suppressed
+  });
 });
