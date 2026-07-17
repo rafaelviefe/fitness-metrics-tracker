@@ -2,22 +2,22 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { formatIsoToDateTimeLocal, formatDateForDisplay, formatDateWithTimeForDisplay } from './date-utils';
 
 describe('formatIsoToDateTimeLocal', () => {
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Use fake timers to control Date.now() and new Date() behavior
     vi.useFakeTimers();
     // Set a consistent system time for tests where current time is used
     vi.setSystemTime(new Date('2023-11-15T10:00:00.000Z'));
-    // Spy on console.error to check if it's called without printing to console
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // Spy on console.warn to check if it's called without printing to console
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     // Restore real timers after each test
     vi.useRealTimers();
-    // Restore console.error to its original implementation
-    consoleErrorSpy.mockRestore();
+    // Restore console.warn to its original implementation
+    consoleWarnSpy.mockRestore();
   });
 
   it('should correctly format a valid ISO date string to datetime-local format', () => {
@@ -39,7 +39,7 @@ describe('formatIsoToDateTimeLocal', () => {
     const expected = `${year}-${month}-${day}T${hours}:${minutes}`;
 
     expect(formatIsoToDateTimeLocal(isoDate)).toBe(expected);
-    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
   it('should handle dates at the start of the month/day with leading zeros', () => {
@@ -53,7 +53,7 @@ describe('formatIsoToDateTimeLocal', () => {
     const expected = `${year}-${month}-${day}T${hours}:${minutes}`;
 
     expect(formatIsoToDateTimeLocal(isoDate)).toBe(expected);
-    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
   it('should return current system time in datetime-local format for an invalid date string', () => {
@@ -68,9 +68,9 @@ describe('formatIsoToDateTimeLocal', () => {
     const expectedFallback = `${year}-${month}-${day}T${hours}:${minutes}`;
 
     expect(formatIsoToDateTimeLocal(invalidIsoDate)).toBe(expectedFallback);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Invalid date string provided to formatIsoToDateTimeLocal:',
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatIsoToDateTimeLocal, falling back to current local time:',
       invalidIsoDate
     );
   });
@@ -87,9 +87,9 @@ describe('formatIsoToDateTimeLocal', () => {
     const expectedFallback = `${year}-${month}-${day}T${hours}:${minutes}`;
 
     expect(formatIsoToDateTimeLocal(emptyDate)).toBe(expectedFallback);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Invalid date string provided to formatIsoToDateTimeLocal:',
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Invalid date string provided to formatIsoToDateTimeLocal, falling back to current local time:',
       emptyDate
     );
   });
@@ -158,7 +158,7 @@ describe('formatDateForDisplay', () => {
     );
   });
 
-  it('should return "Invalid Date" for null or undefined input and log an error (though types prevent this)', () => {
+  it('should return "Invalid Date" for null or undefined input and log an error (though types restrict this)', () => {
     // Although TypeScript types prevent direct `null` or `undefined`, JS allows it.
     // The function should still handle it gracefully via `new Date(value)` returning Invalid Date.
     expect(formatDateForDisplay(null as any)).toBe('Invalid Date');

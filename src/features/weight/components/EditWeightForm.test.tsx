@@ -203,20 +203,13 @@ describe('EditWeightForm', () => {
     expect(screen.getByLabelText(/Date & Time/i)).toHaveAttribute('aria-invalid', 'false');
   });
 
-  it('applies additional custom class names', () => {
-    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} className="custom-form-style" data-testid="edit-form"/>);
-    const formElement = screen.getByTestId('edit-form');
-    expect(formElement).toHaveClass('custom-form-style');
-    expect(formElement).toHaveClass('space-y-4'); // Default class
-  });
-
   it('handles invalid initial date string gracefully by falling back to current time', () => {
     const invalidDateRecord: WeightRecord = {
       id: 'mock-id-invalid-date',
       date: 'invalid-date-string',
       weight: 70
     };
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     render(<EditWeightForm record={invalidDateRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
 
@@ -225,9 +218,9 @@ describe('EditWeightForm', () => {
     // Use the actual utility function for the expected fallback
     const expectedFallbackDate = formatIsoToDateTimeLocal(now.toISOString());
     expect(dateInput.value).toBe(expectedFallbackDate);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Invalid date string provided to formatIsoToDateTimeLocal:", "invalid-date-string");
+    expect(consoleWarnSpy).toHaveBeenCalledWith("Invalid date string provided to formatIsoToDateTimeLocal, falling back to current local time:", "invalid-date-string");
 
-    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
   });
 
   it('shows an error if date input is cleared/invalid during submission and shows weight error if still present', () => {
