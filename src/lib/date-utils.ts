@@ -2,7 +2,7 @@ export const formatIsoToDateTimeLocal = (isoDateString: string): string => {
   const date = new Date(isoDateString);
   // Ensure the date object is valid before formatting
   if (isNaN(date.getTime())) {
-    console.error("Invalid date string provided to formatIsoToDateTimeLocal:", isoDateString);
+    console.warn("Invalid date string provided to formatIsoToDateTimeLocal, falling back to current local time:", isoDateString);
     // Fallback to current local time if date is invalid to prevent input crash
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
