@@ -14,6 +14,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
+const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
+
+type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
@@ -34,7 +37,7 @@ export default function Home() {
     }
     return false;
   });
-  const [weightStatistics, setWeightStatistics] = useState<WeightStatistics>({
+  const [weightStatistics, setWeightStatistics] = useState<WeightStatistics> ({
     latest: null,
     highest: null,
     lowest: null,
@@ -42,7 +45,18 @@ export default function Home() {
     average: null,
   });
 
-  const [sortOrder, setSortOrder] = useState<'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc'>('date_desc');
+  const [sortOrder, setSortOrder] = useState<SortOrder>(() => {
+    if (typeof window !== 'undefined') {
+      const localStorageAdapter = new LocalStorageAdapter();
+      const storedSortOrder = localStorageAdapter.getItem<SortOrder>(SORT_ORDER_PREFERENCE_KEY);
+      // Ensure the stored value is one of the valid SortOrder types, otherwise default.
+      const validSortOrders: SortOrder[] = ['date_desc', 'date_asc', 'weight_desc', 'weight_asc'];
+      if (storedSortOrder && validSortOrders.includes(storedSortOrder)) {
+        return storedSortOrder;
+      }
+    }
+    return 'date_desc'; // Default sort order
+  });
 
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
   const localStorageAdapterRef = useRef<LocalStorageAdapter | null>(null);
@@ -55,17 +69,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (weightRepositoryRef.current === null) {
+    if (localStorageAdapterRef.current === null) {
       localStorageAdapterRef.current = new LocalStorageAdapter();
       weightRepositoryRef.current = new WeightRepository(localStorageAdapterRef.current);
     }
 
     const repository = weightRepositoryRef.current;
+    if (repository) { // Ensure repository is not null before usage
+      const initialRecords = repository.getWeightRecords();
+      setWeightRecords(initialRecords);
 
-    const initialRecords = repository.getWeightRecords();
-    setWeightRecords(initialRecords);
-
-    updateAllStatistics();
+      updateAllStatistics();
+    }
   }, [updateAllStatistics]);
 
   useEffect(() => {
@@ -79,6 +94,12 @@ export default function Home() {
       localStorageAdapterRef.current.setItem(DISPLAY_TIME_PREFERENCE_KEY, displayTime.toString());
     }
   }, [displayTime]);
+
+  useEffect(() => {
+    if (localStorageAdapterRef.current) {
+      localStorageAdapterRef.current.setItem(SORT_ORDER_PREFERENCE_KEY, sortOrder);
+    }
+  }, [sortOrder]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
@@ -220,7 +241,7 @@ export default function Home() {
         {/* New controls for sorting */}
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
-          <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as any)}>
+          <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
             <ToggleGroupItem value="date_desc" size="sm">Date (Newest)</ToggleGroupItem>
             <ToggleGroupItem value="date_asc" size="sm">Date (Oldest)</ToggleGroupItem>
             <ToggleGroupItem value="weight_desc" size="sm">Weight (Highest)</ToggleGroupItem>
