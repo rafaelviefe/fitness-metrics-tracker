@@ -95,6 +95,7 @@ export default function Home() {
     }
   }, [displayTime]);
 
+  // Persist sortOrder to local storage whenever it changes
   useEffect(() => {
     if (localStorageAdapterRef.current) {
       localStorageAdapterRef.current.setItem(SORT_ORDER_PREFERENCE_KEY, sortOrder);
