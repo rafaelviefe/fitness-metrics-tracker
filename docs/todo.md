@@ -5,4 +5,4 @@
 [x] ID: 176: Change the `console.error` call within `src/lib/date-utils.ts`'s `formatIsoToDateTimeLocal` function to `console.warn` when falling back to the current date due to an invalid input string.
 [x] ID: 177: In `src/app/page.tsx`, initialize the `sortOrder` state by attempting to retrieve the user's preference from local storage using `LocalStorageAdapter`, defaulting to 'date_desc' if no preference is found.
 [x] ID: 178: In `src/app/page.tsx`, add a `useEffect` hook to persist the `sortOrder` state to local storage whenever it changes, using `LocalStorageAdapter` and a new constant key for the storage key.
-[ ] ID: 179: In `src/app/page.tsx`, add descriptive `aria-label` attributes to the `ToggleGroupItem` components used for sorting, clarifying the action of each sort option for accessibility.
+[x] ID: 179: In `src/app/page.tsx`, add descriptive `aria-label` attributes to the `ToggleGroupItem` components used for sorting, clarifying the action of each sort option for accessibility.
