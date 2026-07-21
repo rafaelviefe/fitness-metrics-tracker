@@ -243,10 +243,10 @@ export default function Home() {
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
           <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
-            <ToggleGroupItem value="date_desc" size="sm">Date (Newest)</ToggleGroupItem>
-            <ToggleGroupItem value="date_asc" size="sm">Date (Oldest)</ToggleGroupItem>
-            <ToggleGroupItem value="weight_desc" size="sm">Weight (Highest)</ToggleGroupItem>
-            <ToggleGroupItem value="weight_asc" size="sm">Weight (Lowest)</ToggleGroupItem>
+            <ToggleGroupItem value="date_desc" size="sm" aria-label="Sort by date, newest first">Date (Newest)</ToggleGroupItem>
+            <ToggleGroupItem value="date_asc" size="sm" aria-label="Sort by date, oldest first">Date (Oldest)</ToggleGroupItem>
+            <ToggleGroupItem value="weight_desc" size="sm" aria-label="Sort by weight, highest first">Weight (Highest)</ToggleGroupItem>
+            <ToggleGroupItem value="weight_asc" size="sm" aria-label="Sort by weight, lowest first">Weight (Lowest)</ToggleGroupItem>
           </ToggleGroup>
         </div>
 
