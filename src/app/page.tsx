@@ -215,10 +215,10 @@ export default function Home() {
           <WeightStatisticsCard record={weightStatistics.lowest} label="Lowest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard record={weightStatistics.oldest} label="Oldest Weight" unitPreference={displayUnit} displayTime={displayTime} />
           <WeightStatisticsCard
-            record={weightStatistics.average !== null ? { id: 'average', date: new Date().toISOString(), weight: weightStatistics.average } : null}
             label="Average Weight"
             unitPreference={displayUnit}
-            displayTime={false}
+            averageValue={weightStatistics.average}
+            displayTime={false} // Date/time is always suppressed for average value
           />
         </div>
 

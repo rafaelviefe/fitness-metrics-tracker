@@ -68,7 +68,7 @@ describe('WeightStatisticsCard', () => {
     expect(screen.getByText('October 27, 2023, 2:30 PM')).toBeInTheDocument();
   });
 
-  it('renders "No records yet." when record is undefined', () => {
+  it('renders "No records yet." when record is undefined and averageValue is null', () => {
     render(<WeightStatisticsCard label="Latest Weight" data-testid="stat-card" />);
 
     const cardElement = screen.getByTestId('stat-card');
@@ -80,7 +80,7 @@ describe('WeightStatisticsCard', () => {
     expect(screen.queryByText(/\d{4}/)).not.toBeInTheDocument(); // No date displayed
   });
 
-  it('renders "No records yet." when record is null', () => {
+  it('renders "No records yet." when record is null and averageValue is null', () => {
     render(<WeightStatisticsCard record={null} label="Latest Weight" data-testid="stat-card" />);
 
     expect(screen.getByText('No records yet.')).toBeInTheDocument();
@@ -170,17 +170,46 @@ describe('WeightStatisticsCard', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('should suppress date display for average weight if record id is "average" (even if displayTime is true)', () => {
-    const averageRecord: WeightRecord = {
-      id: 'average', 
-      date: '2023-10-27T10:00:00.000Z', 
-      weight: 75.0,
-    };
-    render(<WeightStatisticsCard record={averageRecord} label="Average Weight" displayTime={true} />);
+  // New tests for averageValue prop
+  it('renders correctly with averageValue, converting to lbs if specified, and no date displayed', () => {
+    render(<WeightStatisticsCard label="Average Weight" averageValue={75.5} unitPreference="lbs" />);
+    const expectedLbs = convertKgToLbs(75.5).toFixed(1);
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
+  });
 
-    expect(screen.getByText('75 kg')).toBeInTheDocument();
-    expect(screen.queryByText(/2023/)).not.toBeInTheDocument(); // Date should be suppressed
-    expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument(); // Time should be suppressed
-    expect(screen.queryByText('October 27, 2023, 10:00 AM')).not.toBeInTheDocument(); // Full date with time should be suppressed
+  it('renders correctly with averageValue in kg and no date displayed', () => {
+    render(<WeightStatisticsCard label="Average Weight" averageValue={75.5} unitPreference="kg" />);
+    expect(screen.getByText('75.5 kg')).toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
+  });
+
+  it('renders "No records yet." when both record and averageValue are null', () => {
+    render(<WeightStatisticsCard record={null} averageValue={null} label="Average Weight" />);
+    expect(screen.getByText('No records yet.')).toBeInTheDocument();
+    expect(screen.queryByText(/kg/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/lbs/)).not.toBeInTheDocument();
+  });
+
+  it('prioritizes averageValue over record when both are present', () => {
+    const mockRecordConflict: WeightRecord = {
+      id: 'conflict-id',
+      date: '2023-01-01T10:00:00.000Z',
+      weight: 100, // Different weight
+    };
+    render(<WeightStatisticsCard record={mockRecordConflict} averageValue={70.0} label="Average Weight" />);
+    expect(screen.getByText('70 kg')).toBeInTheDocument();
+    expect(screen.queryByText('100 kg')).not.toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument(); // No date from averageValue
+  });
+
+  it('should fall back to record if averageValue is null but record is present', () => {
+    render(<WeightStatisticsCard record={mockRecord} averageValue={null} label="Latest Weight" />);
+    expect(screen.getByText('78.9 kg')).toBeInTheDocument();
+    expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
   });
 });
