@@ -1,7 +1,7 @@
 # Project Roadmap
 
 [x] ID: 180: Refactor `WeightStatisticsCard` component in `src/features/weight/components/WeightStatisticsCard.tsx` to accept an optional `averageValue: number | null` prop, and adjust its rendering logic to display this value when present, prioritizing it over the `record` prop for the weight display, and ensuring no date is shown.
-[ ] ID: 181: Update the `Home` component in `src/app/page.tsx` to use the new `averageValue` prop for the `WeightStatisticsCard` displaying the average weight, removing the creation of the dummy `WeightRecord` object for this specific card.
+[x] ID: 181: Update the `Home` component in `src/app/page.tsx` to use the new `averageValue` prop for the `WeightStatisticsCard` displaying the average weight, removing the creation of the dummy `WeightRecord` object for this specific card.
 [ ] ID: 182: Modify the `handleClearAllRecords` function in `src/app/page.tsx` to prompt the user for confirmation using `window.confirm()` before proceeding with clearing all weight records.
 [ ] ID: 183: Refine the `cn` utility function in `src/lib/utils.ts` to explicitly filter out boolean `true` and `false` values (e.g., `typeof input === 'string' && input.trim() !== ''`), ensuring only non-empty string class names are combined.
 [ ] ID: 184: Update the `cn` utility tests in `src/lib/utils.test.ts` to include a test case that verifies boolean `true` and `false` values passed directly to `cn` are correctly filtered out and do not appear in the resulting class string.
