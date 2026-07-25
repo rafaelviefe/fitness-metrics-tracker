@@ -152,17 +152,20 @@ export default function Home() {
   };
 
   const handleClearAllRecords = () => {
-    if (weightRepositoryRef.current) {
-      const repository = weightRepositoryRef.current;
-      repository.clearAllWeightRecords();
-      setWeightRecords([]);
-      setWeightStatistics({
-        latest: null,
-        highest: null,
-        lowest: null,
-        oldest: null,
-        average: null,
-      });
+    // Prompt user for confirmation before clearing records
+    if (window.confirm('Are you sure you want to delete ALL weight records? This action cannot be undone.')) {
+      if (weightRepositoryRef.current) {
+        const repository = weightRepositoryRef.current;
+        repository.clearAllWeightRecords();
+        setWeightRecords([]);
+        setWeightStatistics({
+          latest: null,
+          highest: null,
+          lowest: null,
+          oldest: null,
+          average: null,
+        });
+      }
     }
   };
 
