@@ -24,9 +24,8 @@ describe('cn', () => {
     expect(cn('single-class')).toBe('single-class');
   });
 
-  it('should filter out boolean true, as only non-empty string class names are combined', () => {
-    // Updated: `true` no longer results in 'true' string, it's filtered out.
-    expect(cn('base', true, 'modifier')).toBe('base modifier');
+  it('should filter out direct boolean true and false values', () => {
+    expect(cn('base', true, false, 'modifier')).toBe('base modifier');
   });
 
   it('should handle mixed valid inputs and conditional rendering (simple booleans)', () => {
