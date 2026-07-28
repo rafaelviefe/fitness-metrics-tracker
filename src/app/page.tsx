@@ -228,11 +228,28 @@ export default function Home() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
           <div className="flex items-center gap-4">
-            <ToggleGroup type="single" value={displayUnit} onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')} className="space-x-2">
+            {/* Unit Preference Toggle Group */}
+            <span id="unit-preference-label" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Unit:</span>
+            <ToggleGroup
+              type="single"
+              value={displayUnit}
+              onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')}
+              className="space-x-2"
+              aria-labelledby="unit-preference-label"
+            >
               <ToggleGroupItem value="kg">kg</ToggleGroupItem>
               <ToggleGroupItem value="lbs">lbs</ToggleGroupItem>
             </ToggleGroup>
-            <ToggleGroup type="single" value={displayTime.toString()} onValueChange={(value) => setDisplayTime(value === 'true')} className="space-x-2">
+
+            {/* Display Time Preference Toggle Group */}
+            <span id="display-time-label" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Display:</span>
+            <ToggleGroup
+              type="single"
+              value={displayTime.toString()}
+              onValueChange={(value) => setDisplayTime(value === 'true')}
+              className="space-x-2"
+              aria-labelledby="display-time-label"
+            >
               <ToggleGroupItem value="true">Date & Time</ToggleGroupItem>
               <ToggleGroupItem value="false">Date Only</ToggleGroupItem>
             </ToggleGroup>
@@ -244,8 +261,13 @@ export default function Home() {
 
         {/* New controls for sorting */}
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
-          <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
+          <span id="sort-order-label" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sort by:</span>
+          <ToggleGroup
+            type="single"
+            value={sortOrder}
+            onValueChange={(value) => setSortOrder(value as SortOrder)}
+            aria-labelledby="sort-order-label"
+          >
             <ToggleGroupItem value="date_desc" size="sm" aria-label="Sort by date, newest first">Date (Newest)</ToggleGroupItem>
             <ToggleGroupItem value="date_asc" size="sm" aria-label="Sort by date, oldest first">Date (Oldest)</ToggleGroupItem>
             <ToggleGroupItem value="weight_desc" size="sm" aria-label="Sort by weight, highest first">Weight (Highest)</ToggleGroupItem>
