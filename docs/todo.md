@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 180: Refactor `WeightStatisticsCard` component in `src/features/weight/components/WeightStatisticsCard.tsx` to accept an optional `averageValue: number | null` prop, and adjust its rendering logic to display this value when present, prioritizing it over the `record` prop for the weight display, and ensuring no date is shown.
-[x] ID: 181: Update the `Home` component in `src/app/page.tsx` to use the new `averageValue` prop for the `WeightStatisticsCard` displaying the average weight, removing the creation of the dummy `WeightRecord` object for this specific card.
-[x] ID: 182: Modify the `handleClearAllRecords` function in `src/app/page.tsx` to prompt the user for confirmation using `window.confirm()` before proceeding with clearing all weight records.
-[x] ID: 183: Refine the `cn` utility function in `src/lib/utils.ts` to explicitly filter out boolean `true` and `false` values (e.g., `typeof input === 'string' && input.trim() !== ''`), ensuring only non-empty string class names are combined.
-[x] ID: 184: Update the `cn` utility tests in `src/lib/utils.test.ts` to include a test case that verifies boolean `true` and `false` values passed directly to `cn` are correctly filtered out and do not appear in the resulting class string.
-[x] ID: 185: Enhance accessibility in `src/app/page.tsx` by adding `id` attributes to the `span` elements that act as labels for the `ToggleGroup` components, and then linking these `span` elements to their respective `ToggleGroup` components using the `aria-labelledby` attribute.
+[ ] ID: 186: Modify `LocalStorageAdapter.setItem` to return a boolean indicating success (`true`) or failure (`false`) of the operation.
+[ ] ID: 187: Update `local-storage.adapter.test.ts` to verify the new boolean return value of `LocalStorageAdapter.setItem` for both successful and failed scenarios.
+[ ] ID: 188: Modify `WeightRepository.addWeightRecord` to check the boolean return value from `this.storageService.setItem`. If `setItem` returns `false`, remove the newly added record from the local `records` array and return `null` instead of the record itself.
+[ ] ID: 189: Update `weight.repository.test.ts` to add a test case verifying `addWeightRecord` returns `null` and does not persist the record when `storageService.setItem` fails.
+[ ] ID: 190: Modify `EditWeightForm` to initialize the `editedWeight` state value to display in the `unitPreference` unit (e.g., convert `record.weight` from kg to lbs if `unitPreference` is 'lbs' for display).
+[ ] ID: 191: Update `EditWeightForm.test.tsx` to add a test case verifying `editedWeight` is initialized correctly in 'lbs' when `unitPreference` is set to 'lbs'.
