@@ -19,13 +19,15 @@ export class LocalStorageAdapter implements StorageService {
     }
   }
 
-  setItem<T>(key: string, value: T): void {
+  setItem<T>(key: string, value: T): boolean {
     try {
       // Stringify the value before storing it
       this.storage.setItem(key, JSON.stringify(value));
+      return true;
     } catch (error) {
       // Log the error if writing fails (e.g., QuotaExceededError)
       console.error(`Error writing item to localStorage for key "${key}":`, error);
+      return false;
     }
   }
 
