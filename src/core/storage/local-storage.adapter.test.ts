@@ -41,7 +41,7 @@ describe('LocalStorageAdapter', () => {
   it('should store and retrieve a string value', () => {
     const key = 'testKey';
     const value = 'testValue';
-    adapter.setItem(key, value);
+    expect(adapter.setItem(key, value)).toBe(true);
     expect(adapter.getItem<string>(key)).toBe(value);
     expect(vi.mocked(adapter['storage'].setItem)).toHaveBeenCalledWith(key, JSON.stringify(value));
     expect(vi.mocked(adapter['storage'].getItem)).toHaveBeenCalledWith(key);
@@ -50,7 +50,7 @@ describe('LocalStorageAdapter', () => {
   it('should store and retrieve an object', () => {
     const key = 'user';
     const user = { name: 'John Doe', age: 30, isActive: true };
-    adapter.setItem(key, user);
+    expect(adapter.setItem(key, user)).toBe(true);
     expect(adapter.getItem<{ name: string; age: number; isActive: boolean }>(key)).toEqual(user);
     expect(vi.mocked(adapter['storage'].setItem)).toHaveBeenCalledWith(key, JSON.stringify(user));
   });
@@ -58,14 +58,14 @@ describe('LocalStorageAdapter', () => {
   it('should store and retrieve a number', () => {
     const key = 'score';
     const score = 123;
-    adapter.setItem(key, score);
+    expect(adapter.setItem(key, score)).toBe(true);
     expect(adapter.getItem<number>(key)).toBe(score);
   });
 
   it('should store and retrieve a boolean', () => {
     const key = 'loggedIn';
     const loggedIn = true;
-    adapter.setItem(key, loggedIn);
+    expect(adapter.setItem(key, loggedIn)).toBe(true);
     expect(adapter.getItem<boolean>(key)).toBe(loggedIn);
   });
 
@@ -76,7 +76,7 @@ describe('LocalStorageAdapter', () => {
 
   it('should remove an item', () => {
     const key = 'tempItem';
-    adapter.setItem(key, 'value');
+    expect(adapter.setItem(key, 'value')).toBe(true);
     expect(adapter.getItem(key)).toBe('value');
     adapter.removeItem(key);
     expect(adapter.getItem(key)).toBeNull();
@@ -84,8 +84,8 @@ describe('LocalStorageAdapter', () => {
   });
 
   it('should clear all items', () => {
-    adapter.setItem('key1', 'value1');
-    adapter.setItem('key2', 'value2');
+    expect(adapter.setItem('key1', 'value1')).toBe(true);
+    expect(adapter.setItem('key2', 'value2')).toBe(true);
     expect(adapter.getItem('key1')).toBe('value1');
     expect(adapter.getItem('key2')).toBe('value2');
     adapter.clear();
@@ -107,7 +107,7 @@ describe('LocalStorageAdapter', () => {
     );
   });
 
-  it('should log an error if setItem fails (e.g., QuotaExceededError)', () => {
+  it('should log an error if setItem fails (e.g., QuotaExceededError) and return false', () => {
     const key = 'errorKey';
     const value = { data: 'too big' };
     // Make the mock setItem throw an error
@@ -115,7 +115,7 @@ describe('LocalStorageAdapter', () => {
       throw new Error('QuotaExceededError: The quota has been exceeded.');
     });
 
-    adapter.setItem(key, value);
+    expect(adapter.setItem(key, value)).toBe(false);
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       `Error writing item to localStorage for key "${key}":`,
