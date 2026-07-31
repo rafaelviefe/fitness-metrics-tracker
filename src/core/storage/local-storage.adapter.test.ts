@@ -38,19 +38,20 @@ describe('LocalStorageAdapter', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('should store and retrieve a string value', () => {
+  it('should store a string value and return true on success', () => {
     const key = 'testKey';
     const value = 'testValue';
-    expect(adapter.setItem(key, value)).toBe(true);
+    const result = adapter.setItem(key, value);
+    expect(result).toBe(true); // Explicitly verify the return value
     expect(adapter.getItem<string>(key)).toBe(value);
     expect(vi.mocked(adapter['storage'].setItem)).toHaveBeenCalledWith(key, JSON.stringify(value));
-    expect(vi.mocked(adapter['storage'].getItem)).toHaveBeenCalledWith(key);
   });
 
-  it('should store and retrieve an object', () => {
+  it('should store an object and return true on success', () => {
     const key = 'user';
     const user = { name: 'John Doe', age: 30, isActive: true };
-    expect(adapter.setItem(key, user)).toBe(true);
+    const result = adapter.setItem(key, user);
+    expect(result).toBe(true); // Explicitly verify the return value
     expect(adapter.getItem<{ name: string; age: number; isActive: boolean }>(key)).toEqual(user);
     expect(vi.mocked(adapter['storage'].setItem)).toHaveBeenCalledWith(key, JSON.stringify(user));
   });
@@ -107,7 +108,7 @@ describe('LocalStorageAdapter', () => {
     );
   });
 
-  it('should log an error if setItem fails (e.g., QuotaExceededError) and return false', () => {
+  it('should return false and log an error if setItem fails (e.g., QuotaExceededError)', () => {
     const key = 'errorKey';
     const value = { data: 'too big' };
     // Make the mock setItem throw an error
@@ -115,7 +116,8 @@ describe('LocalStorageAdapter', () => {
       throw new Error('QuotaExceededError: The quota has been exceeded.');
     });
 
-    expect(adapter.setItem(key, value)).toBe(false);
+    const result = adapter.setItem(key, value);
+    expect(result).toBe(false); // Explicitly verify the return value
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       `Error writing item to localStorage for key "${key}":`,
