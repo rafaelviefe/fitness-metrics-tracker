@@ -13,6 +13,7 @@ class MockStorageService implements StorageService {
   });
   setItem = vi.fn((key: string, value: any) => {
     this.data[key] = JSON.stringify(value);
+    return true; // Default to success
   });
   removeItem = vi.fn((key: string) => {
     delete this.data[key];
@@ -64,7 +65,7 @@ describe('WeightRepository', () => {
     expect(storageService.getItem).toHaveBeenCalledWith('weightRecords');
   });
 
-  it('should add a new weight record', () => {
+  it('should add a new weight record and return it if storage is successful', () => {
     const newRecord = weightRepository.addWeightRecord(75, '2023-01-01T10:00:00.000Z');
     expect(newRecord).toEqual({
       id: 'id-1',
@@ -75,6 +76,22 @@ describe('WeightRepository', () => {
     expect(weightRepository.getWeightRecords()).toEqual([newRecord]);
   });
 
+  it('should return null and not persist the record if storageService.setItem fails', () => {
+    // Make setItem return false to simulate storage failure
+    (storageService.setItem as vi.Mock).mockReturnValueOnce(false);
+
+    const newRecord = weightRepository.addWeightRecord(75, '2023-01-01T10:00:00.000Z');
+
+    expect(newRecord).toBeNull(); // Should return null on failure
+    expect(storageService.setItem).toHaveBeenCalledTimes(1); // setItem was attempted
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1); // Error should be logged by repository
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `WeightRepository: Failed to store new record with ID id-1. Storage operation returned false.`
+    );
+    // Verify that getWeightRecords still returns an empty array, as the failed record should not be considered added
+    expect(weightRepository.getWeightRecords()).toEqual([]);
+  });
+
   it('should add multiple weight records', () => {
     const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
     const record2 = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
@@ -82,16 +99,17 @@ describe('WeightRepository', () => {
     expect(weightRepository.getWeightRecords()).toEqual([record1, record2]);
   });
 
-  it('should update an existing weight record', () => {
-    const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
-    const updatedRecord = { ...record1, weight: 70.5 };
-    const result = weightRepository.updateWeightRecord(updatedRecord);
+  it('should update an existing weight record',
+    () => {
+      const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
+      const updatedRecord = { ...record1, weight: 70.5 };
+      const result = weightRepository.updateWeightRecord(updatedRecord);
 
-    expect(result).toEqual(updatedRecord);
-    expect(storageService.setItem).toHaveBeenCalledTimes(2); // one for add, one for update
-    expect(storageService.setItem).toHaveBeenCalledWith('weightRecords', [updatedRecord]);
-    expect(weightRepository.getWeightRecords()).toEqual([updatedRecord]);
-  });
+      expect(result).toEqual(updatedRecord);
+      expect(storageService.setItem).toHaveBeenCalledTimes(2); // one for add, one for update
+      expect(storageService.setItem).toHaveBeenCalledWith('weightRecords', [updatedRecord]);
+      expect(weightRepository.getWeightRecords()).toEqual([updatedRecord]);
+    });
 
   it('should return null and log a warning if trying to update a non-existent record', () => {
     const nonExistentRecord: WeightRecord = { id: 'non-existent', date: '2023-01-01T10:00:00.000Z', weight: 80 };
@@ -109,7 +127,7 @@ describe('WeightRepository', () => {
     const record1 = weightRepository.addWeightRecord(70, '2023-01-01T10:00:00.000Z');
     const record2 = weightRepository.addWeightRecord(71, '2023-01-02T10:00:00.000Z');
 
-    const isDeleted = weightRepository.deleteWeightRecord(record1.id);
+    const isDeleted = weightRepository.deleteWeightRecord(record1!.id);
     expect(isDeleted).toBe(true);
     expect(storageService.setItem).toHaveBeenCalledTimes(3); // two for adds, one for delete
     expect(storageService.setItem).toHaveBeenCalledWith('weightRecords', [record2]);
@@ -176,8 +194,8 @@ describe('WeightRepository', () => {
     vi.setSystemTime(now);
 
     const newRecord = weightRepository.addWeightRecord(80);
-    expect(newRecord.date).toBe(now.toISOString());
-    expect(newRecord.weight).toBe(80);
+    expect(newRecord!.date).toBe(now.toISOString());
+    expect(newRecord!.weight).toBe(80);
 
     vi.useRealTimers();
   });

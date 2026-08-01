@@ -107,8 +107,12 @@ export default function Home() {
     if (weightRepositoryRef.current) {
       const repository = weightRepositoryRef.current;
       const newRecord = repository.addWeightRecord(weight, date);
-      setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
-      updateAllStatistics();
+      if (newRecord) { // Only add if the record was successfully stored
+        setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
+        updateAllStatistics();
+      } else {
+        console.error('Failed to add weight record due to a storage error.');
+      }
     }
   };
 
