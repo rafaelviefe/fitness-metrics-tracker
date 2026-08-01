@@ -35,9 +35,9 @@ export class WeightRepository {
    * Automatically assigns a unique ID and current timestamp for creation.
    * @param weight The weight value in kilograms.
    * @param date The date string for the record (defaults to current ISO string if not provided).
-   * @returns The newly created WeightRecord including its ID.
+   * @returns The newly created WeightRecord including its ID, or null if storage failed.
    */
-  addWeightRecord(weight: number, date?: string): WeightRecord {
+  addWeightRecord(weight: number, date?: string): WeightRecord | null { // Changed return type
     const records = this.getWeightRecords();
     const newRecord: WeightRecord = {
       id: crypto.randomUUID(),
@@ -45,7 +45,15 @@ export class WeightRepository {
       weight,
     };
     records.push(newRecord);
-    this.storageService.setItem(WEIGHT_STORAGE_KEY, records);
+    
+    const isStored = this.storageService.setItem(WEIGHT_STORAGE_KEY, records);
+    
+    if (!isStored) {
+      console.error(`WeightRepository: Failed to store new record with ID ${newRecord.id}. Storage operation returned false.`);
+      records.pop(); // Remove the newly added record from the in-memory array
+      return null; // Indicate failure
+    }
+
     return newRecord;
   }
 
