@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils';
-import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
+import { convertKgToLbs, convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
 
 interface EditWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   record: WeightRecord;
@@ -22,7 +22,13 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
   unitPreference = 'kg',
   ...props
 }) => {
-  const [editedWeight, setEditedWeight] = useState<string>(record.weight.toString());
+  const [editedWeight, setEditedWeight] = useState<string>(() => {
+    // Initialize editedWeight based on unitPreference
+    if (unitPreference === 'lbs') {
+      return convertKgToLbs(record.weight).toFixed(1); // Convert from kg to lbs for display
+    }
+    return record.weight.toString(); // Default to kg
+  });
   const [editedDate, setEditedDate] = useState<string>(formatIsoToDateTimeLocal(record.date));
   const [weightError, setWeightError] = useState<string | null>(null); // Separate state for weight error
   const [dateError, setDateError] = useState<string | null>(null);     // Separate state for date error
