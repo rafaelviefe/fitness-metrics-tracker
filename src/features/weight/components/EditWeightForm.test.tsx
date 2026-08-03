@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { EditWeightForm } from './EditWeightForm';
 import { WeightRecord } from '../types';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // Import the utility function
-import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
+import { convertKgToLbs, convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
 
 describe('EditWeightForm', () => {
   const mockRecord: WeightRecord = {
@@ -51,13 +51,14 @@ describe('EditWeightForm', () => {
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
   });
 
-  it('renders correctly with initial weight and date values (lbs unitPreference)', () => {
+  it('renders correctly with initial weight value converted to lbs when unitPreference is lbs', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} unitPreference="lbs"/>);
 
     const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
+    const expectedLbsValue = convertKgToLbs(mockRecord.weight).toFixed(1);
 
     expect(weightInput).toBeInTheDocument();
-    expect(weightInput.value).toBe(mockRecord.weight.toString()); // Value is still kg here, conversion happens on save
+    expect(weightInput.value).toBe(expectedLbsValue); // Value should now be in lbs, formatted
   });
 
   it('updates weight input value on change', () => {
