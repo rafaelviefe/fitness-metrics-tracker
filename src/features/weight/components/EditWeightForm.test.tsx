@@ -51,14 +51,14 @@ describe('EditWeightForm', () => {
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
   });
 
-  it('renders correctly with initial weight value converted to lbs when unitPreference is lbs', () => {
-    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} unitPreference="lbs"/>);
+  it('initializes editedWeight correctly in lbs when unitPreference is lbs', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} unitPreference="lbs" />);
 
     const weightInput = screen.getByLabelText(/Weight \(lbs\)/i) as HTMLInputElement;
     const expectedLbsValue = convertKgToLbs(mockRecord.weight).toFixed(1);
 
     expect(weightInput).toBeInTheDocument();
-    expect(weightInput.value).toBe(expectedLbsValue); // Value should now be in lbs, formatted
+    expect(weightInput.value).toBe(expectedLbsValue);
   });
 
   it('updates weight input value on change', () => {
