@@ -164,7 +164,7 @@ describe('WeightRecordCard', () => {
     render(<WeightRecordCard record={invalidDateRecord} displayTime={false} />);
 
     expect(screen.getByText('Invalid Date')).toBeInTheDocument();
-    expect(screen.getByText('60 kg')).toBeInTheDocument();
+    expect(screen.getByText('60.0 kg')).toBeInTheDocument(); // Now 60.0 kg due to toFixed(1)
     // Verify that the console.error was called due to the invalid date
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -186,7 +186,7 @@ describe('WeightRecordCard', () => {
     render(<WeightRecordCard record={invalidDateRecord} displayTime={true} />);
 
     expect(screen.getByText('Invalid Date')).toBeInTheDocument();
-    expect(screen.getByText('60 kg')).toBeInTheDocument();
+    expect(screen.getByText('60.0 kg')).toBeInTheDocument(); // Now 60.0 kg due to toFixed(1)
     // Verify that the console.error was called due to the invalid date
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -195,5 +195,25 @@ describe('WeightRecordCard', () => {
     );
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it('formats integer kg weight to one decimal place', () => {
+    const integerWeightRecord: WeightRecord = {
+      id: '789',
+      date: '2023-01-01T10:00:00.000Z',
+      weight: 75,
+    };
+    render(<WeightRecordCard record={integerWeightRecord} unitPreference="kg" />);
+    expect(screen.getByText('75.0 kg')).toBeInTheDocument();
+  });
+
+  it('formats decimal kg weight to one decimal place', () => {
+    const decimalWeightRecord: WeightRecord = {
+      id: '790',
+      date: '2023-01-01T10:00:00.000Z',
+      weight: 75.123,
+    };
+    render(<WeightRecordCard record={decimalWeightRecord} unitPreference="kg" />);
+    expect(screen.getByText('75.1 kg')).toBeInTheDocument();
   });
 });
