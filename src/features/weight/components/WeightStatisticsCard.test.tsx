@@ -136,7 +136,7 @@ describe('WeightStatisticsCard', () => {
 
     render(<WeightStatisticsCard record={invalidDateRecord} label="Latest Weight" />);
 
-    expect(screen.getByText('70 kg')).toBeInTheDocument();
+    expect(screen.getByText('70.0 kg')).toBeInTheDocument(); // Updated to 70.0 kg
     expect(screen.getByText('Invalid Date')).toBeInTheDocument();
     // Verify that the console.error was called due to the invalid date
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
@@ -158,7 +158,7 @@ describe('WeightStatisticsCard', () => {
 
     render(<WeightStatisticsCard record={invalidDateRecord} label="Latest Weight" displayTime={true} />);
 
-    expect(screen.getByText('70 kg')).toBeInTheDocument();
+    expect(screen.getByText('70.0 kg')).toBeInTheDocument(); // Updated to 70.0 kg
     expect(screen.getByText('Invalid Date')).toBeInTheDocument();
     // Verify that the console.error was called due to the invalid date
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
@@ -182,7 +182,7 @@ describe('WeightStatisticsCard', () => {
 
   it('renders correctly with averageValue in kg and no date displayed', () => {
     render(<WeightStatisticsCard label="Average Weight" averageValue={75.5} unitPreference="kg" />);
-    expect(screen.getByText('75.5 kg')).toBeInTheDocument();
+    expect(screen.getByText('75.5 kg')).toBeInTheDocument(); // Updated to 75.5 kg
     expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
     expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
@@ -202,8 +202,8 @@ describe('WeightStatisticsCard', () => {
       weight: 100, // Different weight
     };
     render(<WeightStatisticsCard record={mockRecordConflict} averageValue={70.0} label="Average Weight" />);
-    expect(screen.getByText('70 kg')).toBeInTheDocument();
-    expect(screen.queryByText('100 kg')).not.toBeInTheDocument();
+    expect(screen.getByText('70.0 kg')).toBeInTheDocument(); // Updated to 70.0 kg
+    expect(screen.queryByText('100.0 kg')).not.toBeInTheDocument(); // Updated to 100.0 kg
     expect(screen.queryByText(/date/i)).not.toBeInTheDocument(); // No date from averageValue
   });
 

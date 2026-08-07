@@ -23,7 +23,7 @@ const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCa
       // Prioritize averageValue if provided
       displayedWeight = unitPreference === 'lbs'
         ? convertKgToLbs(averageValue).toFixed(1)
-        : averageValue;
+        : averageValue.toFixed(1); // Format to one decimal place for kg as well
       
       content = (
         <div className="flex items-baseline space-x-2">
@@ -37,7 +37,7 @@ const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCa
       
       displayedWeight = unitPreference === 'lbs'
         ? convertKgToLbs(record.weight).toFixed(1) // Format to one decimal place for lbs
-        : record.weight;
+        : record.weight.toFixed(1); // Format to one decimal place for kg as well
 
       const formattedDate = shouldDisplayDateForRecord
         ? (displayTime ? formatDateWithTimeForDisplay(record.date) : formatDateForDisplay(record.date))
