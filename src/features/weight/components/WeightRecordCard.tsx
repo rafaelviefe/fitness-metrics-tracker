@@ -21,10 +21,10 @@ const WeightRecordCard = React.forwardRef<HTMLDivElement, WeightRecordCardProps>
       ? formatDateWithTimeForDisplay(record.date)
       : formatDateForDisplay(record.date);
 
-    // Convert weight if unitPreference is 'lbs'
+    // Convert and format weight based on unitPreference
     const displayedWeight = unitPreference === 'lbs'
       ? convertKgToLbs(record.weight).toFixed(1) // Format to one decimal place for lbs
-      : record.weight;
+      : record.weight.toFixed(1); // Format to one decimal place for kg as well
     const displayedUnit = unitPreference;
 
     const handleDeleteClick = () => {
