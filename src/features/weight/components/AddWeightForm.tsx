@@ -9,12 +9,14 @@ import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion uti
 interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   onWeightAdded?: (weight: number, date: string) => void;
   unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
+  submissionError?: string | null; // NEW PROP: Optional prop for displaying a general submission error
 }
 
 export const AddWeightForm: React.FC<AddWeightFormProps> = ({
   className,
   onWeightAdded,
-  unitPreference = 'kg', // Default to 'kg'
+  unitPreference = 'kg',
+  submissionError = null, // Default to null if not provided
   ...props
 }) => {
   const [weight, setWeight] = useState<string>('');
@@ -114,6 +116,8 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
         />
         {dateError && <p id="date-error" className="text-red-500 text-sm mt-1">{dateError}</p>}
       </div>
+
+      {submissionError && <p className="text-red-500 text-sm mt-1" role="alert">{submissionError}</p>}
 
       <Button type="submit" disabled={isSubmitDisabled} className="mt-4">
         Add Weight
