@@ -21,6 +21,7 @@ type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 export default function Home() {
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [addFormSubmissionError, setAddFormSubmissionError] = useState<string | null>(null);
   const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>(() => {
     if (typeof window !== 'undefined') {
       const localStorageAdapter = new LocalStorageAdapter();
@@ -104,6 +105,8 @@ export default function Home() {
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
+    // Clear any previous submission error
+    setAddFormSubmissionError(null);
     if (weightRepositoryRef.current) {
       const repository = weightRepositoryRef.current;
       const newRecord = repository.addWeightRecord(weight, date);
@@ -112,6 +115,7 @@ export default function Home() {
         updateAllStatistics();
       } else {
         console.error('Failed to add weight record due to a storage error.');
+        setAddFormSubmissionError('Failed to add weight record. Please try again.');
       }
     }
   };
@@ -214,7 +218,7 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
-        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} />
+        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} displayTime={displayTime} />
