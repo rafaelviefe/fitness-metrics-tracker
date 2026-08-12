@@ -1,6 +1,6 @@
 # Project Roadmap
 
-[ ] ID: 198: Modify the `cn` function in `src/lib/utils.ts` to use `flat(Infinity)` instead of `flat()` to ensure all levels of nested arrays are flattened. Do not change its type signature or tests in this task.
+[x] ID: 198: Modify the `cn` function in `src/lib/utils.ts` to use `flat(Infinity)` instead of `flat()` to ensure all levels of nested arrays are flattened. Do not change its type signature or tests in this task.
 [ ] ID: 199: Define a recursive type `ClassNameValue` for `src/lib/utils.ts` as `string | boolean | undefined | null | ClassNameValue[]`. Update the `cn` function's parameter type signature to `(...classNames: ClassNameValue[])` to accurately reflect its ability to handle infinitely nested arrays after implementing `flat(Infinity)`. Do not modify the function implementation or tests.
 [ ] ID: 200: Modify the test case for `cn` in `src/lib/utils.test.ts` that checks `should filter out nested arrays as they are not strings after initial flattening`. Update its expectation to now include the string contents of deeply nested arrays, asserting that `cn('outer', ['inner-a', ['deep-a', 'deep-b']], 'outer-end')` correctly returns `'outer inner-a deep-a deep-b outer-end'`.
 [ ] ID: 201: Add explicit `focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300` classes to the `baseClasses` in `src/components/ui/Button.tsx`. Ensure this provides a consistent focus ring color across different button variants, similar to the default input focus style.
