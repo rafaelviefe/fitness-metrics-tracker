@@ -45,7 +45,7 @@ describe('cn', () => {
   });
 
   it('should filter out nested arrays as they are not strings after initial flattening', () => {
-    // Updated: Deeply nested arrays are now filtered out, as the filter only passes actual strings.
-    expect(cn('outer', ['inner-a', ['deep-a', 'deep-b']], 'outer-end')).toBe('outer inner-a outer-end');
+    // Updated: Deeply nested arrays are now correctly flattened and their string contents included.
+    expect(cn('outer', ['inner-a', ['deep-a', 'deep-b']], 'outer-end')).toBe('outer inner-a deep-a deep-b outer-end');
   });
 });
