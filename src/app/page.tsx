@@ -209,7 +209,7 @@ export default function Home() {
   }, [weightRecords, sortOrder]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-[var(--background)] text-[var(--foreground)]">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
         Fitness Metrics Tracker
       </h1>
