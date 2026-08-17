@@ -183,26 +183,36 @@ export default function Home() {
 
       switch (sortOrder) {
         case 'date_desc':
+          // Primary sort: date descending. Secondary sort: ID descending (for newer IDs with same date)
           comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
+          if (comparison === 0) {
+            comparison = b.id.localeCompare(a.id); // Tie-breaker by ID descending
+          }
           break;
         case 'date_asc':
+          // Primary sort: date ascending. Secondary sort: ID ascending (for older IDs with same date)
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          if (comparison === 0) {
+            comparison = a.id.localeCompare(b.id); // Tie-breaker by ID ascending
+          }
           break;
         case 'weight_desc':
+          // Primary sort: weight descending. Secondary sort: date ascending (oldest first)
           comparison = b.weight - a.weight;
+          if (comparison === 0) {
+            comparison = new Date(a.date).getTime() - new Date(b.date).getTime(); // Tie-breaker by date ascending
+          }
           break;
         case 'weight_asc':
+          // Primary sort: weight ascending. Secondary sort: date ascending (oldest first)
           comparison = a.weight - b.weight;
+          if (comparison === 0) {
+            comparison = new Date(a.date).getTime() - new Date(b.date).getTime(); // Tie-breaker by date ascending
+          }
           break;
         default:
           break;
       }
-
-      // Secondary tie-breaker: sort by ID ascending if primary comparison is equal
-      if (comparison === 0) {
-        return a.id.localeCompare(b.id);
-      }
-
       return comparison;
     });
     return sorted;
