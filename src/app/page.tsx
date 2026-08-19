@@ -239,7 +239,6 @@ export default function Home() {
             label="Average Weight"
             unitPreference={displayUnit}
             averageValue={weightStatistics.average}
-            displayTime={false} // Date/time is always suppressed for average value
           />
         </div>
 
