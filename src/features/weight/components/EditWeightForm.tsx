@@ -27,7 +27,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
     if (unitPreference === 'lbs') {
       return convertKgToLbs(record.weight).toFixed(1); // Convert from kg to lbs for display
     }
-    return record.weight.toString(); // Default to kg
+    return record.weight.toFixed(1); // Default to kg, formatted to one decimal place
   });
   const [editedDate, setEditedDate] = useState<string>(formatIsoToDateTimeLocal(record.date));
   const [weightError, setWeightError] = useState<string | null>(null); // Separate state for weight error
@@ -118,7 +118,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
           aria-describedby={dateError ? `date-error-${record.id}` : undefined}
           isError={!!dateError}
         />
-        {dateError && <p id={`date-error-${record.id}`} className="text-red-500 text-sm mt-1">{dateError}</p>} {/* Display date error */}
+        {dateError && <p id={`date-error-${record.id}`} className="text-red-500 text-sm mt-1">{dateError}</p>}
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
