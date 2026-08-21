@@ -33,7 +33,7 @@ describe('EditWeightForm', () => {
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
 
     expect(weightInput).toBeInTheDocument();
-    expect(weightInput.value).toBe(mockRecord.weight.toString());
+    expect(weightInput.value).toBe(mockRecord.weight.toFixed(1));
     expect(weightInput.type).toBe('number');
     expect(weightInput).toHaveAttribute('step', '0.1');
 
