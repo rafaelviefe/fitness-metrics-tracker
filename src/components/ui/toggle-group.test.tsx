@@ -43,9 +43,9 @@ describe('ToggleGroup', () => {
       expect(option3).not.toHaveAttribute('aria-pressed', 'true');
 
       // Check styling for selected/unselected with default variant and size
-      expect(option1).toHaveClass('bg-gray-100'); // Default unselected background
+      expect(option1).toHaveClass('bg-neutral-900'); // Default unselected background harmonized with Button's default
       expect(option2).toHaveClass('bg-blue-600'); // Selected background
-      expect(option3).toHaveClass('bg-gray-100');
+      expect(option3).toHaveClass('bg-neutral-900'); // Default unselected background harmonized with Button's default
       expect(option1).toHaveClass('h-10 px-4 py-2'); // Default size
       expect(option2).toHaveClass('h-10 px-4 py-2'); // Default size
     });

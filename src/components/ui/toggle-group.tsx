@@ -58,9 +58,9 @@ interface ToggleGroupItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 }
 
 const toggleItemBaseClasses =
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors '
-  + 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300 '
-  + 'disabled:pointer-events-none disabled:opacity-50';
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300 ' +
+  'disabled:pointer-events-none disabled:opacity-50';
 
 const toggleItemSizeClasses: Record<ToggleGroupItemSize, string> = {
   default: 'h-10 px-4 py-2',
@@ -71,8 +71,9 @@ const toggleItemSizeClasses: Record<ToggleGroupItemSize, string> = {
 
 // Styles for when an item is NOT selected, based on variant
 const toggleItemUnselectedVariantClasses: Record<ToggleGroupItemVariant, string> = {
+  // Harmonize default unselected style with Button's default variant.
   default:
-    'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700',
+    'bg-neutral-900 text-neutral-50 hover:bg-neutral-900/90 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-50/90',
   destructive:
     'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950 dark:text-red-300 dark:hover:bg-red-900',
   outline:
@@ -86,8 +87,8 @@ const toggleItemUnselectedVariantClasses: Record<ToggleGroupItemVariant, string>
 
 // Styles for when an item IS selected. These are generally strong/primary and override unselected variants.
 const toggleItemSelectedClasses =
-  'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:text-white dark:hover:bg-blue-800 '
-  + 'focus-visible:ring-blue-600'; // Specific ring color for selected state
+  'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:text-white dark:hover:bg-blue-800 ' +
+  'focus-visible:ring-blue-600'; // Specific ring color for selected state
 
 const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps>(
   ({ className, value, onClick, children, variant = 'default', size = 'default', ...props }, ref) => {
