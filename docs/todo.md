@@ -5,4 +5,4 @@
 [x] ID: 206: Adjust the test expectations in `src/features/weight/components/EditWeightForm.test.tsx` to account for the `toFixed(1)` formatting applied to `editedWeight` during initialization.
 [x] ID: 207: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.default` styles with the `Button` component's `variantClasses.default` styles.
 [x] ID: 208: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.secondary` styles with the `Button` component's `variantClasses.secondary` styles.
-[ ] ID: 209: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.outline` styles with the `Button` component's `variantClasses.outline` styles.
+[x] ID: 209: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.outline` styles with the `Button` component's `variantClasses.outline` styles.
