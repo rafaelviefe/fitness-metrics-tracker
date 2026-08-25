@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 204: Remove redundant `displayTime={false}` prop from the Average Weight `WeightStatisticsCard` component in `src/app/page.tsx`.
-[x] ID: 205: Update `src/features/weight/components/EditWeightForm.tsx` to initialize the `editedWeight` state with `record.weight.toFixed(1)` for consistent display formatting.
-[x] ID: 206: Adjust the test expectations in `src/features/weight/components/EditWeightForm.test.tsx` to account for the `toFixed(1)` formatting applied to `editedWeight` during initialization.
-[x] ID: 207: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.default` styles with the `Button` component's `variantClasses.default` styles.
-[x] ID: 208: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.secondary` styles with the `Button` component's `variantClasses.secondary` styles.
-[x] ID: 209: Update `src/components/ui/toggle-group.tsx` to harmonize the `toggleItemUnselectedVariantClasses.outline` styles with the `Button` component's `variantClasses.outline` styles.
+[ ] ID: 210: Refine `toggleItemUnselectedVariantClasses` for the `default` variant in `toggle-group.tsx`.
+[ ] ID: 211: Remove redundant `space-x-2` classes from `ToggleGroup` usages in `page.tsx`.
+[ ] ID: 212: Update `h1` and `h2` elements in `page.tsx` to use CSS variables for foreground color.
+[ ] ID: 213: Create a `FormError` component for consistent error message display.
+[ ] ID: 214: Apply the `FormError` component for `weightError` in `AddWeightForm`.
+[ ] ID: 215: Apply the `FormError` component for `dateError` in `AddWeightForm`.
