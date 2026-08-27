@@ -71,9 +71,9 @@ const toggleItemSizeClasses: Record<ToggleGroupItemSize, string> = {
 
 // Styles for when an item is NOT selected, based on variant
 const toggleItemUnselectedVariantClasses: Record<ToggleGroupItemVariant, string> = {
-  // Harmonize default unselected style with Button's default variant.
+  // Refined default unselected style to align with a secondary button appearance.
   default:
-    'bg-neutral-900 text-neutral-50 hover:bg-neutral-900/90 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-50/90',
+    'bg-neutral-100 text-neutral-900 hover:bg-neutral-100/80 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-800/80',
   destructive:
     'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950 dark:text-red-300 dark:hover:bg-red-900',
   outline:
