@@ -251,7 +251,6 @@ export default function Home() {
               type="single"
               value={displayUnit}
               onValueChange={(value) => setDisplayUnit(value as 'kg' | 'lbs')}
-              className="space-x-2"
               aria-labelledby="unit-preference-label"
             >
               <ToggleGroupItem value="kg">kg</ToggleGroupItem>
@@ -264,7 +263,6 @@ export default function Home() {
               type="single"
               value={displayTime.toString()}
               onValueChange={(value) => setDisplayTime(value === 'true')}
-              className="space-x-2"
               aria-labelledby="display-time-label"
             >
               <ToggleGroupItem value="true">Date & Time</ToggleGroupItem>
