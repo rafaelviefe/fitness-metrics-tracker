@@ -220,7 +220,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-[var(--background)] text-[var(--foreground)]">
-      <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-4">
+      <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] mb-4">
         Fitness Metrics Tracker
       </h1>
       <p className="text-neutral-500">
@@ -243,7 +243,7 @@ export default function Home() {
         </div>
 
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-neutral-900">Your Weight Records</h2>
+          <h2 className="text-2xl font-semibold text-[var(--foreground)]">Your Weight Records</h2>
           <div className="flex items-center gap-4">
             {/* Unit Preference Toggle Group */}
             <span id="unit-preference-label" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Unit:</span>
