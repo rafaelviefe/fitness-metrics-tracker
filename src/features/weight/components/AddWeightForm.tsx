@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils'; // Import date utility
 import { convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
+import { FormError } from '@/components/ui/FormError'; // Import FormError
 
 interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   onWeightAdded?: (weight: number, date: string) => void;
@@ -98,7 +99,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
           aria-describedby={weightError ? 'weight-error' : undefined}
           isError={!!weightError}
         />
-        {weightError && <p id="weight-error" className="text-red-500 text-sm mt-1">{weightError}</p>}
+        <FormError id="weight-error">{weightError}</FormError>
       </div>
 
       <div>
