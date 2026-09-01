@@ -115,7 +115,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
           aria-describedby={dateError ? 'date-error' : undefined}
           isError={!!dateError}
         />
-        {dateError && <p id="date-error" className="text-red-500 text-sm mt-1">{dateError}</p>}
+        <FormError id="date-error">{dateError}</FormError>
       </div>
 
       {submissionError && <p className="text-red-500 text-sm mt-1" role="alert">{submissionError}</p>}

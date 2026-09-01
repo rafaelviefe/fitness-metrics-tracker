@@ -5,4 +5,4 @@
 [x] ID: 212: Update `h1` and `h2` elements in `page.tsx` to use CSS variables for foreground color.
 [x] ID: 213: Create a `FormError` component for consistent error message display.
 [x] ID: 214: Apply the `FormError` component for `weightError` in `AddWeightForm`.
-[ ] ID: 215: Apply the `FormError` component for `dateError` in `AddWeightForm`.
+[x] ID: 215: Apply the `FormError` component for `dateError` in `AddWeightForm`.
