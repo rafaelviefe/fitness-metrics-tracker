@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 210: Refine `toggleItemUnselectedVariantClasses` for the `default` variant in `toggle-group.tsx`.
-[x] ID: 211: Remove redundant `space-x-2` classes from `ToggleGroup` usages in `page.tsx`.
-[x] ID: 212: Update `h1` and `h2` elements in `page.tsx` to use CSS variables for foreground color.
-[x] ID: 213: Create a `FormError` component for consistent error message display.
-[x] ID: 214: Apply the `FormError` component for `weightError` in `AddWeightForm`.
-[x] ID: 215: Apply the `FormError` component for `dateError` in `AddWeightForm`.
+[ ] ID: 216: Implement future date validation logic in `src/features/weight/components/AddWeightForm.tsx`.
+[ ] ID: 217: Add a test case to `src/features/weight/components/AddWeightForm.test.tsx` for future date submission.
+[ ] ID: 218: Implement future date validation logic in `src/features/weight/components/EditWeightForm.tsx`.
+[ ] ID: 219: Add a test case to `src/features/weight/components/EditWeightForm.test.tsx` for future date submission.
+[ ] ID: 220: Remove debug `console.log` statement from `handleAddWeight` in `src/app/page.tsx`.
+[ ] ID: 221: Refine date string validation in `formatDateForDisplay` and `formatDateWithTimeForDisplay` in `src/lib/date-utils.ts`.
