@@ -81,7 +81,7 @@ describe('AddWeightForm', () => {
     const addButton = screen.getByRole('button', { name: 'Add Weight' });
 
     const newWeight = '78.5';
-    const newDateTimeLocal = '2023-11-16T12:00'; // Example date time
+    const newDateTimeLocal = '2023-11-14T12:00'; // Past date
     const expectedIsoDate = new Date(newDateTimeLocal).toISOString();
 
     fireEvent.change(weightInput, { target: { value: newWeight } });
@@ -106,7 +106,7 @@ describe('AddWeightForm', () => {
     const addButton = screen.getByRole('button', { name: 'Add Weight' });
 
     const newWeightLbs = '170.0'; // Example weight in lbs
-    const newDateTimeLocal = '2023-11-17T09:00';
+    const newDateTimeLocal = '2023-11-14T09:00'; // Past date
     const expectedIsoDate = new Date(newDateTimeLocal).toISOString();
     const expectedWeightKg = convertLbsToKg(parseFloat(newWeightLbs));
 
@@ -157,6 +157,26 @@ describe('AddWeightForm', () => {
     expect(addButton).toBeDisabled();
   });
 
+  it('shows an error for a future date and keeps weight valid', () => {
+    render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const addButton = screen.getByRole('button', { name: 'Add Weight' });
+
+    // Set a valid weight
+    fireEvent.change(weightInput, { target: { value: '70' } });
+    // Set a future date (e.g., one day after the mocked system time)
+    fireEvent.change(dateInput, { target: { value: '2023-11-16T10:00' } });
+
+    fireEvent.click(addButton);
+
+    expect(mockOnWeightAdded).not.toHaveBeenCalled();
+    expect(screen.getByText('Date cannot be in the future.')).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'true');
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Weight is still valid
+    expect(addButton).toBeDisabled();
+  });
+
   it('shows both weight and date errors if both are invalid', () => {
     render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
@@ -197,7 +217,7 @@ describe('AddWeightForm', () => {
     expect(addButton).toBeEnabled();
   });
 
-  it('clears date error when date input changes after an error', () => {
+  it('clears date error when date input changes after an error (invalid date)', () => {
     render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
@@ -210,8 +230,27 @@ describe('AddWeightForm', () => {
     expect(dateInput).toHaveAttribute('aria-invalid', 'true');
     expect(addButton).toBeDisabled();
 
-    fireEvent.change(dateInput, { target: { value: '2023-11-16T10:00' } }); // Make date valid
+    fireEvent.change(dateInput, { target: { value: '2023-11-14T10:00' } }); // Make date valid (past)
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'false');
+    expect(addButton).toBeEnabled(); // Both are now valid
+  });
+
+  it('clears date error when date input changes after an error (future date)', () => {
+    render(<AddWeightForm onWeightAdded={mockOnWeightAdded} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const addButton = screen.getByRole('button', { name: 'Add Weight' });
+
+    fireEvent.change(weightInput, { target: { value: '70' } }); // Make weight valid
+    fireEvent.change(dateInput, { target: { value: '2023-11-16T10:00' } }); // Make date a future date
+    fireEvent.click(addButton);
+    expect(screen.getByText('Date cannot be in the future.')).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'true');
+    expect(addButton).toBeDisabled();
+
+    fireEvent.change(dateInput, { target: { value: '2023-11-14T10:00' } }); // Change to a valid past date
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
     expect(addButton).toBeEnabled(); // Both are now valid
   });
@@ -232,13 +271,14 @@ describe('AddWeightForm', () => {
 
     // Correct inputs and submit
     fireEvent.change(weightInput, { target: { value: '75' } });
-    fireEvent.change(dateInput, { target: { value: '2023-11-16T11:30' } });
+    fireEvent.change(dateInput, { target: { value: '2023-11-14T11:30' } }); // Valid past date
     expect(addButton).toBeEnabled();
     fireEvent.click(addButton);
 
     expect(mockOnWeightAdded).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
     expect(weightInput).toHaveValue(null);
     expect(dateInput.value).toBe(getInitialDateTimeLocal());
     expect(addButton).toBeDisabled();
