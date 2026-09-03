@@ -44,6 +44,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
 
     const parsedWeight = parseFloat(weight);
     const parsedDate = new Date(addedDate);
+    const now = new Date();
 
     let currentWeightError: string | null = null;
     let currentDateError: string | null = null;
@@ -56,6 +57,9 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
 
     if (isNaN(parsedDate.getTime())) {
       currentDateError = 'Invalid date selected.';
+      hasValidationErrors = true;
+    } else if (parsedDate.getTime() > now.getTime()) { // NEW: Future date validation
+      currentDateError = 'Date cannot be in the future.';
       hasValidationErrors = true;
     }
 
