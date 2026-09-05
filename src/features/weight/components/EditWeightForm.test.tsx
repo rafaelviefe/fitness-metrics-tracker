@@ -46,6 +46,7 @@ describe('EditWeightForm', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
 
     expect(weightInput).toHaveAttribute('aria-invalid', 'false');
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
@@ -85,7 +86,7 @@ describe('EditWeightForm', () => {
     const saveButton = screen.getByRole('button', { name: 'Save Changes' });
 
     const newWeight = '82.7';
-    const newDateTimeLocal = '2023-11-01T15:30';
+    const newDateTimeLocal = '2023-11-01T10:00'; // Set to a past or current date
 
     fireEvent.change(weightInput, { target: { value: newWeight } });
     fireEvent.change(dateInput, { target: { value: newDateTimeLocal } });
@@ -99,6 +100,7 @@ describe('EditWeightForm', () => {
     });
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
     expect(weightInput).toHaveAttribute('aria-invalid', 'false');
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
   });
@@ -110,7 +112,7 @@ describe('EditWeightForm', () => {
     const saveButton = screen.getByRole('button', { name: 'Save Changes' });
 
     const newWeightLbs = '180.0';
-    const newDateTimeLocal = '2023-11-01T15:30';
+    const newDateTimeLocal = '2023-11-01T10:00'; // Set to a past or current date
     const expectedWeightKg = convertLbsToKg(parseFloat(newWeightLbs));
 
     fireEvent.change(weightInput, { target: { value: newWeightLbs } });
@@ -176,6 +178,25 @@ describe('EditWeightForm', () => {
     expect(dateInput).toHaveAttribute('aria-invalid', 'true');
   });
 
+  it('displays an error message for a future date and keeps weight valid', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+  
+    // Set a valid weight
+    fireEvent.change(weightInput, { target: { value: '70' } });
+    // Set a future date (e.g., one day after the mocked system time)
+    fireEvent.change(dateInput, { target: { value: '2023-11-02T10:00' } });
+  
+    fireEvent.click(saveButton);
+  
+    expect(mockOnSave).not.toHaveBeenCalled();
+    expect(screen.getByText('Date cannot be in the future.')).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'true');
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Weight is still valid
+  });
+
   it('clears weight error message when weight input changes after a weight error', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
@@ -200,6 +221,7 @@ describe('EditWeightForm', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
     expect(screen.queryByText('Weight must be a positive number.')).not.toBeInTheDocument();
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
     expect(screen.getByLabelText(/Weight \(kg\)/i)).toHaveAttribute('aria-invalid', 'false');
     expect(screen.getByLabelText(/Date & Time/i)).toHaveAttribute('aria-invalid', 'false');
   });
@@ -245,7 +267,7 @@ describe('EditWeightForm', () => {
     expect(weightInput).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('clears date error message when date input changes after a date error', () => {
+  it('clears date error message when date input changes after a date error (invalid date)', () => {
     render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
     const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement; // Get weight input to verify its aria-invalid state
     const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
@@ -261,6 +283,26 @@ describe('EditWeightForm', () => {
     // Clear error by typing valid input in date field
     fireEvent.change(dateInput, { target: { value: '2023-11-01T10:00' } });
     expect(screen.queryByText('Invalid date selected.')).not.toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'false');
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Weight input should remain valid
+  });
+
+  it('clears date error message when date input changes after a date error (future date)', () => {
+    render(<EditWeightForm record={mockRecord} onSave={mockOnSave} onCancel={mockOnCancel} />);
+    const weightInput = screen.getByLabelText(/Weight \(kg\)/i) as HTMLInputElement;
+    const dateInput = screen.getByLabelText(/Date & Time/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+  
+    // Trigger future date error
+    fireEvent.change(dateInput, { target: { value: '2023-11-02T10:00' } }); // Future date
+    fireEvent.click(saveButton);
+    expect(screen.getByText('Date cannot be in the future.')).toBeInTheDocument();
+    expect(dateInput).toHaveAttribute('aria-invalid', 'true');
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Weight input is initially valid
+  
+    // Clear error by typing valid input in date field
+    fireEvent.change(dateInput, { target: { value: '2023-11-01T10:00' } }); // Valid past date
+    expect(screen.queryByText('Date cannot be in the future.')).not.toBeInTheDocument();
     expect(dateInput).toHaveAttribute('aria-invalid', 'false');
     expect(weightInput).toHaveAttribute('aria-invalid', 'false'); // Weight input should remain valid
   });
