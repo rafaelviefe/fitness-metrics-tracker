@@ -19,20 +19,27 @@ const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
 export default function Home() {
+  // Centralize LocalStorageAdapter instantiation using useMemo
+  const localStorageAdapter = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return new LocalStorageAdapter();
+    }
+    return null; // On server, return null for localStorage adapter
+  }, []); // No dependencies, so it's initialized once per component instance
+
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>([]);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [addFormSubmissionError, setAddFormSubmissionError] = useState<string | null>(null);
+
   const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>(() => {
-    if (typeof window !== 'undefined') {
-      const localStorageAdapter = new LocalStorageAdapter();
+    if (localStorageAdapter) { // Use the memoized instance
       const storedUnit = localStorageAdapter.getItem<'kg' | 'lbs'>(UNIT_PREFERENCE_KEY);
       return storedUnit || 'kg';
     }
     return 'kg';
   });
   const [displayTime, setDisplayTime] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const localStorageAdapter = new LocalStorageAdapter();
+    if (localStorageAdapter) { // Use the memoized instance
       const storedDisplayTime = localStorageAdapter.getItem<string>(DISPLAY_TIME_PREFERENCE_KEY);
       return storedDisplayTime === 'true';
     }
@@ -47,10 +54,8 @@ export default function Home() {
   });
 
   const [sortOrder, setSortOrder] = useState<SortOrder>(() => {
-    if (typeof window !== 'undefined') {
-      const localStorageAdapter = new LocalStorageAdapter();
+    if (localStorageAdapter) { // Use the memoized instance
       const storedSortOrder = localStorageAdapter.getItem<SortOrder>(SORT_ORDER_PREFERENCE_KEY);
-      // Ensure the stored value is one of the valid SortOrder types, otherwise default.
       const validSortOrders: SortOrder[] = ['date_desc', 'date_asc', 'weight_desc', 'weight_asc'];
       if (storedSortOrder && validSortOrders.includes(storedSortOrder)) {
         return storedSortOrder;
@@ -60,7 +65,7 @@ export default function Home() {
   });
 
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
-  const localStorageAdapterRef = useRef<LocalStorageAdapter | null>(null);
+  // Removed localStorageAdapterRef as it's no longer needed
 
   const updateAllStatistics = useCallback(() => {
     if (weightRepositoryRef.current) {
@@ -70,47 +75,44 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (localStorageAdapterRef.current === null) {
-      localStorageAdapterRef.current = new LocalStorageAdapter();
-      weightRepositoryRef.current = new WeightRepository(localStorageAdapterRef.current);
-    }
+    // Initialize WeightRepository only once, when localStorageAdapter is available.
+    if (!weightRepositoryRef.current && localStorageAdapter) {
+      weightRepositoryRef.current = new WeightRepository(localStorageAdapter);
+      const repository = weightRepositoryRef.current;
 
-    const repository = weightRepositoryRef.current;
-    if (repository) { // Ensure repository is not null before usage
       const initialRecords = repository.getWeightRecords();
       setWeightRecords(initialRecords);
 
       updateAllStatistics();
     }
-  }, [updateAllStatistics]);
+  }, [localStorageAdapter, updateAllStatistics]);
 
   useEffect(() => {
-    if (localStorageAdapterRef.current) {
-      localStorageAdapterRef.current.setItem(UNIT_PREFERENCE_KEY, displayUnit);
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(UNIT_PREFERENCE_KEY, displayUnit);
     }
-  }, [displayUnit]);
+  }, [displayUnit, localStorageAdapter]);
 
   useEffect(() => {
-    if (localStorageAdapterRef.current) {
-      localStorageAdapterRef.current.setItem(DISPLAY_TIME_PREFERENCE_KEY, displayTime.toString());
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(DISPLAY_TIME_PREFERENCE_KEY, displayTime.toString());
     }
-  }, [displayTime]);
+  }, [displayTime, localStorageAdapter]);
 
   // Persist sortOrder to local storage whenever it changes
   useEffect(() => {
-    if (localStorageAdapterRef.current) {
-      localStorageAdapterRef.current.setItem(SORT_ORDER_PREFERENCE_KEY, sortOrder);
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(SORT_ORDER_PREFERENCE_KEY, sortOrder);
     }
-  }, [sortOrder]);
+  }, [sortOrder, localStorageAdapter]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
-    // Clear any previous submission error
     setAddFormSubmissionError(null);
     if (weightRepositoryRef.current) {
       const repository = weightRepositoryRef.current;
       const newRecord = repository.addWeightRecord(weight, date);
-      if (newRecord) { // Only add if the record was successfully stored
+      if (newRecord) {
         setWeightRecords((prevRecords) => [...prevRecords, newRecord]);
         updateAllStatistics();
       } else {
@@ -160,7 +162,6 @@ export default function Home() {
   };
 
   const handleClearAllRecords = () => {
-    // Prompt user for confirmation before clearing records
     if (window.confirm('Are you sure you want to delete ALL weight records? This action cannot be undone.')) {
       if (weightRepositoryRef.current) {
         const repository = weightRepositoryRef.current;
@@ -183,31 +184,27 @@ export default function Home() {
 
       switch (sortOrder) {
         case 'date_desc':
-          // Primary sort: date descending. Secondary sort: ID descending (for newer IDs with same date)
           comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
           if (comparison === 0) {
-            comparison = b.id.localeCompare(a.id); // Tie-breaker by ID descending
+            comparison = b.id.localeCompare(a.id);
           }
           break;
         case 'date_asc':
-          // Primary sort: date ascending. Secondary sort: ID ascending (for older IDs with same date)
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (comparison === 0) {
-            comparison = a.id.localeCompare(b.id); // Tie-breaker by ID ascending
+            comparison = a.id.localeCompare(b.id);
           }
           break;
         case 'weight_desc':
-          // Primary sort: weight descending. Secondary sort: date ascending (oldest first)
           comparison = b.weight - a.weight;
           if (comparison === 0) {
-            comparison = new Date(a.date).getTime() - new Date(b.date).getTime(); // Tie-breaker by date ascending
+            comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           }
           break;
         case 'weight_asc':
-          // Primary sort: weight ascending. Secondary sort: date ascending (oldest first)
           comparison = a.weight - b.weight;
           if (comparison === 0) {
-            comparison = new Date(a.date).getTime() - new Date(b.date).getTime(); // Tie-breaker by date ascending
+            comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           }
           break;
         default:
