@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { formatIsoToDateTimeLocal } from '@/lib/date-utils';
 import { convertKgToLbs, convertLbsToKg } from '../utils/weight-utils'; // Import conversion utility
+import { FormError } from '@/components/ui/FormError'; // Import FormError
 
 interface EditWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   record: WeightRecord;
@@ -107,7 +108,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
           aria-describedby={weightError ? `weight-error-${record.id}` : undefined}
           isError={!!weightError}
         />
-        {weightError && <p id={`weight-error-${record.id}`} className="text-red-500 text-sm mt-1">{weightError}</p>}
+        <FormError id={`weight-error-${record.id}`}>{weightError}</FormError>
       </div>
       <div>
         <label htmlFor={`edit-date-${record.id}`} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
