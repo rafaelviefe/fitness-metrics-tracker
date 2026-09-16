@@ -123,7 +123,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
           aria-describedby={dateError ? `date-error-${record.id}` : undefined}
           isError={!!dateError}
         />
-        {dateError && <p id={`date-error-${record.id}`} className="text-red-500 text-sm mt-1">{dateError}</p>}
+        <FormError id={`date-error-${record.id}`}>{dateError}</FormError>
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>

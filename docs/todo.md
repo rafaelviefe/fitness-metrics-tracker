@@ -5,4 +5,4 @@
 [x] ID: 003: Update `displayTime` state initialization in `Home` to use the centralized `localStorageAdapter` instance.
 [x] ID: 004: Update `sortOrder` state initialization in `Home` to use the centralized `localStorageAdapter` instance.
 [x] ID: 005: Refactor `EditWeightForm` to use the `FormError` component for displaying `weightError`.
-[ ] ID: 006: Refactor `EditWeightForm` to use the `FormError` component for displaying `dateError`.
+[x] ID: 006: Refactor `EditWeightForm` to use the `FormError` component for displaying `dateError`.
