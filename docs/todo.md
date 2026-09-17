@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 001: Centralize `LocalStorageAdapter` instantiation in `Home` component using `useMemo`.
-[x] ID: 002: Update `displayUnit` state initialization in `Home` to use the centralized `localStorageAdapter` instance.
-[x] ID: 003: Update `displayTime` state initialization in `Home` to use the centralized `localStorageAdapter` instance.
-[x] ID: 004: Update `sortOrder` state initialization in `Home` to use the centralized `localStorageAdapter` instance.
-[x] ID: 005: Refactor `EditWeightForm` to use the `FormError` component for displaying `weightError`.
-[x] ID: 006: Refactor `EditWeightForm` to use the `FormError` component for displaying `dateError`.
+[ ] ID: 007: Implement a test in `src/app/page.test.tsx` to verify that the `Home` component correctly loads and applies the `displayUnit` preference from `localStorage` on initial render, ensuring 'lbs' is active if set.
+[ ] ID: 008: Implement a test in `src/app/page.test.tsx` to verify that the `Home` component correctly loads and applies the `displayTime` preference from `localStorage` on initial render, ensuring 'Date & Time' is active if set.
+[ ] ID: 009: Implement a test in `src/app/page.test.tsx` to verify that the `Home` component correctly loads and applies the `sortOrder` preference from `localStorage` on initial render, ensuring the correct sort toggle is active if set.
+[ ] ID: 010: Implement a test in `src/app/page.test.tsx` to verify that an `AddWeightForm` submission error message is displayed when `handleAddWeight` fails (e.g., due to a simulated `WeightRepository` storage error).
+[ ] ID: 011: Implement a test in `src/app/page.test.tsx` to verify that `WeightRecordCard` components are initially rendered in `date_desc` order (newest first) when multiple weight records are added.
+[ ] ID: 012: Implement a test in `src/app/page.test.tsx` to verify that `WeightRecordCard` components correctly re-sort to `weight_asc` order (lowest weight first) when the corresponding `ToggleGroupItem` is clicked.
