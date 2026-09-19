@@ -4,6 +4,7 @@ import Home from './page';
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
+const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 
 describe('Home Page', () => {
   // Clear localStorage before each test to ensure a clean state
@@ -53,5 +54,23 @@ describe('Home Page', () => {
     // Verify that the AddWeightForm reflects the 'lbs' preference
     expect(screen.getByLabelText(/Weight \(lbs\)/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/Weight \(kg\)/i)).not.toBeInTheDocument();
+  });
+
+  it('correctly loads and applies the displayTime preference from localStorage on initial render, ensuring "Date & Time" is active if set', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    // Set the display time preference to 'true' in localStorage before rendering
+    localStorageAdapter.setItem(DISPLAY_TIME_PREFERENCE_KEY, 'true');
+
+    render(<Home />);
+
+    // Check if the 'Date & Time' toggle group item is selected
+    const dateTimeToggle = screen.getByRole('button', { name: 'Date & Time' });
+    const dateOnlyToggle = screen.getByRole('button', { name: 'Date Only' });
+
+    expect(dateTimeToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(dateOnlyToggle).toHaveAttribute('aria-pressed', 'false');
+
+    // Optionally, you could also verify that a WeightRecordCard, if present, would display time.
+    // Since there are no records initially, this check is limited to the toggle button state.
   });
 });
