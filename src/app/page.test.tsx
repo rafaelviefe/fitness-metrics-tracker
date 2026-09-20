@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, fireEvent, act } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import Home from './page';
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
+import Home from './page';
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
+const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 
 describe('Home Page', () => {
   // Clear localStorage before each test to ensure a clean state
@@ -72,5 +73,28 @@ describe('Home Page', () => {
 
     // Optionally, you could also verify that a WeightRecordCard, if present, would display time.
     // Since there are no records initially, this check is limited to the toggle button state.
+  });
+
+  it('correctly loads and applies the sortOrder preference from localStorage on initial render, ensuring the correct sort toggle is active if set', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    // Set a specific sort order preference in localStorage before rendering
+    const preferredSortOrder = 'weight_asc';
+    localStorageAdapter.setItem(SORT_ORDER_PREFERENCE_KEY, preferredSortOrder);
+
+    render(<Home />);
+
+    // Get all sort order toggle buttons using their aria-label as the accessible name
+    const dateNewestToggle = screen.getByRole('button', { name: 'Sort by date, newest first' });
+    const dateOldestToggle = screen.getByRole('button', { name: 'Sort by date, oldest first' });
+    const weightHighestToggle = screen.getByRole('button', { name: 'Sort by weight, highest first' });
+    const weightLowestToggle = screen.getByRole('button', { name: 'Sort by weight, lowest first' });
+
+    // Assert that the preferred sort order button is active
+    expect(weightLowestToggle).toHaveAttribute('aria-pressed', 'true');
+
+    // Assert that other sort order buttons are not active
+    expect(dateNewestToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(dateOldestToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(weightHighestToggle).toHaveAttribute('aria-pressed', 'false');
   });
 });
