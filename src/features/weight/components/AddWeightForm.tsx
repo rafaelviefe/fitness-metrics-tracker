@@ -122,7 +122,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
         <FormError id="date-error">{dateError}</FormError>
       </div>
 
-      {submissionError && <p className="text-red-500 text-sm mt-1" role="alert">{submissionError}</p>}
+      <FormError>{submissionError}</FormError>
 
       <Button type="submit" disabled={isSubmitDisabled} className="mt-4">
         Add Weight
