@@ -89,7 +89,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div>
-        <label htmlFor="weight-input" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+        <label htmlFor="weight-input" className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Weight ({unitPreference})
         </label>
         <Input
@@ -107,7 +107,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
       </div>
 
       <div>
-        <label htmlFor="date-input" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+        <label htmlFor="date-input" className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Date & Time
         </label>
         <Input
