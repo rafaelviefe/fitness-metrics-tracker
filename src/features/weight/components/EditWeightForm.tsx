@@ -94,7 +94,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div>
-        <label htmlFor={`edit-weight-${record.id}`} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+        <label htmlFor={`edit-weight-${record.id}`} className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Weight ({unitPreference})
         </label>
         <Input
@@ -111,7 +111,7 @@ export const EditWeightForm: React.FC<EditWeightFormProps> = ({
         <FormError id={`weight-error-${record.id}`}>{weightError}</FormError>
       </div>
       <div>
-        <label htmlFor={`edit-date-${record.id}`} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+        <label htmlFor={`edit-date-${record.id}`} className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Date & Time
         </label>
         <Input
