@@ -6,6 +6,7 @@ import Home from './page';
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
+const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
 
 describe('Home Page', () => {
   // Clear localStorage before each test to ensure a clean state
@@ -96,5 +97,37 @@ describe('Home Page', () => {
     expect(dateNewestToggle).toHaveAttribute('aria-pressed', 'false');
     expect(dateOldestToggle).toHaveAttribute('aria-pressed', 'false');
     expect(weightHighestToggle).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  // NEW: Test for showAddForm preference loading from localStorage
+  it('hides the AddWeightForm if showAddFormPreference is false in localStorage', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    localStorageAdapter.setItem(SHOW_ADD_FORM_PREFERENCE_KEY, 'false');
+
+    render(<Home />);
+
+    // The form should not be in the document
+    expect(screen.queryByLabelText(/Weight \(kg\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Add Weight' })).not.toBeInTheDocument();
+  });
+
+  // NEW: Test for showAddForm preference when true or not set
+  it('shows the AddWeightForm if showAddFormPreference is true or not set in localStorage', () => {
+    // Case 1: 'true' is explicitly set
+    const localStorageAdapterTrue = new LocalStorageAdapter(window.localStorage);
+    localStorageAdapterTrue.clear(); // Clear for fresh test
+    localStorageAdapterTrue.setItem(SHOW_ADD_FORM_PREFERENCE_KEY, 'true');
+    const { unmount: unmountTrue } = render(<Home />);
+    expect(screen.getByLabelText(/Weight \(kg\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add Weight' })).toBeInTheDocument();
+    unmountTrue();
+
+    // Case 2: No preference is set (should default to true)
+    const localStorageAdapterUnset = new LocalStorageAdapter(window.localStorage);
+    localStorageAdapterUnset.clear(); // Clear for fresh test
+    const { unmount: unmountUnset } = render(<Home />);
+    expect(screen.getByLabelText(/Weight \(kg\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add Weight' })).toBeInTheDocument();
+    unmountUnset();
   });
 });
