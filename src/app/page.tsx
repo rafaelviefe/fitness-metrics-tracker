@@ -15,6 +15,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
+const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
 
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
@@ -64,8 +65,17 @@ export default function Home() {
     return 'date_desc'; // Default sort order
   });
 
+  // NEW: State for AddWeightForm visibility
+  const [showAddForm, setShowAddForm] = useState<boolean>(() => {
+    if (localStorageAdapter) {
+      const storedShowAddForm = localStorageAdapter.getItem<string>(SHOW_ADD_FORM_PREFERENCE_KEY);
+      // Default to true if no preference is stored, so the form is visible by default
+      return storedShowAddForm === 'false' ? false : true;
+    }
+    return true; // Default to true on server or if adapter not available
+  });
+
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
-  // Removed localStorageAdapterRef as it's no longer needed
 
   const updateAllStatistics = useCallback(() => {
     if (weightRepositoryRef.current) {
@@ -105,6 +115,13 @@ export default function Home() {
       localStorageAdapter.setItem(SORT_ORDER_PREFERENCE_KEY, sortOrder);
     }
   }, [sortOrder, localStorageAdapter]);
+
+  // NEW: Persist showAddForm to local storage whenever it changes
+  useEffect(() => {
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(SHOW_ADD_FORM_PREFERENCE_KEY, showAddForm.toString());
+    }
+  }, [showAddForm, localStorageAdapter]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
@@ -225,7 +242,10 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
-        <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} />
+        {/* NEW: Conditionally render AddWeightForm based on showAddForm state */}
+        {showAddForm && (
+          <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <WeightStatisticsCard record={weightStatistics.latest} label="Latest Weight" unitPreference={displayUnit} displayTime={displayTime} />
