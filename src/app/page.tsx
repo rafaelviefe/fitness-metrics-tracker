@@ -204,13 +204,13 @@ export default function Home() {
           comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
           if (comparison === 0) {
             comparison = b.id.localeCompare(a.id);
-          }
+          }       
           break;
         case 'date_asc':
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (comparison === 0) {
             comparison = a.id.localeCompare(b.id);
-          }
+          }  
           break;
         case 'weight_desc':
           comparison = b.weight - a.weight;
@@ -222,7 +222,7 @@ export default function Home() {
           comparison = a.weight - b.weight;
           if (comparison === 0) {
             comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-          }
+          }  
           break;
         default:
           break;
@@ -242,6 +242,11 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => setShowAddForm(!showAddForm)} variant="outline" size="sm">
+            {showAddForm ? 'Hide Add Form' : 'Show Add Form'}
+          </Button>
+        </div>
         {/* NEW: Conditionally render AddWeightForm based on showAddForm state */}
         {showAddForm && (
           <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} />
