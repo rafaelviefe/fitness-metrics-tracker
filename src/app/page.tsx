@@ -204,13 +204,13 @@ export default function Home() {
           comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
           if (comparison === 0) {
             comparison = b.id.localeCompare(a.id);
-          }       
+          }
           break;
         case 'date_asc':
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (comparison === 0) {
             comparison = a.id.localeCompare(b.id);
-          }  
+          }
           break;
         case 'weight_desc':
           comparison = b.weight - a.weight;
@@ -222,7 +222,7 @@ export default function Home() {
           comparison = a.weight - b.weight;
           if (comparison === 0) {
             comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-          }  
+          }
           break;
         default:
           break;
