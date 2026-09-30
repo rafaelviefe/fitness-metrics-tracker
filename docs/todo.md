@@ -5,4 +5,4 @@
 [x] ID: 003: Update label text colors in `EditWeightForm` to use `text-[var(--foreground)]` for improved theme consistency.
 [x] ID: 004: Introduce a new `useState` variable `showAddForm` in `page.tsx` to control the visibility of the `AddWeightForm`. Initialize its value by reading from `localStorage`.
 [x] ID: 005: Add a `Button` in `page.tsx` that toggles the `showAddForm` state, and conditionally render the `AddWeightForm` based on this state.
-[ ] ID: 006: Implement a `useEffect` hook in `page.tsx` to persist the `showAddForm` state to `localStorage` whenever it changes.
+[x] ID: 006: Implement a `useEffect` hook in `page.tsx` to persist the `showAddForm` state to `localStorage` whenever it changes.
