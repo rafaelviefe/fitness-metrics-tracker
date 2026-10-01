@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 001: Refactor `AddWeightForm` to use the `FormError` component for displaying the `submissionError` prop.
-[x] ID: 002: Update label text colors in `AddWeightForm` to use `text-[var(--foreground)]` for improved theme consistency.
-[x] ID: 003: Update label text colors in `EditWeightForm` to use `text-[var(--foreground)]` for improved theme consistency.
-[x] ID: 004: Introduce a new `useState` variable `showAddForm` in `page.tsx` to control the visibility of the `AddWeightForm`. Initialize its value by reading from `localStorage`.
-[x] ID: 005: Add a `Button` in `page.tsx` that toggles the `showAddForm` state, and conditionally render the `AddWeightForm` based on this state.
-[x] ID: 006: Implement a `useEffect` hook in `page.tsx` to persist the `showAddForm` state to `localStorage` whenever it changes.
+[ ] ID: 007: Add `onSuccess` prop to `AddWeightForm` and call it after successful submission.
+[ ] ID: 008: Update `app/page.tsx` to pass a callback to `AddWeightForm`'s `onSuccess` prop to hide the form, and add a test.
+[ ] ID: 009: Create a basic `AlertDialog` UI component in `src/components/ui/` with corresponding test file.
+[ ] ID: 010: Add state to `app/page.tsx` to control the "Clear All Records" `AlertDialog` visibility and render it conditionally.
+[ ] ID: 011: Refactor `app/page.tsx` to integrate the "Clear All Records" logic with the `AlertDialog`'s confirmation.
+[ ] ID: 012: Add state to `WeightRecordCard.tsx` to control the visibility of a delete confirmation `AlertDialog` for individual records.
