@@ -11,6 +11,7 @@ interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   onWeightAdded?: (weight: number, date: string) => void;
   unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
   submissionError?: string | null; // NEW PROP: Optional prop for displaying a general submission error
+  onSuccess?: () => void; // NEW PROP: Callback for successful submission
 }
 
 export const AddWeightForm: React.FC<AddWeightFormProps> = ({
@@ -18,6 +19,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
   onWeightAdded,
   unitPreference = 'kg',
   submissionError = null, // Default to null if not provided
+  onSuccess,
   ...props
 }) => {
   const [weight, setWeight] = useState<string>('');
@@ -76,11 +78,16 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
       weightInKg = convertLbsToKg(parsedWeight);
     }
 
+    // Clear form fields BEFORE calling onWeightAdded/onSuccess
     setWeight('');
     setAddedDate(formatIsoToDateTimeLocal(new Date().toISOString()));
 
     if (onWeightAdded) {
       onWeightAdded(weightInKg, parsedDate.toISOString());
+    }
+
+    if (onSuccess) {
+      onSuccess();
     }
   };
 
