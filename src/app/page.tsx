@@ -139,6 +139,11 @@ export default function Home() {
     }
   };
 
+  // NEW: Callback for successful form submission that clears the error state
+  const handleAddFormSuccess = useCallback(() => {
+    setAddFormSubmissionError(null);
+  }, []);
+
   const handleDeleteWeight = (id: string) => {
     if (weightRepositoryRef.current) {
       const repository = weightRepositoryRef.current;
@@ -249,7 +254,7 @@ export default function Home() {
         </div>
         {/* NEW: Conditionally render AddWeightForm based on showAddForm state */}
         {showAddForm && (
-          <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} />
+          <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} onSuccess={handleAddFormSuccess} />
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
