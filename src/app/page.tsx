@@ -248,7 +248,12 @@ export default function Home() {
 
       <section className="mt-8 max-w-md w-full">
         <div className="flex justify-end mb-4">
-          <Button onClick={() => setShowAddForm(!showAddForm)} variant="outline" size="sm">
+          <Button onClick={() => {
+            if (showAddForm) { // If the form is currently visible and about to be hidden
+              setAddFormSubmissionError(null);
+            }
+            setShowAddForm(!showAddForm);
+          }} variant="outline" size="sm">
             {showAddForm ? 'Hide Add Form' : 'Show Add Form'}
           </Button>
         </div>
