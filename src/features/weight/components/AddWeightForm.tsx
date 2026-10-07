@@ -12,6 +12,7 @@ interface AddWeightFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
   submissionError?: string | null; // NEW PROP: Optional prop for displaying a general submission error
   onSuccess?: () => void; // NEW PROP: Callback for successful submission
+  formId?: string; // NEW PROP: Optional ID for the form element
 }
 
 export const AddWeightForm: React.FC<AddWeightFormProps> = ({
@@ -20,6 +21,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
   unitPreference = 'kg',
   submissionError = null, // Default to null if not provided
   onSuccess,
+  formId,
   ...props
 }) => {
   const [weight, setWeight] = useState<string>('');
@@ -94,7 +96,7 @@ export const AddWeightForm: React.FC<AddWeightFormProps> = ({
   const isSubmitDisabled = !weight || !!weightError || !!dateError;
 
   return (
-    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} id={formId} {...props}>
       <div>
         <label htmlFor="weight-input" className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Weight ({unitPreference})
