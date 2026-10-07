@@ -290,4 +290,10 @@ describe('AddWeightForm', () => {
     expect(formElement).toHaveClass('my-custom-form');
     expect(formElement).toHaveClass('space-y-4'); // Default class
   });
+
+  it('should apply the formId prop to the root form element', () => {
+    render(<AddWeightForm formId="unique-add-form" aria-label="Add Weight Form" />);
+    const formElement = screen.getByRole('form', { name: 'Add Weight Form' });
+    expect(formElement).toHaveAttribute('id', 'unique-add-form');
+  });
 });
