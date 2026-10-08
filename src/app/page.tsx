@@ -259,7 +259,14 @@ export default function Home() {
         </div>
         {/* NEW: Conditionally render AddWeightForm based on showAddForm state */}
         {showAddForm && (
-          <AddWeightForm className="mb-6" onWeightAdded={handleAddWeight} unitPreference={displayUnit} submissionError={addFormSubmissionError} onSuccess={handleAddFormSuccess} />
+          <AddWeightForm
+            className="mb-6"
+            onWeightAdded={handleAddWeight}
+            unitPreference={displayUnit}
+            submissionError={addFormSubmissionError}
+            onSuccess={handleAddFormSuccess}
+            formId="add-weight-form"
+          />
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
