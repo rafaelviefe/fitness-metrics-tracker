@@ -253,7 +253,7 @@ export default function Home() {
               setAddFormSubmissionError(null);
             }
             setShowAddForm(!showAddForm);
-          }} variant="outline" size="sm" aria-expanded={showAddForm}>
+          }} variant="outline" size="sm" aria-expanded={showAddForm} aria-controls="add-weight-form">
             {showAddForm ? 'Hide Add Form' : 'Show Add Form'}
           </Button>
         </div>
