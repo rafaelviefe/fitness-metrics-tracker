@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 008: Modify `app/page.tsx` to pass an `onSuccess` callback to the `AddWeightForm` component that clears the `addFormSubmissionError` state.
-[x] ID: 009: In `app/page.tsx`, update the logic for toggling `showAddForm` so that when `setShowAddForm(false)` is called, `setAddFormSubmissionError(null)` is also called.
-[x] ID: 010: Modify the `AddWeightForm` component in `src/features/weight/components/AddWeightForm.tsx` to accept a new `formId` prop and apply it to its root `form` element.
-[x] ID: 011: In `app/page.tsx`, add the `formId="add-weight-form"` prop to the `AddWeightForm` component instance.
-[x] ID: 012: In `app/page.tsx`, add the `aria-expanded` attribute to the "Hide Add Form / Show Add Form" `Button`, dynamically setting its value based on the `showAddForm` state.
-[x] ID: 013: In `app/page.tsx`, add the `aria-controls="add-weight-form"` attribute to the "Hide Add Form / Show Add Form" `Button`, linking it to the `AddWeightForm`.
+[ ] ID: 014: Define a new constant `TARGET_WEIGHT_KEY` in `src/app/page.tsx` for storing target weight in local storage.
+[ ] ID: 015: Add `targetWeight` state to `src/app/page.tsx`, initialized by reading from `localStorageAdapter` using `TARGET_WEIGHT_KEY`. Default to `null`.
+[ ] ID: 016: Implement a `useEffect` in `src/app/page.tsx` to persist `targetWeight` to `localStorageAdapter` whenever its value changes.
+[ ] ID: 017: Add a new method `setTargetWeight(weight: number | null): boolean` to `src/features/weight/repositories/weight.repository.ts` to save the target weight, returning `true` on successful storage or `false` on failure. This method should handle converting `null` to `removeItem` and a number to `setItem`.
+[ ] ID: 018: Add a new method `getTargetWeight(): number | null` to `src/features/weight/repositories/weight.repository.ts` to retrieve the target weight from storage, handling parsing errors and returning `null` if not found or invalid.
+[ ] ID: 019: Add new test cases for `getTargetWeight()` in `src/features/weight/repositories/weight.repository.test.ts`, covering scenarios where no target weight exists, a valid target weight exists, and a malformed target weight exists in storage.
