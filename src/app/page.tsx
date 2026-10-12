@@ -16,6 +16,7 @@ const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
+const TARGET_WEIGHT_KEY = 'targetWeight'; // NEW: Key for storing target weight
 
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
