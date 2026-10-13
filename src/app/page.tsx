@@ -76,6 +76,14 @@ export default function Home() {
     return true; // Default to true on server or if adapter not available
   });
 
+  // NEW: Add targetWeight state, initialized from localStorageAdapter
+  const [targetWeight, setTargetWeight] = useState<number | null>(() => {
+    if (localStorageAdapter) {
+      return localStorageAdapter.getItem<number>(TARGET_WEIGHT_KEY);
+    }
+    return null;
+  });
+
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
 
   const updateAllStatistics = useCallback(() => {
