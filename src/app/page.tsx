@@ -15,8 +15,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
-const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
-const TARGET_WEIGHT_KEY = 'targetWeight'; // NEW: Key for storing target weight
+const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference';
+const TARGET_WEIGHT_KEY = 'targetWeight';
 
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
@@ -131,6 +131,13 @@ export default function Home() {
       localStorageAdapter.setItem(SHOW_ADD_FORM_PREFERENCE_KEY, showAddForm.toString());
     }
   }, [showAddForm, localStorageAdapter]);
+
+  // NEW: Implement a useEffect to persist targetWeight to localStorageAdapter whenever its value changes.
+  useEffect(() => {
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(TARGET_WEIGHT_KEY, targetWeight);
+    }
+  }, [targetWeight, localStorageAdapter]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
