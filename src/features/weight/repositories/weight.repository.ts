@@ -2,6 +2,7 @@ import { StorageService } from '@/core/storage/storage.service';
 import { WeightRecord } from '../types';
 
 const WEIGHT_STORAGE_KEY = 'weightRecords';
+const TARGET_WEIGHT_KEY = 'targetWeight'; // NEW constant for target weight
 
 export class WeightRepository {
   constructor(private readonly storageService: StorageService) {}
@@ -230,5 +231,24 @@ export class WeightRepository {
    */
   clearAllWeightRecords(): void {
     this.storageService.removeItem(WEIGHT_STORAGE_KEY);
+  }
+
+  /**
+   * Saves the user's target weight to storage.
+   * If `weight` is `null`, the target weight is removed from storage.
+   * @param weight The target weight as a number (in kg) or null to remove it.
+   * @returns `true` if the operation was successful, `false` otherwise (only applicable for setting a number, as removing is considered successful if no internal storage errors occur).
+   */
+  setTargetWeight(weight: number | null): boolean {
+    if (weight === null) {
+      // If weight is null, remove the target weight from storage
+      this.storageService.removeItem(TARGET_WEIGHT_KEY);
+      // As removeItem is void and the adapter handles errors internally,
+      // we assume success here from the repository's perspective.
+      return true;
+    } else {
+      // If weight is a number, set it in storage
+      return this.storageService.setItem(TARGET_WEIGHT_KEY, weight);
+    }
   }
 }
