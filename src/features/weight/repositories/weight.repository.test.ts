@@ -6,21 +6,35 @@ import { WeightRecord } from '../types';
 // Mock for StorageService to control localStorage interactions in tests
 class MockStorageService implements StorageService {
   private data: { [key: string]: string } = {}; // Use string to simulate JSON.stringify
+  public setItemFails: boolean = false; // Control flag for setItem failure
+  public removeItemThrows: boolean = false; // Control flag for removeItem error logging
 
   getItem = vi.fn((key: string) => {
     // Simulate JSON.parse if data exists, otherwise return null
     return this.data[key] ? JSON.parse(this.data[key]) : null;
   });
   setItem = vi.fn((key: string, value: any) => {
+    if (this.setItemFails) {
+      // Simulate LocalStorageAdapter's behavior: log error and return false
+      console.error(`Error writing item to localStorage for key "${key}":`, new Error('Simulated QuotaExceededError'));
+      return false;
+    }
     this.data[key] = JSON.stringify(value);
     return true; // Default to success
   });
   removeItem = vi.fn((key: string) => {
+    if (this.removeItemThrows) {
+      // Simulate LocalStorageAdapter's behavior: log error
+      console.error(`Error removing item from localStorage for key "${key}":`, new Error('Simulated RemovalError'));
+      return; // removeItem is void
+    }
     delete this.data[key];
   });
   clear = vi.fn(() => {
     this.data = {};
   });
+  length = 0;
+  key = vi.fn();
 }
 
 describe('WeightRepository', () => {
@@ -473,6 +487,58 @@ describe('WeightRepository', () => {
 
       expect(weightRepository.getAverageWeight()).toBeNull();
       expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setTargetWeight', () => {
+    it('should successfully store a target weight (number)', () => {
+      const targetWeightValue = 70.5;
+      const result = weightRepository.setTargetWeight(targetWeightValue);
+      expect(result).toBe(true);
+      expect(storageService.setItem).toHaveBeenCalledWith('targetWeight', targetWeightValue);
+      expect(storageService.getItem('targetWeight')).toBe(targetWeightValue);
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No errors expected
+    });
+
+    it('should successfully remove the target weight when given null', () => {
+      // First, set a value to ensure it's there to be removed
+      weightRepository.setTargetWeight(70);
+      (storageService.setItem as vi.Mock).mockClear(); // Clear setItem call for previous action
+
+      const result = weightRepository.setTargetWeight(null);
+      expect(result).toBe(true);
+      expect(storageService.removeItem).toHaveBeenCalledWith('targetWeight');
+      expect(storageService.getItem('targetWeight')).toBeNull(); // Verify removal via mock
+      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No errors expected
+    });
+
+    it('should return false if storing a target weight fails (setItem returns false)', () => {
+      storageService.setItemFails = true; // Activate failure mode in mock
+
+      const targetWeightValue = 72;
+      const result = weightRepository.setTargetWeight(targetWeightValue);
+      expect(result).toBe(false);
+      expect(storageService.setItem).toHaveBeenCalledWith('targetWeight', targetWeightValue);
+      // Expect console.error to be called by the mock's setItem implementation (simulating adapter)
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        `Error writing item to localStorage for key "targetWeight":`,
+        expect.any(Error)
+      );
+    });
+
+    it('should return true for removing target weight, even if underlying removeItem logs an error', () => {
+      storageService.removeItemThrows = true; // Activate error logging mode in mock removeItem
+
+      const result = weightRepository.setTargetWeight(null);
+      expect(result).toBe(true); // Repository's perspective: it initiated removal, didn't get an error back
+      expect(storageService.removeItem).toHaveBeenCalledWith('targetWeight');
+      // Expect console.error to be called by the mock's removeItem implementation (simulating adapter)
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        `Error removing item from localStorage for key "targetWeight":`,
+        expect.any(Error)
+      );
     });
   });
 });
