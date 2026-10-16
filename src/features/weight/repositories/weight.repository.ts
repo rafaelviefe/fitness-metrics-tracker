@@ -251,4 +251,25 @@ export class WeightRepository {
       return this.storageService.setItem(TARGET_WEIGHT_KEY, weight);
     }
   }
+
+  /**
+   * Retrieves the user's target weight from storage.
+   * Handles parsing errors and returns `null` if not found or invalid.
+   * @returns The target weight as a number (in kg) or `null` if not set, not found, or invalid.
+   */
+  getTargetWeight(): number | null {
+    const targetWeight = this.storageService.getItem<number>(TARGET_WEIGHT_KEY);
+
+    if (targetWeight === null) {
+      return null;
+    }
+
+    // Additional validation: ensure it's a number after retrieval from storage
+    if (typeof targetWeight === 'number') {
+      return targetWeight;
+    } else {
+      console.error('WeightRepository: Stored target weight is not a valid number, returning null.', targetWeight);
+      return null;
+    }
+  }
 }
