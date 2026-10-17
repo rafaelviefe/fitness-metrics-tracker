@@ -549,14 +549,14 @@ describe('WeightRepository', () => {
   });
 
   describe('getTargetWeight', () => {
-    it('should return null if no target weight is stored', () => {
+    it('should return null if no target weight exists in storage', () => {
       storageService.getItem.mockReturnValueOnce(null);
       expect(weightRepository.getTargetWeight()).toBeNull();
       expect(storageService.getItem).toHaveBeenCalledWith('targetWeight');
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('should return the stored target weight if it is a valid number', () => {
+    it('should return the stored target weight if a valid target weight exists in storage', () => {
       const storedTargetWeight = 70.5;
       storageService.getItem.mockReturnValueOnce(storedTargetWeight);
       expect(weightRepository.getTargetWeight()).toBe(storedTargetWeight);
@@ -564,11 +564,11 @@ describe('WeightRepository', () => {
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('should return null if the stored target weight is not a number (e.g., string)', () => {
+    it('should return null and log an error for a malformed target weight (e.g., a non-numeric string) in storage', () => {
       storageService.getItem.mockReturnValueOnce('not-a-number');
       expect(weightRepository.getTargetWeight()).toBeNull();
       expect(storageService.getItem).toHaveBeenCalledWith('targetWeight');
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1); // Expect a warning/error from validation
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'WeightRepository: Stored target weight is not a valid number, returning null.',
         'not-a-number'
@@ -606,14 +606,10 @@ describe('WeightRepository', () => {
       );
     });
 
-    it('should return null if the stored value is 0 (which is a valid number but might be handled as invalid based on business rules. Here, 0 is considered invalid as a target weight implies a positive goal)', () => {
-      // Based on typical weight tracking, a target weight of 0 is usually not meaningful or valid.
-      // The implementation of getTargetWeight specifically checks for typeof === 'number', it doesn't currently validate positive.
-      // For this test, let's assume if it's a number, it's returned. If a positive validation is needed, it should be added to getTargetWeight.
-      // Current implementation does NOT filter for positive, so 0 is considered valid.
+    it('should return 0 if the stored value is 0, as 0 is a valid number', () => {
       storageService.getItem.mockReturnValueOnce(0);
       expect(weightRepository.getTargetWeight()).toBe(0);
-      expect(consoleErrorSpy).not.toHaveBeenCalled(); // No error for a valid number 0
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
   });
 });
