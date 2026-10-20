@@ -16,7 +16,7 @@ const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference';
-const TARGET_WEIGHT_KEY = 'targetWeight';
+// const TARGET_WEIGHT_KEY = 'targetWeight'; // Removed, as repository encapsulates this key
 
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
@@ -76,13 +76,8 @@ export default function Home() {
     return true; // Default to true on server or if adapter not available
   });
 
-  // NEW: Add targetWeight state, initialized from localStorageAdapter
-  const [targetWeight, setTargetWeight] = useState<number | null>(() => {
-    if (localStorageAdapter) {
-      return localStorageAdapter.getItem<number>(TARGET_WEIGHT_KEY);
-    }
-    return null;
-  });
+  // NEW: Add targetWeight state, initialized to null, and will be set in useEffect
+  const [targetWeight, setTargetWeight] = useState<number | null>(null);
 
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
 
@@ -103,6 +98,10 @@ export default function Home() {
       setWeightRecords(initialRecords);
 
       updateAllStatistics();
+
+      // NEW: Initialize targetWeight from repository
+      const initialTargetWeight = repository.getTargetWeight();
+      setTargetWeight(initialTargetWeight);
     }
   }, [localStorageAdapter, updateAllStatistics]);
 
@@ -132,12 +131,12 @@ export default function Home() {
     }
   }, [showAddForm, localStorageAdapter]);
 
-  // NEW: Implement a useEffect to persist targetWeight to localStorageAdapter whenever its value changes.
+  // NEW: Implement a useEffect to persist targetWeight using weightRepositoryRef.current.setTargetWeight()
   useEffect(() => {
-    if (localStorageAdapter) {
-      localStorageAdapter.setItem(TARGET_WEIGHT_KEY, targetWeight);
+    if (weightRepositoryRef.current) {
+      weightRepositoryRef.current.setTargetWeight(targetWeight);
     }
-  }, [targetWeight, localStorageAdapter]);
+  }, [targetWeight]);
 
   const handleAddWeight = (weight: number, date: string) => {
     console.log('Weight to add:', weight, 'Date:', date);
