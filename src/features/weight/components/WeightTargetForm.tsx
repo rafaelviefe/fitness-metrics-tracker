@@ -11,6 +11,7 @@ interface WeightTargetFormProps extends React.FormHTMLAttributes<HTMLFormElement
   onSave: (targetWeight: number | null) => void; // Callback with target weight in KG or null
   onCancel: () => void;
   unitPreference?: 'kg' | 'lbs';
+  formId?: string; // NEW PROP: Optional ID for the form element
 }
 
 export const WeightTargetForm: React.FC<WeightTargetFormProps> = ({
@@ -19,6 +20,7 @@ export const WeightTargetForm: React.FC<WeightTargetFormProps> = ({
   onCancel,
   className,
   unitPreference = 'kg',
+  formId,
   ...props
 }) => {
   const [editedTargetWeight, setEditedTargetWeight] = useState<string>(() => {
@@ -75,7 +77,7 @@ export const WeightTargetForm: React.FC<WeightTargetFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} id={formId} {...props}>
       <div>
         <label htmlFor="target-weight-input" className="block text-sm font-medium text-[var(--foreground)] mb-1">
           Target Weight ({unitPreference})
