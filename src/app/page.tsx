@@ -11,12 +11,13 @@ import { WeightStatisticsCard } from '@/features/weight/components/WeightStatist
 import { Button } from '@/components/ui/Button';
 import { WeightStatistics, refreshWeightStatistics } from '@/features/weight/utils/weight-utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { WeightTargetForm } from '@/features/weight/components/WeightTargetForm';
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference';
-// const TARGET_WEIGHT_KEY = 'targetWeight'; // Removed, as repository encapsulates this key
+const SHOW_TARGET_FORM_PREFERENCE_KEY = 'showTargetFormPreference'; // NEW CONSTANT
 
 type SortOrder = 'date_desc' | 'date_asc' | 'weight_desc' | 'weight_asc';
 
@@ -66,7 +67,7 @@ export default function Home() {
     return 'date_desc'; // Default sort order
   });
 
-  // NEW: State for AddWeightForm visibility
+  // State for AddWeightForm visibility
   const [showAddForm, setShowAddForm] = useState<boolean>(() => {
     if (localStorageAdapter) {
       const storedShowAddForm = localStorageAdapter.getItem<string>(SHOW_ADD_FORM_PREFERENCE_KEY);
@@ -76,7 +77,17 @@ export default function Home() {
     return true; // Default to true on server or if adapter not available
   });
 
-  // NEW: Add targetWeight state, initialized to null, and will be set in useEffect
+  // NEW: State for WeightTargetForm visibility
+  const [showTargetForm, setShowTargetForm] = useState<boolean>(() => {
+    if (localStorageAdapter) {
+      const storedShowTargetForm = localStorageAdapter.getItem<string>(SHOW_TARGET_FORM_PREFERENCE_KEY);
+      // Default to false if no preference is stored, so the form is hidden by default
+      return storedShowTargetForm === 'true';
+    }
+    return false; // Default to false on server or if adapter not available
+  });
+
+  // Add targetWeight state, initialized to null, and will be set in useEffect
   const [targetWeight, setTargetWeight] = useState<number | null>(null);
 
   const weightRepositoryRef = useRef<WeightRepository | null>(null);
@@ -99,7 +110,7 @@ export default function Home() {
 
       updateAllStatistics();
 
-      // NEW: Initialize targetWeight from repository
+      // Initialize targetWeight from repository
       const initialTargetWeight = repository.getTargetWeight();
       setTargetWeight(initialTargetWeight);
     }
@@ -124,14 +135,21 @@ export default function Home() {
     }
   }, [sortOrder, localStorageAdapter]);
 
-  // NEW: Persist showAddForm to local storage whenever it changes
+  // Persist showAddForm to local storage whenever it changes
   useEffect(() => {
     if (localStorageAdapter) {
       localStorageAdapter.setItem(SHOW_ADD_FORM_PREFERENCE_KEY, showAddForm.toString());
     }
   }, [showAddForm, localStorageAdapter]);
 
-  // NEW: Implement a useEffect to persist targetWeight using weightRepositoryRef.current.setTargetWeight()
+  // NEW: Persist showTargetForm to local storage whenever it changes
+  useEffect(() => {
+    if (localStorageAdapter) {
+      localStorageAdapter.setItem(SHOW_TARGET_FORM_PREFERENCE_KEY, showTargetForm.toString());
+    }
+  }, [showTargetForm, localStorageAdapter]);
+
+  // Implement a useEffect to persist targetWeight using weightRepositoryRef.current.setTargetWeight()
   useEffect(() => {
     if (weightRepositoryRef.current) {
       weightRepositoryRef.current.setTargetWeight(targetWeight);
@@ -154,7 +172,7 @@ export default function Home() {
     }
   };
 
-  // NEW: Callback for successful form submission that clears the error state
+  // Callback for successful form submission that clears the error state
   const handleAddFormSuccess = useCallback(() => {
     setAddFormSubmissionError(null);
   }, []);
@@ -215,6 +233,24 @@ export default function Home() {
     }
   };
 
+  // NEW: Handler for saving target weight
+  const handleSaveTargetWeight = useCallback((weight: number | null) => {
+    if (weightRepositoryRef.current) {
+      const success = weightRepositoryRef.current.setTargetWeight(weight);
+      if (success) {
+        setTargetWeight(weight);
+        setShowTargetForm(false); // Hide form after successful save
+      } else {
+        console.error('Failed to save target weight due to storage error.');
+      }
+    }
+  }, []);
+
+  // NEW: Handler for canceling target weight edit
+  const handleCancelTargetWeight = useCallback(() => {
+    setShowTargetForm(false); // Hide form without saving
+  }, []);
+
   const sortedWeightRecords = useMemo(() => {
     const sorted = [...weightRecords].sort((a, b) => {
       let comparison = 0;
@@ -262,7 +298,7 @@ export default function Home() {
       </p>
 
       <section className="mt-8 max-w-md w-full">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-4 gap-2"> {/* Added gap-2 for spacing */}
           <Button onClick={() => {
             if (showAddForm) { // If the form is currently visible and about to be hidden
               setAddFormSubmissionError(null);
@@ -271,8 +307,12 @@ export default function Home() {
           }} variant="outline" size="sm" aria-expanded={showAddForm} aria-controls="add-weight-form">
             {showAddForm ? 'Hide Add Form' : 'Show Add Form'}
           </Button>
+          {/* NEW: Button to toggle WeightTargetForm visibility */}
+          <Button onClick={() => setShowTargetForm(!showTargetForm)} variant="outline" size="sm" aria-expanded={showTargetForm} aria-controls="target-weight-form">
+            {showTargetForm ? 'Hide Target Form' : 'Set Target Weight'}
+          </Button>
         </div>
-        {/* NEW: Conditionally render AddWeightForm based on showAddForm state */}
+        {/* Conditionally render AddWeightForm based on showAddForm state */}
         {showAddForm && (
           <AddWeightForm
             className="mb-6"
@@ -281,6 +321,18 @@ export default function Home() {
             submissionError={addFormSubmissionError}
             onSuccess={handleAddFormSuccess}
             formId="add-weight-form"
+          />
+        )}
+
+        {/* NEW: Conditionally render WeightTargetForm based on showTargetForm state */}
+        {showTargetForm && (
+          <WeightTargetForm
+            className="mb-6"
+            initialTargetWeight={targetWeight}
+            onSave={handleSaveTargetWeight}
+            onCancel={handleCancelTargetWeight}
+            unitPreference={displayUnit}
+            formId="target-weight-form"
           />
         )}
 
