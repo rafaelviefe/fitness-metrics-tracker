@@ -170,7 +170,7 @@ describe('WeightStatisticsCard', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  // New tests for averageValue prop
+  // Tests for averageValue prop
   it('renders correctly with averageValue, converting to lbs if specified, and no date displayed', () => {
     render(<WeightStatisticsCard label="Average Weight" averageValue={75.5} unitPreference="lbs" />);
     const expectedLbs = convertKgToLbs(75.5).toFixed(1);
@@ -182,7 +182,7 @@ describe('WeightStatisticsCard', () => {
 
   it('renders correctly with averageValue in kg and no date displayed', () => {
     render(<WeightStatisticsCard label="Average Weight" averageValue={75.5} unitPreference="kg" />);
-    expect(screen.getByText('75.5 kg')).toBeInTheDocument(); // Updated to 75.5 kg
+    expect(screen.getByText('75.5 kg')).toBeInTheDocument();
     expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
     expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
@@ -202,14 +202,92 @@ describe('WeightStatisticsCard', () => {
       weight: 100, // Different weight
     };
     render(<WeightStatisticsCard record={mockRecordConflict} averageValue={70.0} label="Average Weight" />);
-    expect(screen.getByText('70.0 kg')).toBeInTheDocument(); // Updated to 70.0 kg
-    expect(screen.queryByText('100.0 kg')).not.toBeInTheDocument(); // Updated to 100.0 kg
-    expect(screen.queryByText(/date/i)).not.toBeInTheDocument(); // No date from averageValue
+    expect(screen.getByText('70.0 kg')).toBeInTheDocument();
+    expect(screen.queryByText('100.0 kg')).not.toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
   });
 
   it('should fall back to record if averageValue is null but record is present', () => {
     render(<WeightStatisticsCard record={mockRecord} averageValue={null} label="Latest Weight" />);
     expect(screen.getByText('78.9 kg')).toBeInTheDocument();
     expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+  });
+
+  // NEW TESTS FOR targetValue
+
+  it('renders correctly with targetValue, converting to lbs if specified, and no date displayed', () => {
+    render(<WeightStatisticsCard label="Target Weight" targetValue={75.5} unitPreference="lbs" />);
+    const expectedLbs = convertKgToLbs(75.5).toFixed(1);
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
+  });
+
+  it('renders correctly with targetValue in kg and no date displayed', () => {
+    render(<WeightStatisticsCard label="Target Weight" targetValue={75.5} unitPreference="kg" />);
+    expect(screen.getByText('75.5 kg')).toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/time/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('No records yet.')).not.toBeInTheDocument();
+  });
+
+  it('prioritizes targetValue over averageValue and record when all are present', () => {
+    const mockRecordConflict: WeightRecord = {
+      id: 'conflict-id',
+      date: '2023-01-01T10:00:00.000Z',
+      weight: 100, 
+    };
+    render(<WeightStatisticsCard
+      record={mockRecordConflict}
+      averageValue={70.0}
+      targetValue={65.0} // This should be displayed
+      label="Target Weight"
+    />);
+    expect(screen.getByText('65.0 kg')).toBeInTheDocument();
+    expect(screen.queryByText('70.0 kg')).not.toBeInTheDocument();
+    expect(screen.queryByText('100.0 kg')).not.toBeInTheDocument();
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+  });
+
+  it('should fall back to averageValue if targetValue is null but averageValue is present', () => {
+    render(<WeightStatisticsCard
+      record={mockRecord}
+      averageValue={70.0}
+      targetValue={null}
+      label="Average Weight"
+    />);
+    expect(screen.getByText('70.0 kg')).toBeInTheDocument();
+    expect(screen.queryByText('78.9 kg')).not.toBeInTheDocument(); // record value should not be displayed
+    expect(screen.queryByText(/date/i)).not.toBeInTheDocument();
+  });
+
+  it('should fall back to record if both targetValue and averageValue are null but record is present', () => {
+    render(<WeightStatisticsCard
+      record={mockRecord}
+      averageValue={null}
+      targetValue={null}
+      label="Latest Weight"
+    />);
+    expect(screen.getByText('78.9 kg')).toBeInTheDocument();
+    expect(screen.getByText('October 27, 2023')).toBeInTheDocument();
+  });
+
+  it('formats integer targetValue to one decimal place', () => {
+    render(<WeightStatisticsCard label="Target Weight" targetValue={75} unitPreference="kg" />);
+    expect(screen.getByText('75.0 kg')).toBeInTheDocument();
+  });
+
+  it('formats decimal targetValue to one decimal place', () => {
+    render(<WeightStatisticsCard label="Target Weight" targetValue={75.123} unitPreference="kg" />);
+    expect(screen.getByText('75.1 kg')).toBeInTheDocument();
+  });
+
+  it('renders "No records yet." when record, averageValue, and targetValue are all null or undefined', () => {
+    const { rerender } = render(<WeightStatisticsCard label="Empty" record={null} averageValue={null} targetValue={null} />);
+    expect(screen.getByText('No records yet.')).toBeInTheDocument();
+
+    rerender(<WeightStatisticsCard label="Empty" record={undefined} averageValue={undefined} targetValue={undefined} />);
+    expect(screen.getByText('No records yet.')).toBeInTheDocument();
   });
 });
