@@ -10,17 +10,28 @@ interface WeightStatisticsCardProps extends React.HTMLAttributes<HTMLDivElement>
   label: string;
   displayTime?: boolean; // New prop for conditional time display
   unitPreference?: 'kg' | 'lbs'; // New prop for unit preference
-  averageValue?: number | null; // NEW PROP
+  averageValue?: number | null; // Existing prop for average value
+  targetValue?: number | null; // NEW PROP: Optional prop to display a target value instead of a record
 }
 
 const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCardProps>(
-  ({ record, label, className, displayTime = false, unitPreference = 'kg', averageValue = null, ...props }, ref) => {
+  ({ record, label, className, displayTime = false, unitPreference = 'kg', averageValue = null, targetValue = null, ...props }, ref) => {
     let content;
-    let displayedWeight: string | number | null = null;
-    let displayedUnit = unitPreference;
+    let displayedWeight: string | null = null; // Changed to string as toFixed returns string
+    const displayedUnit = unitPreference;
 
-    if (averageValue !== null) {
-      // Prioritize averageValue if provided
+    if (targetValue !== null && typeof targetValue === 'number') { // Prioritize targetValue if provided
+      displayedWeight = unitPreference === 'lbs'
+        ? convertKgToLbs(targetValue).toFixed(1)
+        : targetValue.toFixed(1); // Format to one decimal place
+      
+      content = (
+        <div className="flex items-baseline space-x-2">
+          <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{displayedWeight} {displayedUnit}</p>
+          {/* No date is shown for targetValue */}
+        </div>
+      );
+    } else if (averageValue !== null) { // Fallback to averageValue if targetValue is null
       displayedWeight = unitPreference === 'lbs'
         ? convertKgToLbs(averageValue).toFixed(1)
         : averageValue.toFixed(1); // Format to one decimal place for kg as well
@@ -32,8 +43,8 @@ const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCa
         </div>
       );
     } else if (record) {
-      // Fallback to record if averageValue is null
-      const shouldDisplayDateForRecord = record.id !== 'average'; // Existing logic for records
+      // Fallback to record if both targetValue and averageValue are null
+      const shouldDisplayDateForRecord = record.id !== 'average'; // Existing logic for internal 'average' record
       
       displayedWeight = unitPreference === 'lbs'
         ? convertKgToLbs(record.weight).toFixed(1) // Format to one decimal place for lbs
@@ -46,13 +57,13 @@ const WeightStatisticsCard = React.forwardRef<HTMLDivElement, WeightStatisticsCa
       content = (
         <div className="flex items-baseline space-x-2">
           <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{displayedWeight} {displayedUnit}</p>
-          {shouldDisplayDateForRecord && formattedDate && (
+          {formattedDate && (
             <p className="text-sm text-neutral-500 dark:text-neutral-400">{formattedDate}</p>
           )}
         </div>
       );
     } else {
-      // No record and no averageValue
+      // No record, no averageValue, no targetValue
       content = (
         <p className="text-neutral-500 dark:text-neutral-400">No records yet.</p>
       );
