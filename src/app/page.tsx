@@ -346,6 +346,11 @@ export default function Home() {
             unitPreference={displayUnit}
             averageValue={weightStatistics.average}
           />
+          <WeightStatisticsCard
+            label="Target Weight"
+            unitPreference={displayUnit}
+            targetValue={targetWeight}
+          />
         </div>
 
         <div className="flex justify-between items-center mb-4">
