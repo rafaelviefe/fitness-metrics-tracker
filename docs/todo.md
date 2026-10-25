@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 020: Create the initial `WeightTargetForm` component file with basic structure.
-[x] ID: 021: Update `src/app/page.tsx` to use `weightRepositoryRef.current.getTargetWeight()` for initial state and `weightRepositoryRef.current.setTargetWeight()` for persistence of the `targetWeight`.
-[x] ID: 022: Integrate the `WeightTargetForm` into `src/app/page.tsx` by adding a `showTargetForm` state and a button to toggle its visibility.
-[x] ID: 023: Implement `handleSaveTargetWeight` and `handleCancelTargetWeight` functions in `src/app/page.tsx` and pass them as props to the `WeightTargetForm`.
-[x] ID: 024: Add a new `targetValue?: number | null;` prop to `WeightStatisticsCardProps` and modify `WeightStatisticsCard.tsx` to display this value if provided (without a date).
-[x] ID: 025: Render a `WeightStatisticsCard` instance in `src/app/page.tsx` dedicated to displaying the `targetWeight` state using the new `targetValue` prop.
+[ ] ID: 026: Add a test to `page.test.tsx` to verify that the `WeightTargetForm` is initially hidden when no `SHOW_TARGET_FORM_PREFERENCE_KEY` is set in `localStorage`.
+[ ] ID: 027: Add a test to `page.test.tsx` to verify that the `WeightTargetForm` is initially visible if `SHOW_TARGET_FORM_PREFERENCE_KEY` is set to `'true'` in `localStorage`.
+[ ] ID: 028: Add a test to `page.test.tsx` to verify that the `targetWeight` loaded from `localStorage` is correctly displayed in the `WeightStatisticsCard` on initial render.
+[ ] ID: 029: Add a test to `page.test.tsx` to simulate saving a new `targetWeight` via the `WeightTargetForm` and verify that the `targetWeight` state and `localStorage` are updated.
+[ ] ID: 030: Add a test to `page.test.tsx` to simulate clearing `targetWeight` via the `WeightTargetForm` (empty input) and verify that the `targetWeight` state becomes `null` and the `targetWeight` entry is removed from `localStorage`.
+[ ] ID: 031: Add a test to `page.test.tsx` to verify that the `WeightTargetForm` clears its internal validation error when it is hidden and then re-shown.
