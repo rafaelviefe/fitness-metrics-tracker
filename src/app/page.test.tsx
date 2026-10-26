@@ -7,6 +7,7 @@ const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
+const SHOW_TARGET_FORM_PREFERENCE_KEY = 'showTargetFormPreference'; // NEW: Key for TargetForm visibility
 
 describe('Home Page', () => {
   // Clear localStorage before each test to ensure a clean state
@@ -129,5 +130,23 @@ describe('Home Page', () => {
     expect(screen.getByLabelText(/Weight \(kg\)/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add Weight' })).toBeInTheDocument();
     unmountUnset();
+  });
+
+  // NEW: Test for WeightTargetForm being initially hidden when preference is not set
+  it('hides the WeightTargetForm initially when no SHOW_TARGET_FORM_PREFERENCE_KEY is set in localStorage', () => {
+    // Ensure localStorage is empty for the preference key
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    localStorageAdapter.removeItem(SHOW_TARGET_FORM_PREFERENCE_KEY);
+
+    render(<Home />);
+
+    // The WeightTargetForm should not be visible
+    expect(screen.queryByLabelText(/Target Weight \(kg\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save Target' })).not.toBeInTheDocument();
+
+    // The toggle button for the target form should say "Set Target Weight" (indicating it's currently hidden)
+    expect(screen.getByRole('button', { name: 'Set Target Weight' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Hide Target Form' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Set Target Weight' })).toHaveAttribute('aria-expanded', 'false');
   });
 });
