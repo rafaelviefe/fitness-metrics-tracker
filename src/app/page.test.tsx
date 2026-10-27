@@ -149,4 +149,20 @@ describe('Home Page', () => {
     expect(screen.queryByRole('button', { name: 'Hide Target Form' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Set Target Weight' })).toHaveAttribute('aria-expanded', 'false');
   });
+
+  it('shows the WeightTargetForm if SHOW_TARGET_FORM_PREFERENCE_KEY is true in localStorage', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    localStorageAdapter.setItem(SHOW_TARGET_FORM_PREFERENCE_KEY, 'true');
+
+    render(<Home />);
+
+    // The WeightTargetForm should be visible
+    expect(screen.getByLabelText(/Target Weight \(kg\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save Target' })).toBeInTheDocument();
+
+    // The toggle button for the target form should say "Hide Target Form" (indicating it's currently visible)
+    expect(screen.getByRole('button', { name: 'Hide Target Form' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Set Target Weight' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Hide Target Form' })).toHaveAttribute('aria-expanded', 'true');
+  });
 });
