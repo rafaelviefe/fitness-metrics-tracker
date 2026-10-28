@@ -2,12 +2,14 @@ import { describe, it, expect, beforeEach, fireEvent, act } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { LocalStorageAdapter } from '@/core/storage/local-storage.adapter';
 import Home from './page';
+import { convertKgToLbs } from '@/features/weight/utils/weight-utils'; // Import for conversion
 
 const UNIT_PREFERENCE_KEY = 'unitPreference';
 const DISPLAY_TIME_PREFERENCE_KEY = 'displayTimePreference';
 const SORT_ORDER_PREFERENCE_KEY = 'sortOrderPreference';
 const SHOW_ADD_FORM_PREFERENCE_KEY = 'showAddFormPreference'; // NEW: Key for AddForm visibility
 const SHOW_TARGET_FORM_PREFERENCE_KEY = 'showTargetFormPreference'; // NEW: Key for TargetForm visibility
+const TARGET_WEIGHT_KEY = 'targetWeight'; // NEW: Key for target weight
 
 describe('Home Page', () => {
   // Clear localStorage before each test to ensure a clean state
@@ -164,5 +166,47 @@ describe('Home Page', () => {
     expect(screen.getByRole('button', { name: 'Hide Target Form' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Set Target Weight' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Hide Target Form' })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('correctly loads and displays the target weight from localStorage on initial render', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    const testTargetWeightKg = 70.5;
+    // Set a target weight in localStorage (stored in KG)
+    localStorageAdapter.setItem(TARGET_WEIGHT_KEY, testTargetWeightKg);
+    // Ensure default unit preference is kg for this test (it is by default, but explicitly setting won't hurt)
+    localStorageAdapter.setItem(UNIT_PREFERENCE_KEY, 'kg');
+
+    render(<Home />);
+
+    // Find the WeightStatisticsCard labeled "Target Weight"
+    const targetWeightCard = screen.getByRole('heading', { name: 'Target Weight' }).closest('div');
+    expect(targetWeightCard).toBeInTheDocument();
+
+    // Check if the weight is displayed correctly in kg
+    expect(screen.getByText('70.5 kg')).toBeInTheDocument();
+    // Ensure "No records yet." is not displayed within this specific card
+    expect(targetWeightCard).not.toHaveTextContent('No records yet.');
+  });
+
+  it('correctly loads and displays the target weight in lbs from localStorage on initial render if unit preference is lbs', () => {
+    const localStorageAdapter = new LocalStorageAdapter(window.localStorage);
+    const testTargetWeightKg = 70.5;
+    const expectedLbs = convertKgToLbs(testTargetWeightKg).toFixed(1);
+
+    // Set a target weight in localStorage (stored in KG)
+    localStorageAdapter.setItem(TARGET_WEIGHT_KEY, testTargetWeightKg);
+    // Set unit preference to lbs
+    localStorageAdapter.setItem(UNIT_PREFERENCE_KEY, 'lbs');
+
+    render(<Home />);
+
+    // Find the WeightStatisticsCard labeled "Target Weight"
+    const targetWeightCard = screen.getByRole('heading', { name: 'Target Weight' }).closest('div');
+    expect(targetWeightCard).toBeInTheDocument();
+
+    // Check if the weight is displayed correctly in lbs
+    expect(screen.getByText(`${expectedLbs} lbs`)).toBeInTheDocument();
+    // Ensure "No records yet." is not displayed within this specific card
+    expect(targetWeightCard).not.toHaveTextContent('No records yet.');
   });
 });
