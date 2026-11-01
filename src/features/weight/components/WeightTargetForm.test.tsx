@@ -249,6 +249,37 @@ describe('WeightTargetForm', () => {
     expect(weightInput).toHaveAttribute('aria-invalid', 'false');
   });
 
+  // NEW Test Case: Clears error when input is made empty after an error
+  it('clears error when input is made empty after an error', () => {
+    render(
+      <WeightTargetForm
+        initialTargetWeight={null}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
+      />
+    );
+    const weightInput = screen.getByLabelText(/Target Weight \(kg\)/i) as HTMLInputElement;
+    const saveButton = screen.getByRole('button', { name: 'Save Target' });
+
+    // 1. Trigger an error
+    fireEvent.change(weightInput, { target: { value: '-5' } });
+    fireEvent.click(saveButton);
+    expect(screen.getByText('Target weight must be a positive number.')).toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('aria-invalid', 'true');
+
+    // 2. Change input to empty (valid action to clear target)
+    fireEvent.change(weightInput, { target: { value: '' } });
+
+    // 3. Assert error is cleared in real-time
+    expect(screen.queryByText('Target weight must be a positive number.')).not.toBeInTheDocument();
+    expect(weightInput).toHaveAttribute('aria-invalid', 'false');
+
+    // 4. Optionally, verify save behavior for empty input
+    fireEvent.click(saveButton);
+    expect(mockOnSave).toHaveBeenCalledTimes(1);
+    expect(mockOnSave).toHaveBeenCalledWith(null);
+  });
+
   // Test case 13: Calls onCancel when cancel button is clicked
   it('calls onCancel when cancel button is clicked', () => {
     render(
