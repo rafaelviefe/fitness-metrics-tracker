@@ -180,7 +180,7 @@ describe('WeightTargetForm', () => {
   });
 
   // Test case 10: Shows error for invalid weight (zero or negative)
-  it('shows error for invalid weight (zero or negative)', () => {
+  it('shows error for invalid weight (zero or negative) and does not call onSave', () => {
     render(
       <WeightTargetForm
         initialTargetWeight={null}
@@ -191,15 +191,17 @@ describe('WeightTargetForm', () => {
     const weightInput = screen.getByLabelText(/Target Weight \(kg\)/i) as HTMLInputElement;
     const saveButton = screen.getByRole('button', { name: 'Save Target' });
 
+    // Test with zero
     fireEvent.change(weightInput, { target: { value: '0' } });
     fireEvent.click(saveButton);
     expect(mockOnSave).not.toHaveBeenCalled();
     expect(screen.getByText('Target weight must be a positive number.')).toBeInTheDocument();
     expect(weightInput).toHaveAttribute('aria-invalid', 'true');
 
+    // Test with negative number
     fireEvent.change(weightInput, { target: { value: '-10' } });
     fireEvent.click(saveButton);
-    expect(mockOnSave).not.toHaveBeenCalled();
+    expect(mockOnSave).not.toHaveBeenCalled(); // Should still not be called after second submission
     expect(screen.getByText('Target weight must be a positive number.')).toBeInTheDocument();
     expect(weightInput).toHaveAttribute('aria-invalid', 'true');
   });
