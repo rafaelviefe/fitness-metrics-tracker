@@ -265,7 +265,7 @@ describe('WeightTargetForm', () => {
 
     // 1. Trigger an error
     fireEvent.change(weightInput, { target: { value: '-5' } });
-    fireEvent.click(saveButton);
+    fireEvent.click(saveButton); // Submitting triggers validation and error display
     expect(screen.getByText('Target weight must be a positive number.')).toBeInTheDocument();
     expect(weightInput).toHaveAttribute('aria-invalid', 'true');
 
