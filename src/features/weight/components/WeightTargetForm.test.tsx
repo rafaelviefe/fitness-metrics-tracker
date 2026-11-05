@@ -282,8 +282,8 @@ describe('WeightTargetForm', () => {
     expect(mockOnSave).toHaveBeenCalledWith(null);
   });
 
-  // Test case 13: Calls onCancel when cancel button is clicked
-  it('calls onCancel when cancel button is clicked', () => {
+  // Test case 13: Calls onCancel and not onSave when the Cancel button is clicked
+  it('calls onCancel and not onSave when the Cancel button is clicked', () => {
     render(
       <WeightTargetForm
         initialTargetWeight={70}
