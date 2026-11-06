@@ -1,8 +1,8 @@
 # Project Roadmap
 
-[x] ID: 029: Add unit tests for `WeightTargetForm` to verify initial rendering states and unit preference display, including when `initialTargetWeight` is `null` or a specific value (in `kg` or converted to `lbs`).
-[x] ID: 030: Add unit tests for `WeightTargetForm` to verify input change handling, focusing on the `editedTargetWeight` state updates and real-time clearing of `weightError` on valid input.
-[x] ID: 031: Add unit tests for `WeightTargetForm` to verify client-side validation for the weight input, specifically testing for non-positive numbers and non-numeric inputs, and ensuring the `weightError` state is set correctly.
-[x] ID: 032: Add unit tests for `WeightTargetForm` to verify the `onSave` callback is correctly invoked with a converted (to `kg`) numeric value when a valid positive number is entered and the form is submitted.
-[x] ID: 033: Add unit tests for `WeightTargetForm` to verify the `onSave` callback is correctly invoked with `null` when the weight input is left empty or cleared and the form is submitted.
-[x] ID: 034: Add unit tests for `WeightTargetForm` to verify the `onCancel` callback is correctly invoked when the "Cancel" button is clicked, and ensure no `onSave` action occurs.
+[ ] ID: 035: In `page.tsx`, modify the `handleClearAllRecords` function to also set the `targetWeight` state to `null` and call `weightRepositoryRef.current.setTargetWeight(null)`.
+[ ] ID: 036: In `page.test.tsx`, add a new test case to verify that when the "Clear All Records" button is clicked, the "Target Weight" statistics card displays "No records yet.".
+[ ] ID: 037: In `src/features/weight/components/WeightStatisticsCard.tsx`, update the `WeightStatisticsCardProps` interface to include a new optional prop: `latestWeightForComparison?: number | null;`.
+[ ] ID: 038: In `page.tsx`, locate the `WeightStatisticsCard` component responsible for displaying "Target Weight" and pass the `weightStatistics.latest?.weight` value to its new `latestWeightForComparison` prop.
+[ ] ID: 039: In `src/features/weight/components/WeightStatisticsCard.tsx`, within the conditional rendering for `targetValue`, add logic to display a textual indicator (e.g., "(Above Target)", "(Below Target)", or "(Target Achieved)") next to the target weight if `targetValue` and `latestWeightForComparison` are both present, based on their comparison. Do not add any styling (colors) at this stage.
+[ ] ID: 040: In `src/features/weight/components/WeightStatisticsCard.test.tsx`, add new test cases to verify the conditional rendering of the textual indicators ("(Above Target)", "(Below Target)", "(Target Achieved)") when `targetValue` and `latestWeightForComparison` props are provided.
