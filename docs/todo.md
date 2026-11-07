@@ -1,8 +1,1 @@
 # Project Roadmap
-
-[ ] ID: 035: In `page.tsx`, modify the `handleClearAllRecords` function to also set the `targetWeight` state to `null` and call `weightRepositoryRef.current.setTargetWeight(null)`.
-[ ] ID: 036: In `page.test.tsx`, add a new test case to verify that when the "Clear All Records" button is clicked, the "Target Weight" statistics card displays "No records yet.".
-[ ] ID: 037: In `src/features/weight/components/WeightStatisticsCard.tsx`, update the `WeightStatisticsCardProps` interface to include a new optional prop: `latestWeightForComparison?: number | null;`.
-[ ] ID: 038: In `page.tsx`, locate the `WeightStatisticsCard` component responsible for displaying "Target Weight" and pass the `weightStatistics.latest?.weight` value to its new `latestWeightForComparison` prop.
-[ ] ID: 039: In `src/features/weight/components/WeightStatisticsCard.tsx`, within the conditional rendering for `targetValue`, add logic to display a textual indicator (e.g., "(Above Target)", "(Below Target)", or "(Target Achieved)") next to the target weight if `targetValue` and `latestWeightForComparison` are both present, based on their comparison. Do not add any styling (colors) at this stage.
-[ ] ID: 040: In `src/features/weight/components/WeightStatisticsCard.test.tsx`, add new test cases to verify the conditional rendering of the textual indicators ("(Above Target)", "(Below Target)", "(Target Achieved)") when `targetValue` and `latestWeightForComparison` props are provided.
