@@ -1,1 +1,8 @@
 # Project Roadmap
+
+[ ] ID: 001: Implement a test in `page.test.tsx` to verify that adding a new weight record via `AddWeightForm` successfully updates the displayed list of records and the weight statistics cards. This involves simulating input for weight and date, form submission, and asserting changes in the UI.
+[ ] ID: 002: Implement a test in `page.test.tsx` to verify that clicking the 'Delete' button on a `WeightRecordCard` successfully removes the corresponding record from the displayed list and updates the weight statistics cards.
+[ ] ID: 003: Implement a test in `page.test.tsx` to verify that editing an existing weight record via `EditWeightForm` (after clicking 'Edit' on a `WeightRecordCard`) successfully updates the displayed record in the list and the weight statistics cards. This involves simulating input changes and form submission.
+[ ] ID: 004: Implement a test in `page.test.tsx` to verify that changing the unit preference (kg/lbs) via its toggle group correctly updates the displayed weight values across all `WeightRecordCard`s and `WeightStatisticsCard`s.
+[ ] ID: 005: Implement a test in `page.test.tsx` to verify that changing the display time preference (Date & Time/Date Only) via its toggle group correctly updates the date format displayed on `WeightRecordCard`s and relevant `WeightStatisticsCard`s (e.g., Latest, Highest).
+[ ] ID: 006: Implement a test in `page.test.tsx` to verify that setting a new target weight via `WeightTargetForm` updates the `Target Weight` statistics card, and that subsequently clearing the target weight via the same form correctly updates the card to "No records yet."
