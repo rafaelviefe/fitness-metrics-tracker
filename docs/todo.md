@@ -1,1 +1,8 @@
 # Project Roadmap
+
+[ ] ID: 001: In `./src/lib/utils.test.ts`, update the description of the test case `should flatten a single level of arrays and filter out non-string values within them` to accurately reflect the deep flattening behavior of `flat(Infinity)`.
+[ ] ID: 002: In `./src/lib/utils.test.ts`, update the description of the test case `should filter out nested arrays as they are not strings after initial flattening` to accurately reflect the deep flattening behavior of `flat(Infinity)`.
+[ ] ID: 003: In `./src/app/page.tsx`, refactor the `WeightRepository` instantiation from the `useEffect` hook into a `useRef` initialized with `useMemo`, ensuring the repository instance is created once when `localStorageAdapter` is available.
+[ ] ID: 004: In `./src/app/page.tsx`, remove the `useEffect` hook that is solely responsible for persisting `targetWeight` to local storage (the one with `[targetWeight]` dependency).
+[ ] ID: 005: In `./src/app/page.tsx`, modify the `handleSaveTargetWeight` function: call `weightRepositoryRef.current.setTargetWeight(weight)` and check its return value; if successful, update the `targetWeight` state and set `setShowTargetForm(false)`.
+[ ] ID: 006: In `./src/app/page.tsx`, modify the `targetWeight` state initialization to directly load its value from `localStorageAdapter` using `TARGET_WEIGHT_KEY` inside the `useState` lazy initializer, and remove its initial loading from the main effect hook. Ensure `TARGET_WEIGHT_KEY` is imported from '@/features/weight/repositories/weight.repository'.
